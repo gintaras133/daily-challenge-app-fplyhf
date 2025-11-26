@@ -24,6 +24,7 @@ interface AuthContextType {
   user: User | null;
   userProfile: UserProfile | null;
   loading: boolean;
+  profileChecked: boolean;
   signOut: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -33,6 +34,7 @@ const AuthContext = createContext<AuthContextType>({
   user: null,
   userProfile: null,
   loading: true,
+  profileChecked: false,
   signOut: async () => {},
   refreshProfile: async () => {},
 });
@@ -50,6 +52,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [profileChecked, setProfileChecked] = useState(false);
 
   const fetchUserProfile = async (userId: string) => {
     try {
@@ -62,18 +65,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error) {
         console.log('No profile found or error fetching profile:', error);
         setUserProfile(null);
+        setProfileChecked(true);
         return;
       }
 
       setUserProfile(data);
+      setProfileChecked(true);
     } catch (error) {
       console.error('Error fetching user profile:', error);
       setUserProfile(null);
+      setProfileChecked(true);
     }
   };
 
   const refreshProfile = async () => {
     if (user) {
+      setProfileChecked(false);
       await fetchUserProfile(user.id);
     }
   };
@@ -89,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         fetchUserProfile(session.user.id).finally(() => setLoading(false));
       } else {
         setLoading(false);
+        setProfileChecked(true);
       }
     });
 
@@ -100,9 +108,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
 
         if (session?.user) {
+          setProfileChecked(false);
           await fetchUserProfile(session.user.id);
         } else {
           setUserProfile(null);
+          setProfileChecked(true);
         }
         
         setLoading(false);
@@ -119,6 +129,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setUser(null);
     setUserProfile(null);
+    setProfileChecked(false);
   };
 
   return (
@@ -128,6 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         userProfile,
         loading,
+        profileChecked,
         signOut,
         refreshProfile,
       }}

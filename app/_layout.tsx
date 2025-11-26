@@ -26,13 +26,17 @@ export const unstable_settings = {
 };
 
 function RootLayoutNav() {
-  const { session, user, userProfile, loading } = useAuth();
+  const { session, user, userProfile, loading, profileChecked } = useAuth();
   const segments = useSegments();
   const colorScheme = useColorScheme();
   const networkState = useNetworkState();
 
   useEffect(() => {
-    if (loading) return;
+    // Wait until both auth loading is complete AND profile has been checked
+    if (loading || !profileChecked) {
+      console.log('Still loading or profile not checked yet');
+      return;
+    }
 
     const inAuthGroup = segments[0] === 'auth';
     const inTabsGroup = segments[0] === '(tabs)';
@@ -42,6 +46,7 @@ function RootLayoutNav() {
       user: !!user,
       userProfile: !!userProfile,
       onboardingCompleted: userProfile?.onboarding_completed,
+      profileChecked,
       inAuthGroup,
       inTabsGroup,
       segments,
@@ -53,20 +58,22 @@ function RootLayoutNav() {
         router.replace('/auth/login');
       }
     } else if (session && user) {
-      // User is signed in
+      // User is signed in and profile has been checked
       if (!userProfile || !userProfile.onboarding_completed) {
-        // User hasn't completed onboarding
+        // User hasn't completed onboarding or has no profile
         if (segments[1] !== 'onboarding') {
+          console.log('Redirecting to onboarding');
           router.replace('/auth/onboarding');
         }
       } else {
         // User has completed onboarding, allow access to app
         if (inAuthGroup) {
+          console.log('Redirecting to home');
           router.replace('/(tabs)/(home)/');
         }
       }
     }
-  }, [session, user, userProfile, loading, segments]);
+  }, [session, user, userProfile, loading, profileChecked, segments]);
 
   React.useEffect(() => {
     if (
