@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   challengeHeaderText: {
-    color: colors.text,
+    color: colors.textOnPrimary,
     fontSize: 20,
     fontWeight: '700',
   },
@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   challengeLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: colors.textMuted,
     marginBottom: 8,
   },
   challengeValue: {
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
   partnerLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: colors.textMuted,
     marginBottom: 8,
   },
   partnerValue: {

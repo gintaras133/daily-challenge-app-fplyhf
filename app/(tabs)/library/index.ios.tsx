@@ -11,26 +11,44 @@ import { router } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
+import { supabase } from '@/app/integrations/supabase/client';
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.title}>Library</Text>
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => router.push('/(tabs)/library/profile')}
-          >
-            <IconSymbol 
-              ios_icon_name="gearshape.fill"
-              android_material_icon_name="settings" 
-              size={28} 
-              color="#FFFFFF"
-            />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={handleLogout}
+            >
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push('/(tabs)/library/profile')}
+            >
+              <IconSymbol 
+                ios_icon_name="gearshape.fill"
+                android_material_icon_name="settings" 
+                size={24} 
+                color={colors.accent}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         {userProfile && (
           <Text style={styles.welcomeText}>
@@ -95,19 +113,35 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.textHeader,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logoutButton: {
+    backgroundColor: colors.secondary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  logoutButtonText: {
+    color: colors.textOnSecondary,
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   settingsButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   welcomeText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -120,7 +154,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.secondary,
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 4,
@@ -129,12 +163,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.textMuted,
   },
   section: {
     marginBottom: 24,
@@ -142,29 +176,29 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.textHeader,
     marginBottom: 12,
   },
   emptyState: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     padding: 32,
     alignItems: 'center',
   },
   emptyStateText: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.text,
     textAlign: 'center',
   },
   communityButton: {
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.accent,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
   },
   communityButtonText: {
-    color: colors.text,
+    color: colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '600',
   },

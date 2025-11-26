@@ -4,75 +4,15 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert } from "rea
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
-import * as ImagePicker from 'expo-image-picker';
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 
 export default function RecordScreen() {
-  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
-  
   // Sample challenge data - in a real app, this would come from navigation params or context
   const todayChallenge = {
     challenge: "Assemble furniture in 60 seconds",
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
     partner: "IKEA"
-  };
-
-  const handleRecordVideo = async () => {
-    try {
-      // Request camera permissions
-      const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Camera permission is needed to record videos.');
-        return;
-      }
-
-      // Launch camera for video recording
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: ['videos'],
-        allowsEditing: true,
-        quality: 1,
-        videoMaxDuration: 60, // 60 seconds max
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        console.log('Video recorded:', result.assets[0].uri);
-        // Handle the recorded video here
-        Alert.alert('Success', 'Video recorded successfully!');
-      }
-    } catch (error) {
-      console.error('Error recording video:', error);
-      Alert.alert('Error', 'Failed to record video. Please try again.');
-    }
-  };
-
-  const handleUploadFromGallery = async () => {
-    try {
-      // Request media library permissions
-      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-      
-      if (status !== 'granted') {
-        Alert.alert('Permission Required', 'Media library permission is needed to upload videos.');
-        return;
-      }
-
-      // Launch image picker for videos
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['videos'],
-        allowsEditing: true,
-        quality: 1,
-      });
-
-      if (!result.canceled && result.assets[0]) {
-        console.log('Video selected:', result.assets[0].uri);
-        // Handle the selected video here
-        Alert.alert('Success', 'Video uploaded successfully!');
-      }
-    } catch (error) {
-      console.error('Error uploading video:', error);
-      Alert.alert('Error', 'Failed to upload video. Please try again.');
-    }
   };
 
   return (
@@ -94,7 +34,7 @@ export default function RecordScreen() {
             <IconSymbol 
               android_material_icon_name="photo-camera" 
               size={80} 
-              color="#ffffff"
+              color={colors.textOnPrimary}
             />
           </View>
         </View>
@@ -109,20 +49,47 @@ export default function RecordScreen() {
           />
         </View>
 
+        {/* Video Upload Section - Using Natively Upload Component */}
+        <View style={styles.uploadSection}>
+          <Text style={styles.uploadTitle}>Upload Your Video</Text>
+          <Text style={styles.uploadDescription}>
+            Use the upload button below to select a video from your device.
+            Videos should be under 60 seconds.
+          </Text>
+          
+          {/* Natively Upload Component Placeholder */}
+          {/* Note: The actual Upload component from Natively should be imported and used here */}
+          {/* Example: <Upload storage="challengemedia" accept="video/*" style={styles.uploadButton} /> */}
+          
+          <View style={styles.uploadButton}>
+            <IconSymbol 
+              android_material_icon_name="cloud-upload" 
+              size={32} 
+              color={colors.textOnPrimary}
+            />
+            <Text style={styles.uploadButtonText}>
+              Upload Video (Natively Component)
+            </Text>
+            <Text style={styles.uploadNote}>
+              Storage: challengemedia
+            </Text>
+          </View>
+        </View>
+
         {/* Action Buttons */}
         <View style={styles.buttonSection}>
           <TouchableOpacity 
             style={styles.recordButton}
-            onPress={handleRecordVideo}
+            onPress={() => Alert.alert('Info', 'Video recording will be implemented with Natively Upload component')}
           >
             <Text style={styles.recordButtonText}>RECORD VIDEO</Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={styles.uploadButton}
-            onPress={handleUploadFromGallery}
+            style={styles.uploadFromGalleryButton}
+            onPress={() => Alert.alert('Info', 'Gallery upload will be implemented with Natively Upload component')}
           >
-            <Text style={styles.uploadButtonText}>UPLOAD FROM GALLERY</Text>
+            <Text style={styles.uploadFromGalleryButtonText}>UPLOAD FROM GALLERY</Text>
           </TouchableOpacity>
         </View>
 
@@ -155,14 +122,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: colors.text,
+    color: colors.textHeader,
     letterSpacing: 1,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '500',
-    color: colors.textLight,
+    color: colors.text,
   },
   cameraSection: {
     alignItems: 'center',
@@ -181,6 +148,43 @@ const styles = StyleSheet.create({
   challengeCardContainer: {
     marginBottom: 32,
   },
+  uploadSection: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    borderWidth: 2,
+    borderColor: colors.accent,
+  },
+  uploadTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.textHeader,
+    marginBottom: 8,
+  },
+  uploadDescription: {
+    fontSize: 14,
+    color: colors.text,
+    marginBottom: 16,
+    lineHeight: 20,
+  },
+  uploadButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 12,
+    padding: 20,
+    alignItems: 'center',
+    gap: 8,
+  },
+  uploadButtonText: {
+    color: colors.textOnPrimary,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  uploadNote: {
+    color: colors.textMuted,
+    fontSize: 12,
+    fontStyle: 'italic',
+  },
   buttonSection: {
     gap: 16,
     marginBottom: 24,
@@ -194,12 +198,12 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   recordButtonText: {
-    color: '#ffffff',
+    color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
   },
-  uploadButton: {
+  uploadFromGalleryButton: {
     backgroundColor: colors.primary,
     paddingVertical: 20,
     borderRadius: 30,
@@ -207,8 +211,8 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.secondary,
   },
-  uploadButtonText: {
-    color: colors.text,
+  uploadFromGalleryButtonText: {
+    color: colors.textOnPrimary,
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
@@ -219,7 +223,7 @@ const styles = StyleSheet.create({
   tipText: {
     fontSize: 15,
     fontWeight: '500',
-    color: colors.textLight,
+    color: colors.textMuted,
     textAlign: 'center',
   },
 });

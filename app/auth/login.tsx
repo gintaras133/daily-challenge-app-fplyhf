@@ -133,7 +133,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="your.email@example.com"
-            placeholderTextColor={colors.accent}
+            placeholderTextColor={colors.textMuted}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -148,7 +148,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter your password"
-            placeholderTextColor={colors.accent}
+            placeholderTextColor={colors.textMuted}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -164,7 +164,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color={colors.accent} />
+            <ActivityIndicator color={colors.textOnPrimary} />
           ) : (
             <Text style={styles.buttonText}>
               {isSignUp ? 'Sign Up' : 'Sign In'}
@@ -225,12 +225,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: colors.accent,
+    color: colors.textHeader,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: colors.accent,
+    color: colors.text,
   },
   form: {
     gap: 16,
@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '600',
-    color: colors.accent,
+    color: colors.textHeader,
   },
   input: {
     backgroundColor: colors.primary,
@@ -250,7 +250,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
-    color: colors.accent,
+    color: colors.text,
   },
   button: {
     borderRadius: 12,
@@ -267,7 +267,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: colors.accent,
+    color: colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -277,7 +277,7 @@ const styles = StyleSheet.create({
     borderColor: colors.accent,
   },
   socialButtonText: {
-    color: colors.accent,
+    color: colors.textOnSecondary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   switchButtonText: {
-    color: colors.accent,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
     textDecorationLine: 'underline',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   },
   dividerText: {
     marginHorizontal: 16,
-    color: colors.accent,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },

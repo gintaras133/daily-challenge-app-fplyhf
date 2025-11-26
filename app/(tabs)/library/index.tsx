@@ -12,25 +12,43 @@ import { router } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
+import { supabase } from '@/app/integrations/supabase/client';
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      router.replace('/auth/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.title}>Library</Text>
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => router.push('/(tabs)/library/profile')}
-          >
-            <IconSymbol 
-              android_material_icon_name="settings" 
-              size={28} 
-              color={colors.text}
-            />
-          </TouchableOpacity>
+          <View style={styles.headerButtons}>
+            <TouchableOpacity
+              style={styles.logoutButton}
+              onPress={handleLogout}
+            >
+              <Text style={styles.logoutButtonText}>Logout</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push('/(tabs)/library/profile')}
+            >
+              <IconSymbol 
+                android_material_icon_name="settings" 
+                size={24} 
+                color={colors.accent}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
         {userProfile && (
           <Text style={styles.welcomeText}>
@@ -95,7 +113,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.textHeader,
+  },
+  headerButtons: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  logoutButton: {
+    backgroundColor: colors.secondary,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 12,
+  },
+  logoutButtonText: {
+    color: colors.textOnSecondary,
+    fontWeight: 'bold',
+    fontSize: 14,
   },
   settingsButton: {
     width: 44,
@@ -134,7 +168,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: colors.text,
+    color: colors.textMuted,
   },
   section: {
     marginBottom: 24,
@@ -142,7 +176,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: colors.text,
+    color: colors.textHeader,
     marginBottom: 12,
   },
   emptyState: {
@@ -164,7 +198,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   communityButtonText: {
-    color: colors.text,
+    color: colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '600',
   },
