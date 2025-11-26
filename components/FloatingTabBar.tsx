@@ -1,3 +1,4 @@
+
 import React from 'react';
 import {
   View,
@@ -39,7 +40,7 @@ interface FloatingTabBarProps {
 
 export default function FloatingTabBar({
   tabs,
-  containerWidth = screenWidth / 2.5,
+  containerWidth = screenWidth * 0.95,
   borderRadius = 35,
   bottomMargin
 }: FloatingTabBarProps) {
@@ -185,7 +186,7 @@ export default function FloatingTabBar({
                     <IconSymbol
                       android_material_icon_name={tab.icon}
                       ios_icon_name={tab.icon}
-                      size={24}
+                      size={22}
                       color={isActive ? theme.colors.primary : (theme.dark ? '#98989D' : '#000000')}
                     />
                     <Text
@@ -219,7 +220,7 @@ const styles = StyleSheet.create({
     alignItems: 'center', // Center the content
   },
   container: {
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     alignSelf: 'center',
     // width and marginBottom handled dynamically via props
   },

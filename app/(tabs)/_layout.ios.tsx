@@ -13,6 +13,10 @@ export default function TabLayout() {
         <Icon sf="hand.thumbsup.fill" />
         <Label>Vote</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger key="community" name="community">
+        <Icon sf="person.2.fill" />
+        <Label>Community</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger key="winner" name="winner">
         <Icon sf="trophy.fill" />
         <Label>Winner</Label>

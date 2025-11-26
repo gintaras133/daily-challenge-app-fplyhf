@@ -105,10 +105,6 @@ export default function LibraryScreen() {
         >
           {/* Header */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.menuButton}>
-              <IconSymbol android_material_icon_name="menu" size={28} color="#000000" />
-            </TouchableOpacity>
-
             <View style={styles.titleSection}>
               <IconSymbol android_material_icon_name="video-library" size={32} color="#ffffff" />
               <Text style={styles.title}>MY LIBRARY</Text>
@@ -271,17 +267,6 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: 24,
-  },
-  menuButton: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   titleSection: {
     flexDirection: 'row',

@@ -34,16 +34,8 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with menu button */}
+          {/* Header with stats */}
           <View style={styles.header}>
-            <TouchableOpacity style={styles.menuButton}>
-              <IconSymbol 
-                android_material_icon_name="menu" 
-                size={28} 
-                color="#000000"
-              />
-            </TouchableOpacity>
-            
             {/* Stats Row */}
             <View style={styles.statsRow}>
               <View style={styles.statBadge}>
@@ -144,15 +136,6 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 40,
-  },
-  menuButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
   },
   statsRow: {
     flexDirection: 'row',

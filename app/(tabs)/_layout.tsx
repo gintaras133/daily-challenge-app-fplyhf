@@ -19,6 +19,12 @@ export default function TabLayout() {
       label: 'Vote',
     },
     {
+      name: 'community',
+      route: '/(tabs)/community',
+      icon: 'people',
+      label: 'Community',
+    },
+    {
       name: 'winner',
       route: '/(tabs)/winner',
       icon: 'emoji-events',
@@ -49,6 +55,7 @@ export default function TabLayout() {
       >
         <Stack.Screen key="home" name="(home)" />
         <Stack.Screen key="vote" name="vote" />
+        <Stack.Screen key="community" name="community" />
         <Stack.Screen key="winner" name="winner" />
         <Stack.Screen key="library" name="library" />
         <Stack.Screen key="profile" name="profile" />

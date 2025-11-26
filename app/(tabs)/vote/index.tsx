@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 
@@ -46,19 +46,11 @@ export default function VoteScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with menu button */}
+        {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity style={styles.menuButton}>
-            <IconSymbol 
-              android_material_icon_name="menu" 
-              size={28} 
-              color="#000000"
-            />
-          </TouchableOpacity>
-          
           <View style={styles.headerTextContainer}>
-            <Text style={styles.headerTitle}>Whose today&apos;s winner!</Text>
-            <Text style={styles.headerSubtitle}>Your vote helps train the scroll algorithm</Text>
+            <Text style={styles.headerTitle}>Choose today&apos;s winner!</Text>
+            <Text style={styles.headerSubtitle}>Always driven by the community</Text>
           </View>
         </View>
 
@@ -158,11 +150,6 @@ export default function VoteScreen() {
             <Text style={styles.voteButtonText}>Video 2</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Bottom Message */}
-        <Text style={styles.bottomMessage}>
-          These matchups help us show you better content! 🎯
-        </Text>
       </ScrollView>
     </View>
   );
@@ -183,15 +170,6 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 32,
-  },
-  menuButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
   },
   headerTextContainer: {
     alignItems: 'center',
@@ -312,13 +290,5 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
-  },
-  bottomMessage: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '500',
-    textAlign: 'center',
-    lineHeight: 22,
-    paddingHorizontal: 16,
   },
 });

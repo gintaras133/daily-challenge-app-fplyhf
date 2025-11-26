@@ -51,17 +51,6 @@ export default function WinnerScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with menu button */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.menuButton}>
-            <IconSymbol 
-              android_material_icon_name="menu" 
-              size={28} 
-              color="#000000"
-            />
-          </TouchableOpacity>
-        </View>
-
         {/* Winner Announcement Section */}
         <View style={styles.winnerSection}>
           <View style={styles.trophyRow}>
@@ -198,7 +187,7 @@ export default function WinnerScreen() {
 
         {/* Social Share Message */}
         <Text style={styles.shareMessage}>
-          This video was shared {yesterdayChallenge.shareCount.toLocaleString()} times on social media! 🚀
+          <Text style={styles.shareMessageBold}>This video was shared {yesterdayChallenge.shareCount.toLocaleString()} times on social media!</Text> 🚀
         </Text>
 
         {/* Winners Lounge Button */}
@@ -241,17 +230,6 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingHorizontal: 24,
     paddingBottom: 120,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  menuButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   winnerSection: {
     alignItems: 'center',
@@ -456,10 +434,13 @@ const styles = StyleSheet.create({
   shareMessage: {
     color: '#ffffff',
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '500',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
+  },
+  shareMessageBold: {
+    fontWeight: '700',
   },
   winnersLoungeButton: {
     backgroundColor: colors.primary,
