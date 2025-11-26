@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -18,6 +18,8 @@ import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '@/app/integrations/supabase/client';
+import CountryPicker, { Country, COUNTRIES } from '@/components/CountryPicker';
+import PhoneInput from '@/components/PhoneInput';
 
 export default function ProfileScreen() {
   const { user, userProfile, signOut, refreshProfile } = useAuth();
@@ -29,14 +31,42 @@ export default function ProfileScreen() {
   const [fullName, setFullName] = useState(userProfile?.full_name || '');
   const [username, setUsername] = useState(userProfile?.username || '');
   const [age, setAge] = useState(userProfile?.age?.toString() || '');
-  const [country, setCountry] = useState(userProfile?.country || '');
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [town, setTown] = useState(userProfile?.town || '');
-  const [phoneNumber, setPhoneNumber] = useState(userProfile?.telephone_number || '');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const [facebookUrl, setFacebookUrl] = useState(userProfile?.facebook_url || '');
   const [instagramUrl, setInstagramUrl] = useState(userProfile?.instagram_url || '');
   const [tiktokUrl, setTiktokUrl] = useState(userProfile?.tiktok_url || '');
   const [linkedinUrl, setLinkedinUrl] = useState(userProfile?.linkedin_url || '');
   const [usernameError, setUsernameError] = useState('');
+
+  // Initialize country and phone from profile
+  useEffect(() => {
+    if (userProfile) {
+      setFullName(userProfile.full_name || '');
+      setUsername(userProfile.username || '');
+      setAge(userProfile.age?.toString() || '');
+      setTown(userProfile.town || '');
+      setFacebookUrl(userProfile.facebook_url || '');
+      setInstagramUrl(userProfile.instagram_url || '');
+      setTiktokUrl(userProfile.tiktok_url || '');
+      setLinkedinUrl(userProfile.linkedin_url || '');
+
+      // Parse country from profile
+      const country = COUNTRIES.find(c => c.name === userProfile.country);
+      setSelectedCountry(country || null);
+
+      // Parse phone number (remove country code)
+      if (userProfile.telephone_number && country) {
+        const phoneWithoutCode = userProfile.telephone_number
+          .replace(country.dialCode, '')
+          .trim();
+        setPhoneNumber(phoneWithoutCode);
+      } else {
+        setPhoneNumber(userProfile.telephone_number || '');
+      }
+    }
+  }, [userProfile]);
 
   const handleSignOut = () => {
     Alert.alert(
@@ -115,18 +145,32 @@ export default function ProfileScreen() {
       return;
     }
 
+    // Validate country
+    if (!selectedCountry) {
+      Alert.alert('Error', 'Please select a country');
+      return;
+    }
+
+    // Validate phone
+    if (!phoneNumber.trim()) {
+      Alert.alert('Error', 'Please enter a phone number');
+      return;
+    }
+
     setIsSaving(true);
 
     try {
+      const fullPhoneNumber = `${selectedCountry.dialCode} ${phoneNumber}`;
+
       const { error } = await supabase
         .from('user_profiles')
         .update({
           full_name: fullName,
           username: username,
           age: ageNum,
-          country: country,
+          country: selectedCountry.name,
           town: town,
-          telephone_number: phoneNumber,
+          telephone_number: fullPhoneNumber,
           facebook_url: facebookUrl || null,
           instagram_url: instagramUrl || null,
           tiktok_url: tiktokUrl || null,
@@ -151,13 +195,24 @@ export default function ProfileScreen() {
     setFullName(userProfile?.full_name || '');
     setUsername(userProfile?.username || '');
     setAge(userProfile?.age?.toString() || '');
-    setCountry(userProfile?.country || '');
     setTown(userProfile?.town || '');
-    setPhoneNumber(userProfile?.telephone_number || '');
     setFacebookUrl(userProfile?.facebook_url || '');
     setInstagramUrl(userProfile?.instagram_url || '');
     setTiktokUrl(userProfile?.tiktok_url || '');
     setLinkedinUrl(userProfile?.linkedin_url || '');
+    
+    // Reset country and phone
+    const country = COUNTRIES.find(c => c.name === userProfile?.country);
+    setSelectedCountry(country || null);
+    if (userProfile?.telephone_number && country) {
+      const phoneWithoutCode = userProfile.telephone_number
+        .replace(country.dialCode, '')
+        .trim();
+      setPhoneNumber(phoneWithoutCode);
+    } else {
+      setPhoneNumber(userProfile?.telephone_number || '');
+    }
+    
     setUsernameError('');
     setIsEditing(false);
   };
@@ -181,16 +236,8 @@ export default function ProfileScreen() {
       if (!result.canceled && result.assets[0]) {
         setIsUploadingPhoto(true);
         
-        // In a real app, you would upload to Supabase Storage here
-        // For now, we'll just update the URL in the database
         const photoUri = result.assets[0].uri;
         
-        // TODO: Upload to Supabase Storage
-        // const { data, error } = await supabase.storage
-        //   .from('profile-photos')
-        //   .upload(`${userProfile?.id}/avatar.jpg`, photoFile);
-        
-        // For now, just save the local URI
         const { error } = await supabase
           .from('user_profiles')
           .update({ profile_photo_url: photoUri })
@@ -335,12 +382,9 @@ export default function ProfileScreen() {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Country</Text>
             {isEditing ? (
-              <TextInput
-                style={styles.input}
-                value={country}
-                onChangeText={setCountry}
-                placeholder="Enter country"
-                placeholderTextColor={colors.text}
+              <CountryPicker
+                selectedCountry={selectedCountry}
+                onSelectCountry={setSelectedCountry}
               />
             ) : (
               <Text style={styles.infoValue}>{userProfile?.country}</Text>
@@ -365,13 +409,10 @@ export default function ProfileScreen() {
           <View style={styles.infoRow}>
             <Text style={styles.infoLabel}>Phone</Text>
             {isEditing ? (
-              <TextInput
-                style={styles.input}
+              <PhoneInput
+                country={selectedCountry}
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
-                placeholder="Enter phone number"
-                placeholderTextColor={colors.text}
-                keyboardType="phone-pad"
               />
             ) : (
               <Text style={styles.infoValue}>{userProfile?.telephone_number}</Text>
@@ -548,6 +589,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingBottom: 100,
   },
   photoSection: {
     alignItems: 'center',
@@ -608,6 +650,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     color: colors.text,
+    marginBottom: 16,
   },
   infoRow: {
     paddingVertical: 12,

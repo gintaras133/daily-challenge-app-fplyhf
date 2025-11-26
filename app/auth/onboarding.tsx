@@ -15,6 +15,8 @@ import { router } from 'expo-router';
 import { supabase } from '@/app/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { colors } from '@/styles/commonStyles';
+import CountryPicker, { Country } from '@/components/CountryPicker';
+import PhoneInput from '@/components/PhoneInput';
 
 export default function OnboardingScreen() {
   const { user, refreshProfile } = useAuth();
@@ -23,10 +25,10 @@ export default function OnboardingScreen() {
     fullName: '',
     age: '',
     username: '',
-    country: '',
     town: '',
-    telephoneNumber: '',
+    phoneNumber: '',
   });
+  const [selectedCountry, setSelectedCountry] = useState<Country | null>(null);
   const [usernameError, setUsernameError] = useState('');
 
   const checkUsernameAvailability = async (username: string) => {
@@ -101,8 +103,8 @@ export default function OnboardingScreen() {
       return false;
     }
 
-    if (!formData.country.trim()) {
-      Alert.alert('Error', 'Please enter your country');
+    if (!selectedCountry) {
+      Alert.alert('Error', 'Please select your country');
       return false;
     }
 
@@ -111,7 +113,7 @@ export default function OnboardingScreen() {
       return false;
     }
 
-    if (!formData.telephoneNumber.trim()) {
+    if (!formData.phoneNumber.trim()) {
       Alert.alert('Error', 'Please enter your telephone number');
       return false;
     }
@@ -132,14 +134,16 @@ export default function OnboardingScreen() {
     setLoading(true);
 
     try {
+      const fullPhoneNumber = `${selectedCountry?.dialCode} ${formData.phoneNumber}`;
+      
       const { error } = await supabase.from('user_profiles').insert({
         id: user?.id,
         full_name: formData.fullName.trim(),
         age: parseInt(formData.age),
         username: formData.username.trim(),
-        country: formData.country.trim(),
+        country: selectedCountry?.name || '',
         town: formData.town.trim(),
-        telephone_number: formData.telephoneNumber.trim(),
+        telephone_number: fullPhoneNumber,
         onboarding_completed: true,
       });
 
@@ -222,14 +226,10 @@ export default function OnboardingScreen() {
 
         <View style={styles.inputContainer}>
           <Text style={styles.label}>Country *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="United States"
-            placeholderTextColor={colors.text}
-            value={formData.country}
-            onChangeText={(text) => setFormData({ ...formData, country: text })}
-            autoCapitalize="words"
-            editable={!loading}
+          <CountryPicker
+            selectedCountry={selectedCountry}
+            onSelectCountry={setSelectedCountry}
+            disabled={loading}
           />
         </View>
 
@@ -247,16 +247,11 @@ export default function OnboardingScreen() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Telephone Number *</Text>
-          <TextInput
-            style={styles.input}
-            placeholder="+1 234 567 8900"
-            placeholderTextColor={colors.text}
-            value={formData.telephoneNumber}
-            onChangeText={(text) =>
-              setFormData({ ...formData, telephoneNumber: text })
-            }
-            keyboardType="phone-pad"
+          <PhoneInput
+            label="Telephone Number *"
+            country={selectedCountry}
+            value={formData.phoneNumber}
+            onChangeText={(text) => setFormData({ ...formData, phoneNumber: text })}
             editable={!loading}
           />
         </View>
@@ -321,11 +316,11 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   inputError: {
-    borderColor: colors.accent,
+    borderColor: '#FF3B30',
     borderWidth: 3,
   },
   errorText: {
-    color: colors.text,
+    color: '#FF3B30',
     fontSize: 12,
     marginTop: 4,
     fontWeight: '600',
