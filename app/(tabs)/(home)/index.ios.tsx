@@ -5,6 +5,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-nati
 import { LinearGradient } from 'expo-linear-gradient';
 import { colors, buttonStyles } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
+import { router } from "expo-router";
 
 export default function HomeScreen() {
   // Sample data - in a real app, this would come from an API
@@ -17,6 +18,10 @@ export default function HomeScreen() {
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
     partner: "IKEA"
+  };
+
+  const handleStartChallenge = () => {
+    router.push('/(tabs)/(home)/record');
   };
 
   return (
@@ -114,7 +119,10 @@ export default function HomeScreen() {
                   </View>
                 </View>
 
-                <TouchableOpacity style={styles.startButton}>
+                <TouchableOpacity 
+                  style={styles.startButton}
+                  onPress={handleStartChallenge}
+                >
                   <Text style={styles.startButtonText}>START CHALLENGE</Text>
                 </TouchableOpacity>
               </View>

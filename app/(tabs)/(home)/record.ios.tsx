@@ -1,0 +1,346 @@
+
+import React, { useState } from "react";
+import { Stack } from "expo-router";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
+import { colors } from "@/styles/commonStyles";
+import { IconSymbol } from "@/components/IconSymbol";
+import { router } from "expo-router";
+import * as ImagePicker from 'expo-image-picker';
+
+export default function RecordScreen() {
+  const [hasPermission, setHasPermission] = useState<boolean | null>(null);
+  
+  // Sample challenge data - in a real app, this would come from navigation params or context
+  const todayChallenge = {
+    challenge: "Do 20 push-ups",
+    environment: "Film in supermarket soft drinks section",
+    phrase: "Bubbles bubbles everywhere",
+    partner: "IKEA"
+  };
+
+  const handleRecordVideo = async () => {
+    try {
+      // Request camera permissions
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Camera permission is needed to record videos.');
+        return;
+      }
+
+      // Launch camera for video recording
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['videos'],
+        allowsEditing: true,
+        quality: 1,
+        videoMaxDuration: 60, // 60 seconds max
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        console.log('Video recorded:', result.assets[0].uri);
+        // Handle the recorded video here
+        Alert.alert('Success', 'Video recorded successfully!');
+      }
+    } catch (error) {
+      console.error('Error recording video:', error);
+      Alert.alert('Error', 'Failed to record video. Please try again.');
+    }
+  };
+
+  const handleUploadFromGallery = async () => {
+    try {
+      // Request media library permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Media library permission is needed to upload videos.');
+        return;
+      }
+
+      // Launch image picker for videos
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['videos'],
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        console.log('Video selected:', result.assets[0].uri);
+        // Handle the selected video here
+        Alert.alert('Success', 'Video uploaded successfully!');
+      }
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      Alert.alert('Error', 'Failed to upload video. Please try again.');
+    }
+  };
+
+  return (
+    <>
+      <Stack.Screen
+        options={{
+          title: "Record Video",
+          headerShown: false,
+        }}
+      />
+      <View style={styles.container}>
+        <LinearGradient
+          colors={['#f5f5f5', '#ffffff']}
+          style={styles.gradient}
+        >
+          <ScrollView 
+            style={styles.scrollView}
+            contentContainerStyle={styles.scrollContent}
+            showsVerticalScrollIndicator={false}
+          >
+            {/* Header with back button */}
+            <View style={styles.header}>
+              <TouchableOpacity 
+                style={styles.backButton}
+                onPress={() => router.back()}
+              >
+                <IconSymbol 
+                  ios_icon_name="line.3.horizontal"
+                  android_material_icon_name="menu" 
+                  size={28} 
+                  color="#ffffff"
+                />
+              </TouchableOpacity>
+            </View>
+
+            {/* Title Section */}
+            <View style={styles.titleSection}>
+              <Text style={styles.title}>FILM YOUR VIDEO</Text>
+              <Text style={styles.subtitle}>Make it creative!</Text>
+            </View>
+
+            {/* Camera Circle */}
+            <View style={styles.cameraSection}>
+              <View style={styles.cameraCircle}>
+                <IconSymbol 
+                  ios_icon_name="camera.fill"
+                  android_material_icon_name="photo-camera" 
+                  size={80} 
+                  color="#ffffff"
+                />
+              </View>
+            </View>
+
+            {/* Remember Card */}
+            <View style={styles.rememberCard}>
+              <View style={styles.rememberHeader}>
+                <IconSymbol 
+                  ios_icon_name="info.circle.fill"
+                  android_material_icon_name="info" 
+                  size={24} 
+                  color={colors.secondary}
+                />
+                <Text style={styles.rememberTitle}>Remember:</Text>
+              </View>
+
+              <View style={styles.challengeList}>
+                <View style={styles.challengeItem}>
+                  <Text style={styles.checkmark}>✓</Text>
+                  <Text style={styles.challengeText}>{todayChallenge.challenge}</Text>
+                </View>
+
+                <View style={styles.challengeItem}>
+                  <Text style={styles.checkmark}>✓</Text>
+                  <Text style={styles.challengeText}>{todayChallenge.environment}</Text>
+                </View>
+
+                <View style={styles.challengeItem}>
+                  <Text style={styles.checkmark}>✓</Text>
+                  <Text style={styles.challengeText}>Say: &quot;{todayChallenge.phrase}&quot;</Text>
+                </View>
+              </View>
+
+              <View style={styles.sponsorInfo}>
+                <Text style={styles.sponsorText}>Sponsored by: <Text style={styles.sponsorName}>{todayChallenge.partner}</Text></Text>
+              </View>
+            </View>
+
+            {/* Action Buttons */}
+            <View style={styles.buttonSection}>
+              <TouchableOpacity 
+                style={styles.recordButton}
+                onPress={handleRecordVideo}
+              >
+                <Text style={styles.recordButtonText}>RECORD VIDEO</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                style={styles.uploadButton}
+                onPress={handleUploadFromGallery}
+              >
+                <Text style={styles.uploadButtonText}>UPLOAD FROM GALLERY</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Tip */}
+            <View style={styles.tipSection}>
+              <Text style={styles.tipText}>Tip: Vertical videos work best! 📱</Text>
+            </View>
+          </ScrollView>
+        </LinearGradient>
+      </View>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f5f5f5',
+  },
+  gradient: {
+    flex: 1,
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingTop: 60,
+    paddingHorizontal: 24,
+    paddingBottom: 120,
+  },
+  header: {
+    marginBottom: 24,
+  },
+  backButton: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    backgroundColor: '#333333',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleSection: {
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: '900',
+    color: '#000000',
+    letterSpacing: 1,
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#666666',
+  },
+  cameraSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  cameraCircle: {
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    backgroundColor: '#6ba3e8',
+    alignItems: 'center',
+    justifyContent: 'center',
+    boxShadow: '0px 8px 24px rgba(107, 163, 232, 0.4)',
+    elevation: 8,
+  },
+  rememberCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    borderWidth: 2,
+    borderColor: '#6ba3e8',
+    padding: 24,
+    marginBottom: 32,
+  },
+  rememberHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
+    gap: 8,
+  },
+  rememberTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#000000',
+  },
+  challengeList: {
+    marginBottom: 20,
+  },
+  challengeItem: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    marginBottom: 12,
+    gap: 12,
+  },
+  checkmark: {
+    fontSize: 18,
+    color: '#6ba3e8',
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  challengeText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#333333',
+    lineHeight: 24,
+  },
+  sponsorInfo: {
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  sponsorText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#666666',
+    textAlign: 'center',
+  },
+  sponsorName: {
+    fontWeight: '700',
+    color: '#000000',
+  },
+  buttonSection: {
+    gap: 16,
+    marginBottom: 24,
+  },
+  recordButton: {
+    backgroundColor: '#ff7b7b',
+    paddingVertical: 20,
+    borderRadius: 30,
+    alignItems: 'center',
+    boxShadow: '0px 4px 12px rgba(255, 123, 123, 0.3)',
+    elevation: 4,
+  },
+  recordButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  uploadButton: {
+    backgroundColor: '#ffffff',
+    paddingVertical: 20,
+    borderRadius: 30,
+    alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#6ba3e8',
+  },
+  uploadButtonText: {
+    color: '#6ba3e8',
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  tipSection: {
+    alignItems: 'center',
+  },
+  tipText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#666666',
+    textAlign: 'center',
+  },
+});
