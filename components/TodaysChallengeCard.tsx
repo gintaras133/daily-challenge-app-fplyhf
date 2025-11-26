@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   challengeHeaderText: {
-    color: colors.textOnPrimary,
+    color: colors.secondary,
     fontSize: 20,
     fontWeight: '700',
   },

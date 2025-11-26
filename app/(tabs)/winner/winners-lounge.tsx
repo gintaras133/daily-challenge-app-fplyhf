@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   rankText: {
-    color: colors.primary,
+    color: colors.secondary,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   phraseText: {
-    color: colors.primary,
+    color: colors.secondary,
     fontSize: 16,
     fontWeight: '600',
     fontStyle: 'italic',
