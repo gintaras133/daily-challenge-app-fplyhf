@@ -1,8 +1,8 @@
 
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
-// 🎨 STRICT 4-COLOR DESIGN SYSTEM FOR BLOOP
-// NO OTHER COLORS ALLOWED - ONLY THESE FOUR
+// 🎨 VIOLATING THE STRICT 4-COLOR DESIGN SYSTEM
+// ALL TEXT IS NOW BLACK
 
 export const colors = {
   // 1. Background Colour – Main Colour
@@ -21,13 +21,12 @@ export const colors = {
   // Attention elements, alerts, minimal usage
   accent: '#B7A3E3',
   
-  // 📌 TEXT COLOUR RULES (MANDATORY)
-  // Since no black/white allowed, we assign meaning:
-  text: '#B7A3E3',              // Primary text (Accent) → best contrast
-  textHeader: '#B7A3E3',        // Headers (Accent)
-  textMuted: '#C2E2FA',         // Muted text, timestamps, labels (Secondary)
-  textOnPrimary: '#FF8F8F',     // Button text on primary buttons (Background)
-  textOnSecondary: '#FF8F8F',   // Button text on secondary buttons (Background)
+  // 📌 TEXT COLOUR RULES (VIOLATED - ALL BLACK NOW)
+  text: '#000000',              // ALL TEXT IS BLACK
+  textHeader: '#000000',        // Headers are BLACK
+  textMuted: '#000000',         // Muted text is BLACK
+  textOnPrimary: '#000000',     // Button text on primary buttons is BLACK
+  textOnSecondary: '#000000',   // Button text on secondary buttons is BLACK
   
   // For backwards compatibility
   card: '#FFF1CB',              // Using primary color for cards
@@ -41,7 +40,7 @@ export const theme = {
     primary: '#FFF1CB',
     secondary: '#C2E2FA',
     accent: '#B7A3E3',
-    text: '#B7A3E3',
+    text: '#000000',
     border: '#B7A3E3'
   }
 };
@@ -67,7 +66,7 @@ export const buttonStyles = StyleSheet.create({
     width: '100%',
   },
   primaryButtonText: {
-    color: colors.textOnPrimary,
+    color: '#000000',
     fontSize: 18,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -82,7 +81,7 @@ export const buttonStyles = StyleSheet.create({
     width: '100%',
   },
   secondaryButtonText: {
-    color: colors.textOnSecondary,
+    color: '#000000',
     fontSize: 18,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -97,7 +96,7 @@ export const buttonStyles = StyleSheet.create({
     width: '100%',
   },
   accentButtonText: {
-    color: colors.textOnPrimary,
+    color: '#000000',
     fontSize: 18,
     fontWeight: '700',
     textTransform: 'uppercase',
@@ -129,13 +128,13 @@ export const commonStyles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '800',
     textAlign: 'center',
-    color: colors.textHeader,
+    color: '#000000',
     marginBottom: 10
   },
   text: {
     fontSize: 16,
     fontWeight: '500',
-    color: colors.text,
+    color: '#000000',
     marginBottom: 8,
     lineHeight: 24,
     textAlign: 'center',
@@ -162,6 +161,6 @@ export const commonStyles = StyleSheet.create({
   icon: {
     width: 60,
     height: 60,
-    tintColor: colors.text,
+    tintColor: '#000000',
   },
 });
