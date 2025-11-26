@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-nati
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import { router } from 'expo-router';
+import TodaysChallengeCard from '@/components/TodaysChallengeCard';
 
 interface FriendVideo {
   id: string;
@@ -17,9 +18,10 @@ interface FriendVideo {
 export default function CommunityScreen() {
   // Sample data - in a real app, this would come from an API
   const todayChallenge = {
-    title: "Do 20 push-ups",
-    sponsor: "IKEA Sponsor",
-    status: "Active",
+    challenge: "Assemble furniture in 60 seconds",
+    environment: "Your living room or any indoor space",
+    phrase: "Where's the instructions manual?!",
+    partner: "IKEA"
   };
 
   const friendsVideos: FriendVideo[] = [
@@ -105,15 +107,13 @@ export default function CommunityScreen() {
         </View>
 
         {/* Today's Challenge Card */}
-        <View style={styles.todayChallengeCard}>
-          <View style={styles.challengeIconRow}>
-            <IconSymbol ios_icon_name="clock.fill" android_material_icon_name="schedule" size={20} color="#ffffff" />
-            <Text style={styles.todayChallengeTitle}>Today&apos;s Challenge</Text>
-          </View>
-          <Text style={styles.challengeText}>{todayChallenge.title} • {todayChallenge.sponsor}</Text>
-          <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>{todayChallenge.status}</Text>
-          </View>
+        <View style={styles.challengeCardContainer}>
+          <TodaysChallengeCard
+            challenge={todayChallenge.challenge}
+            environment={todayChallenge.environment}
+            phrase={todayChallenge.phrase}
+            partner={todayChallenge.partner}
+          />
         </View>
 
         {/* Friends' Today Videos Section */}
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingTop: 60,
     paddingHorizontal: 24,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   header: {
     alignItems: 'center',
@@ -240,40 +240,8 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
   },
-  todayChallengeCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    borderRadius: 20,
-    padding: 20,
+  challengeCardContainer: {
     marginBottom: 24,
-  },
-  challengeIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 8,
-  },
-  todayChallengeTitle: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '700',
-  },
-  challengeText: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '500',
-    marginBottom: 12,
-  },
-  statusBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: '#51cf66',
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  statusText: {
-    color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '700',
   },
   sectionTitle: {
     color: '#ffffff',

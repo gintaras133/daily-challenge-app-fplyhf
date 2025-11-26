@@ -6,15 +6,16 @@ import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import * as ImagePicker from 'expo-image-picker';
+import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 
 export default function RecordScreen() {
   const [hasPermission, setHasPermission] = useState<boolean | null>(null);
   
   // Sample challenge data - in a real app, this would come from navigation params or context
   const todayChallenge = {
-    challenge: "Do 20 push-ups",
-    environment: "Film in supermarket soft drinks section",
-    phrase: "Bubbles bubbles everywhere",
+    challenge: "Assemble furniture in 60 seconds",
+    environment: "Your living room or any indoor space",
+    phrase: "Where's the instructions manual?!",
     partner: "IKEA"
   };
 
@@ -117,37 +118,14 @@ export default function RecordScreen() {
             </View>
           </View>
 
-          {/* Remember Card */}
-          <View style={styles.rememberCard}>
-            <View style={styles.rememberHeader}>
-              <IconSymbol 
-                android_material_icon_name="info" 
-                size={24} 
-                color={colors.secondary}
-              />
-              <Text style={styles.rememberTitle}>Remember:</Text>
-            </View>
-
-            <View style={styles.challengeList}>
-              <View style={styles.challengeItem}>
-                <Text style={styles.checkmark}>✓</Text>
-                <Text style={styles.challengeText}>{todayChallenge.challenge}</Text>
-              </View>
-
-              <View style={styles.challengeItem}>
-                <Text style={styles.checkmark}>✓</Text>
-                <Text style={styles.challengeText}>{todayChallenge.environment}</Text>
-              </View>
-
-              <View style={styles.challengeItem}>
-                <Text style={styles.checkmark}>✓</Text>
-                <Text style={styles.challengeText}>Say: &quot;{todayChallenge.phrase}&quot;</Text>
-              </View>
-            </View>
-
-            <View style={styles.sponsorInfo}>
-              <Text style={styles.sponsorText}>Sponsored by: <Text style={styles.sponsorName}>{todayChallenge.partner}</Text></Text>
-            </View>
+          {/* Today's Challenge Card */}
+          <View style={styles.challengeCardContainer}>
+            <TodaysChallengeCard
+              challenge={todayChallenge.challenge}
+              environment={todayChallenge.environment}
+              phrase={todayChallenge.phrase}
+              partner={todayChallenge.partner}
+            />
           </View>
 
           {/* Action Buttons */}
@@ -234,61 +212,8 @@ const styles = StyleSheet.create({
     boxShadow: '0px 8px 24px rgba(107, 163, 232, 0.4)',
     elevation: 8,
   },
-  rememberCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: '#6ba3e8',
-    padding: 24,
+  challengeCardContainer: {
     marginBottom: 32,
-  },
-  rememberHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    gap: 8,
-  },
-  rememberTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#000000',
-  },
-  challengeList: {
-    marginBottom: 20,
-  },
-  challengeItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 12,
-    gap: 12,
-  },
-  checkmark: {
-    fontSize: 18,
-    color: '#6ba3e8',
-    fontWeight: '700',
-    marginTop: 2,
-  },
-  challengeText: {
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '500',
-    color: '#333333',
-    lineHeight: 24,
-  },
-  sponsorInfo: {
-    paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  sponsorText: {
-    fontSize: 15,
-    fontWeight: '500',
-    color: '#666666',
-    textAlign: 'center',
-  },
-  sponsorName: {
-    fontWeight: '700',
-    color: '#000000',
   },
   buttonSection: {
     gap: 16,

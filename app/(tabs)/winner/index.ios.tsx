@@ -4,6 +4,7 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-nati
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
+import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 
 export default function WinnerScreen() {
   // Sample data - in a real app, this would come from an API
@@ -14,9 +15,10 @@ export default function WinnerScreen() {
   };
 
   const yesterdayChallenge = {
-    task: "Dance at a furniture store",
-    phrase: "Time to get funky with IKEA!",
-    sponsor: "IKEA",
+    challenge: "Assemble furniture in 60 seconds",
+    environment: "Your living room or any indoor space",
+    phrase: "Where's the instructions manual?!",
+    partner: "IKEA",
     likes: 45200,
     views: 98500,
     engagement: 94,
@@ -107,28 +109,19 @@ export default function WinnerScreen() {
           </View>
         </View>
 
-        {/* Yesterday's Challenge Details */}
-        <View style={styles.challengeDetailsCard}>
-          <Text style={styles.challengeDetailsTitle}>Yesterday&apos;s Challenge:</Text>
-          
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Task:</Text>
-            <Text style={styles.detailValue}>{yesterdayChallenge.task}</Text>
-          </View>
+        {/* Yesterday's Challenge Card */}
+        <View style={styles.challengeCardContainer}>
+          <Text style={styles.yesterdayTitle}>Yesterday&apos;s Challenge</Text>
+          <TodaysChallengeCard
+            challenge={yesterdayChallenge.challenge}
+            environment={yesterdayChallenge.environment}
+            phrase={yesterdayChallenge.phrase}
+            partner={yesterdayChallenge.partner}
+          />
+        </View>
 
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Phrase:</Text>
-            <View style={styles.phraseBox}>
-              <Text style={styles.phraseText}>{yesterdayChallenge.phrase}</Text>
-            </View>
-          </View>
-
-          <View style={styles.detailRow}>
-            <Text style={styles.detailLabel}>Sponsor:</Text>
-            <Text style={styles.detailValue}>{yesterdayChallenge.sponsor}</Text>
-          </View>
-
-          {/* Stats Row */}
+        {/* Stats Section */}
+        <View style={styles.statsCard}>
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
               <IconSymbol 
@@ -186,7 +179,7 @@ export default function WinnerScreen() {
 
         {/* Social Share Message */}
         <Text style={styles.shareMessage}>
-          This video was shared {yesterdayChallenge.shareCount.toLocaleString()} times on social media! 🚀
+          <Text style={styles.shareMessageBold}>This video was shared {yesterdayChallenge.shareCount.toLocaleString()} times on social media!</Text> 🚀
         </Text>
 
         {/* Winners Lounge Button */}
@@ -340,53 +333,29 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
   },
-  challengeDetailsCard: {
+  challengeCardContainer: {
+    marginBottom: 24,
+  },
+  yesterdayTitle: {
+    color: '#ffffff',
+    fontSize: 20,
+    fontWeight: '700',
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  statsCard: {
     backgroundColor: colors.primary,
     borderRadius: 24,
     padding: 24,
     marginBottom: 16,
   },
-  challengeDetailsTitle: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: '700',
-    marginBottom: 20,
-  },
-  detailRow: {
-    marginBottom: 16,
-  },
-  detailLabel: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  detailValue: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '500',
-    lineHeight: 24,
-  },
-  phraseBox: {
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  phraseText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-    fontStyle: 'italic',
-  },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    marginTop: 20,
     marginBottom: 20,
-    paddingTop: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.3)',
+    paddingBottom: 20,
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.3)',
   },
   statItem: {
     alignItems: 'center',
@@ -435,10 +404,13 @@ const styles = StyleSheet.create({
   shareMessage: {
     color: '#ffffff',
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: '500',
     textAlign: 'center',
     marginBottom: 24,
     lineHeight: 22,
+  },
+  shareMessageBold: {
+    fontWeight: '700',
   },
   winnersLoungeButton: {
     backgroundColor: colors.primary,

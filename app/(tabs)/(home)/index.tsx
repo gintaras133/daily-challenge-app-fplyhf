@@ -5,6 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors, buttonStyles } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
+import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 
 export default function HomeScreen() {
   // Sample data - in a real app, this would come from an API
@@ -76,35 +77,22 @@ export default function HomeScreen() {
           </View>
 
           {/* Challenge Card */}
-          <View style={styles.challengeCard}>
-            <View style={styles.challengeHeader}>
-              <Text style={styles.challengeHeaderText}>Today&apos;s Challenge</Text>
-            </View>
-
-            <View style={styles.challengeContent}>
-              <View style={styles.challengeSection}>
-                <Text style={styles.challengeLabel}>Challenge:</Text>
-                <Text style={styles.challengeValue}>{todayChallenge.challenge}</Text>
-              </View>
-
-              <View style={styles.challengeSection}>
-                <Text style={styles.challengeLabel}>Environment:</Text>
-                <Text style={styles.challengeValue}>{todayChallenge.environment}</Text>
-              </View>
-
-              <View style={styles.challengeSection}>
-                <Text style={styles.challengeLabel}>Phrase to say:</Text>
-                <Text style={styles.phraseText}>{todayChallenge.phrase}</Text>
-              </View>
-
-              <TouchableOpacity 
-                style={styles.startButton}
-                onPress={handleStartChallenge}
-              >
-                <Text style={styles.startButtonText}>START CHALLENGE</Text>
-              </TouchableOpacity>
-            </View>
+          <View style={styles.challengeCardContainer}>
+            <TodaysChallengeCard
+              challenge={todayChallenge.challenge}
+              environment={todayChallenge.environment}
+              phrase={todayChallenge.phrase}
+              partner={todayChallenge.partner}
+            />
           </View>
+
+          {/* Start Challenge Button */}
+          <TouchableOpacity 
+            style={styles.startButton}
+            onPress={handleStartChallenge}
+          >
+            <Text style={styles.startButtonText}>START CHALLENGE</Text>
+          </TouchableOpacity>
 
           {/* Bottom Message */}
           <Text style={styles.bottomMessage}>
@@ -179,55 +167,15 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: 4,
   },
-  challengeCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    borderWidth: 4,
-    borderColor: colors.secondary,
-    overflow: 'hidden',
+  challengeCardContainer: {
     marginBottom: 24,
-  },
-  challengeHeader: {
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  challengeHeaderText: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontWeight: '700',
-  },
-  challengeContent: {
-    padding: 24,
-  },
-  challengeSection: {
-    marginBottom: 24,
-  },
-  challengeLabel: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#888888',
-    marginBottom: 8,
-  },
-  challengeValue: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#000000',
-    lineHeight: 26,
-  },
-  phraseText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: '#000000',
-    fontStyle: 'italic',
-    lineHeight: 26,
   },
   startButton: {
     backgroundColor: colors.primary,
     paddingVertical: 18,
     borderRadius: 30,
     alignItems: 'center',
-    marginTop: 8,
+    marginBottom: 24,
   },
   startButtonText: {
     color: '#ffffff',
