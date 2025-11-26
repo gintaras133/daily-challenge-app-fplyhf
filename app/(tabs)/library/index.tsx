@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     fontSize: 16,
-    color: colors.textLight,
+    color: colors.text,
   },
   content: {
     flex: 1,
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
-    color: colors.textLight,
+    color: colors.text,
   },
   section: {
     marginBottom: 24,
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   },
   emptyStateText: {
     fontSize: 14,
-    color: colors.textLight,
+    color: colors.text,
     textAlign: 'center',
   },
   communityButton: {
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   communityButtonText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },

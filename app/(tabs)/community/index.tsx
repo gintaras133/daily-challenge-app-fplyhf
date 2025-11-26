@@ -96,12 +96,12 @@ export default function CommunityScreen() {
         {/* Action Buttons */}
         <View style={styles.actionButtonsRow}>
           <TouchableOpacity style={styles.myLibraryButton} onPress={handleMyLibrary}>
-            <IconSymbol android_material_icon_name="video-library" size={20} color="#ffffff" />
+            <IconSymbol android_material_icon_name="video-library" size={20} color={colors.text} />
             <Text style={styles.actionButtonText}>My Library</Text>
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.winnersLoungeButton} onPress={handleWinnersLounge}>
-            <IconSymbol android_material_icon_name="emoji-events" size={20} color="#ffffff" />
+            <IconSymbol android_material_icon_name="emoji-events" size={20} color={colors.text} />
             <Text style={styles.actionButtonText}>Winners Lounge</Text>
           </TouchableOpacity>
         </View>
@@ -145,7 +145,7 @@ export default function CommunityScreen() {
                   <Text style={styles.statText}>{video.likes}</Text>
                 </View>
                 <View style={styles.statItem}>
-                  <IconSymbol android_material_icon_name="visibility" size={16} color="#666666" />
+                  <IconSymbol android_material_icon_name="visibility" size={16} color={colors.text} />
                   <Text style={styles.statText}>{video.views}</Text>
                 </View>
               </View>
@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   headerSubtitle: {
-    color: colors.textLight,
+    color: colors.text,
     fontSize: 15,
     fontWeight: '500',
   },
@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   actionButtonText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 15,
     fontWeight: '700',
   },
@@ -250,24 +250,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   videoCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.primary,
     borderRadius: 20,
     padding: 16,
     marginBottom: 16,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
-    elevation: 4,
   },
   videoThumbnail: {
     width: '100%',
     height: 120,
-    backgroundColor: '#d9d9d9',
+    backgroundColor: colors.secondary,
     borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
   },
   videoPlaceholder: {
-    color: '#888888',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '500',
   },
@@ -288,18 +286,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   username: {
-    color: '#000000',
+    color: colors.text,
     fontSize: 15,
     fontWeight: '600',
     marginBottom: 2,
   },
   timeAgo: {
-    color: '#666666',
+    color: colors.text,
     fontSize: 13,
     fontWeight: '400',
   },
   videoDescription: {
-    color: '#333333',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
@@ -314,7 +312,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statText: {
-    color: '#666666',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },

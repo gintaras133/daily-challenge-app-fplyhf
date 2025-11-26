@@ -133,7 +133,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="your.email@example.com"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -148,7 +148,7 @@ export default function LoginScreen() {
           <TextInput
             style={styles.input}
             placeholder="Enter your password"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={password}
             onChangeText={setPassword}
             secureTextEntry
@@ -164,7 +164,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#000000" />
+            <ActivityIndicator color={colors.text} />
           ) : (
             <Text style={styles.buttonText}>
               {isSignUp ? 'Sign Up' : 'Sign In'}
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textLight,
+    color: colors.text,
   },
   form: {
     gap: 16,
@@ -244,9 +244,9 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.accent,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
@@ -267,14 +267,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#000000',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
   socialButton: {
     backgroundColor: colors.secondary,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.accent,
   },
   socialButtonText: {
     color: colors.text,
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   dividerLine: {
     flex: 1,
     height: 2,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
   },
   dividerText: {
     marginHorizontal: 16,

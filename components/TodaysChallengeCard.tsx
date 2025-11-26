@@ -49,10 +49,10 @@ export default function TodaysChallengeCard({
 
 const styles = StyleSheet.create({
   challengeCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.primary,
     borderRadius: 24,
     borderWidth: 4,
-    borderColor: colors.primary,
+    borderColor: colors.accent,
     overflow: 'hidden',
   },
   challengeHeader: {
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   challengeHeaderText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 20,
     fontWeight: '700',
   },
@@ -74,36 +74,36 @@ const styles = StyleSheet.create({
   challengeLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#888888',
+    color: colors.text,
     marginBottom: 8,
   },
   challengeValue: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#000000',
+    color: colors.text,
     lineHeight: 26,
   },
   phraseText: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#000000',
+    color: colors.text,
     fontStyle: 'italic',
     lineHeight: 26,
   },
   partnerSection: {
     paddingTop: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopWidth: 2,
+    borderTopColor: colors.accent,
   },
   partnerLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#888888',
+    color: colors.text,
     marginBottom: 8,
   },
   partnerValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#000000',
+    color: colors.text,
   },
 });

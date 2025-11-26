@@ -178,7 +178,7 @@ export default function OnboardingScreen() {
           <TextInput
             style={styles.input}
             placeholder="John Doe"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={formData.fullName}
             onChangeText={(text) => setFormData({ ...formData, fullName: text })}
             autoCapitalize="words"
@@ -191,7 +191,7 @@ export default function OnboardingScreen() {
           <TextInput
             style={styles.input}
             placeholder="18"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={formData.age}
             onChangeText={(text) => setFormData({ ...formData, age: text })}
             keyboardType="number-pad"
@@ -205,7 +205,7 @@ export default function OnboardingScreen() {
           <TextInput
             style={[styles.input, usernameError && styles.inputError]}
             placeholder="johndoe123"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={formData.username}
             onChangeText={(text) => {
               setFormData({ ...formData, username: text });
@@ -225,7 +225,7 @@ export default function OnboardingScreen() {
           <TextInput
             style={styles.input}
             placeholder="United States"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={formData.country}
             onChangeText={(text) => setFormData({ ...formData, country: text })}
             autoCapitalize="words"
@@ -238,7 +238,7 @@ export default function OnboardingScreen() {
           <TextInput
             style={styles.input}
             placeholder="New York"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={formData.town}
             onChangeText={(text) => setFormData({ ...formData, town: text })}
             autoCapitalize="words"
@@ -251,7 +251,7 @@ export default function OnboardingScreen() {
           <TextInput
             style={styles.input}
             placeholder="+1 234 567 8900"
-            placeholderTextColor={colors.textSecondary}
+            placeholderTextColor={colors.text}
             value={formData.telephoneNumber}
             onChangeText={(text) =>
               setFormData({ ...formData, telephoneNumber: text })
@@ -267,7 +267,7 @@ export default function OnboardingScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#000000" />
+            <ActivityIndicator color={colors.text} />
           ) : (
             <Text style={styles.buttonText}>Complete Setup</Text>
           )}
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textLight,
+    color: colors.text,
   },
   form: {
     gap: 20,
@@ -312,9 +312,9 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   input: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     borderWidth: 2,
-    borderColor: colors.primary,
+    borderColor: colors.accent,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
@@ -322,11 +322,13 @@ const styles = StyleSheet.create({
   },
   inputError: {
     borderColor: colors.accent,
+    borderWidth: 3,
   },
   errorText: {
-    color: colors.accent,
+    color: colors.text,
     fontSize: 12,
     marginTop: 4,
+    fontWeight: '600',
   },
   button: {
     backgroundColor: colors.primary,

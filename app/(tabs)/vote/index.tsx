@@ -70,7 +70,7 @@ export default function VoteScreen() {
               <IconSymbol 
                 android_material_icon_name="visibility" 
                 size={18} 
-                color="#666666"
+                color={colors.text}
               />
               <Text style={styles.viewsText}>{video1.views} views</Text>
             </View>
@@ -98,7 +98,7 @@ export default function VoteScreen() {
               <IconSymbol 
                 android_material_icon_name="visibility" 
                 size={18} 
-                color="#666666"
+                color={colors.text}
               />
               <Text style={styles.viewsText}>{video2.views} views</Text>
             </View>
@@ -118,7 +118,7 @@ export default function VoteScreen() {
             <IconSymbol 
               android_material_icon_name="thumb-up" 
               size={24} 
-              color="#ffffff"
+              color={colors.text}
             />
             <Text style={styles.voteButtonText}>Video 1</Text>
           </TouchableOpacity>
@@ -145,7 +145,7 @@ export default function VoteScreen() {
             <IconSymbol 
               android_material_icon_name="thumb-up" 
               size={24} 
-              color="#ffffff"
+              color={colors.text}
             />
             <Text style={styles.voteButtonText}>Video 2</Text>
           </TouchableOpacity>
@@ -175,37 +175,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 8,
     textAlign: 'center',
   },
   headerSubtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '500',
     textAlign: 'center',
   },
   videoCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.primary,
     borderRadius: 24,
     padding: 16,
     marginBottom: 16,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
-    elevation: 4,
   },
   videoPreview: {
     width: '100%',
     aspectRatio: 9 / 16,
-    backgroundColor: '#d9d9d9',
+    backgroundColor: colors.secondary,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
   },
   videoPlaceholder: {
-    color: '#888888',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '500',
   },
@@ -223,13 +221,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   username: {
-    color: '#000000',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 2,
   },
   timeAgo: {
-    color: '#666666',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '400',
   },
@@ -239,20 +237,20 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   viewsText: {
-    color: '#666666',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '500',
   },
   vsBadge: {
     alignSelf: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.background,
     paddingHorizontal: 32,
     paddingVertical: 12,
     borderRadius: 24,
     marginVertical: 8,
   },
   vsText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 20,
     fontWeight: '700',
     letterSpacing: 2,
@@ -276,7 +274,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondary,
   },
   neitherButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.background,
   },
   video2Button: {
     backgroundColor: colors.primary,
@@ -284,10 +282,10 @@ const styles = StyleSheet.create({
   selectedButton: {
     opacity: 0.7,
     borderWidth: 3,
-    borderColor: '#ffffff',
+    borderColor: colors.accent,
   },
   voteButtonText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },

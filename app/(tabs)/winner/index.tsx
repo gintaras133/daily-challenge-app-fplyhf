@@ -88,7 +88,7 @@ export default function WinnerScreen() {
             <IconSymbol 
               android_material_icon_name="emoji-events" 
               size={20} 
-              color="#ffffff"
+              color={colors.text}
             />
             <Text style={styles.placeBadgeText}>1st Place</Text>
           </View>
@@ -166,7 +166,7 @@ export default function WinnerScreen() {
               <IconSymbol 
                 android_material_icon_name="share" 
                 size={20} 
-                color="#ffffff"
+                color={colors.text}
               />
               <Text style={styles.actionButtonText}>Share</Text>
             </TouchableOpacity>
@@ -192,7 +192,7 @@ export default function WinnerScreen() {
             <IconSymbol 
               android_material_icon_name="celebration" 
               size={28} 
-              color="#ffffff"
+              color={colors.text}
             />
             <View style={styles.loungeTextContainer}>
               <Text style={styles.loungeButtonTitle}>VIEW WINNERS LOUNGE</Text>
@@ -201,7 +201,7 @@ export default function WinnerScreen() {
             <IconSymbol 
               android_material_icon_name="emoji-events" 
               size={28} 
-              color="#ffffff"
+              color={colors.text}
             />
           </View>
         </TouchableOpacity>
@@ -257,12 +257,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   winnerCard: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.primary,
     borderRadius: 24,
     padding: 16,
     marginBottom: 24,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
-    elevation: 4,
   },
   placeBadge: {
     position: 'absolute',
@@ -278,21 +276,21 @@ const styles = StyleSheet.create({
     zIndex: 10,
   },
   placeBadgeText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
   videoPreview: {
     width: '100%',
     aspectRatio: 9 / 16,
-    backgroundColor: '#d9d9d9',
+    backgroundColor: colors.secondary,
     borderRadius: 16,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
   },
   videoPlaceholder: {
-    color: '#888888',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '500',
   },
@@ -310,13 +308,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   username: {
-    color: '#000000',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 2,
   },
   date: {
-    color: '#666666',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '400',
   },
@@ -327,7 +325,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   followButtonText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '700',
   },
@@ -352,8 +350,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginBottom: 20,
     paddingBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
+    borderBottomWidth: 2,
+    borderBottomColor: colors.accent,
   },
   statItem: {
     alignItems: 'center',
@@ -368,7 +366,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   statLabel: {
-    color: colors.textLight,
+    color: colors.text,
     fontSize: 12,
     fontWeight: '500',
   },
@@ -395,7 +393,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   actionButtonText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 15,
     fontWeight: '700',
   },
@@ -415,8 +413,6 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     padding: 24,
     marginBottom: 24,
-    boxShadow: '0px 6px 16px rgba(183, 163, 227, 0.4)',
-    elevation: 8,
   },
   loungeButtonContent: {
     flexDirection: 'row',
@@ -429,14 +425,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loungeButtonTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
     marginBottom: 4,
   },
   loungeButtonSubtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.text,
     fontSize: 13,
     fontWeight: '500',
   },
