@@ -77,6 +77,11 @@ export default function WinnersLoungeScreen() {
     // In a real app, this would load more winners from API
   };
 
+  const handleBackToWinner = () => {
+    console.log('Navigate back to Winner screen');
+    router.push('/(tabs)/winner');
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView 
@@ -88,13 +93,13 @@ export default function WinnersLoungeScreen() {
         <View style={styles.header}>
           <TouchableOpacity 
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={handleBackToWinner}
           >
             <IconSymbol 
-              android_material_icon_name="menu" 
-              ios_icon_name="line.3.horizontal"
+              android_material_icon_name="arrow-back" 
+              ios_icon_name="arrow.left"
               size={28} 
-              color="#000000"
+              color="#ffffff"
             />
           </TouchableOpacity>
         </View>
@@ -225,12 +230,12 @@ export default function WinnersLoungeScreen() {
           <Text style={styles.loadMoreText}>Load More Winners</Text>
         </TouchableOpacity>
 
-        {/* Back to Community Hub */}
+        {/* Back to Winner Screen */}
         <TouchableOpacity 
-          style={styles.backToCommunityButton}
-          onPress={() => router.back()}
+          style={styles.backToWinnerButton}
+          onPress={handleBackToWinner}
         >
-          <Text style={styles.backToCommunityText}>← Back to Community Hub</Text>
+          <Text style={styles.backToWinnerText}>← Back to Latest Winner</Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -257,7 +262,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: 'rgba(255, 255, 255, 0.3)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -451,11 +456,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  backToCommunityButton: {
+  backToWinnerButton: {
     alignItems: 'center',
     paddingVertical: 16,
   },
-  backToCommunityText: {
+  backToWinnerText: {
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
