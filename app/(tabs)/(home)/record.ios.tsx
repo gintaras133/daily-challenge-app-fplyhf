@@ -101,8 +101,7 @@ export default function RecordScreen() {
                 onPress={() => router.back()}
               >
                 <IconSymbol 
-                  ios_icon_name="line.3.horizontal"
-                  android_material_icon_name="menu" 
+                  ios_icon_name="arrow.left"
                   size={28} 
                   color="#ffffff"
                 />
@@ -120,7 +119,6 @@ export default function RecordScreen() {
               <View style={styles.cameraCircle}>
                 <IconSymbol 
                   ios_icon_name="camera.fill"
-                  android_material_icon_name="photo-camera" 
                   size={80} 
                   color="#ffffff"
                 />
@@ -132,7 +130,6 @@ export default function RecordScreen() {
               <View style={styles.rememberHeader}>
                 <IconSymbol 
                   ios_icon_name="info.circle.fill"
-                  android_material_icon_name="info" 
                   size={24} 
                   color={colors.secondary}
                 />

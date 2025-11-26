@@ -30,8 +30,7 @@ export default function WinnerScreen() {
 
   const handleWinnersLounge = () => {
     console.log('Navigate to Winners Lounge');
-    // In a real app, this would navigate to a screen showing all past winners
-    router.push('/modal');
+    router.push('/winner/winners-lounge');
   };
 
   const handleShare = () => {
@@ -51,17 +50,6 @@ export default function WinnerScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with menu button */}
-        <View style={styles.header}>
-          <TouchableOpacity style={styles.menuButton}>
-            <IconSymbol 
-              ios_icon_name="line.3.horizontal" 
-              size={28} 
-              color="#000000"
-            />
-          </TouchableOpacity>
-        </View>
-
         {/* Winner Announcement Section */}
         <View style={styles.winnerSection}>
           <View style={styles.trophyRow}>
@@ -241,17 +229,6 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 120,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  menuButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   winnerSection: {
     alignItems: 'center',

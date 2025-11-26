@@ -93,7 +93,7 @@ export default function RecordScreen() {
               onPress={() => router.back()}
             >
               <IconSymbol 
-                android_material_icon_name="menu" 
+                android_material_icon_name="arrow-back" 
                 size={28} 
                 color="#ffffff"
               />

@@ -30,8 +30,7 @@ export default function WinnerScreen() {
 
   const handleWinnersLounge = () => {
     console.log('Navigate to Winners Lounge');
-    // In a real app, this would navigate to a screen showing all past winners
-    router.push('/modal');
+    router.push('/winner/winners-lounge');
   };
 
   const handleShare = () => {
