@@ -17,6 +17,10 @@ export default function TabLayout() {
         <Icon sf="trophy.fill" />
         <Label>Winner</Label>
       </NativeTabs.Trigger>
+      <NativeTabs.Trigger key="library" name="library">
+        <Icon sf="play.rectangle.on.rectangle.fill" />
+        <Label>Library</Label>
+      </NativeTabs.Trigger>
       <NativeTabs.Trigger key="profile" name="profile">
         <Icon sf="person.fill" />
         <Label>Profile</Label>
