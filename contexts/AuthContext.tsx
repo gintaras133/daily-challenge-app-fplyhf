@@ -12,6 +12,11 @@ interface UserProfile {
   town: string;
   telephone_number: string;
   onboarding_completed: boolean;
+  profile_photo_url?: string;
+  facebook_url?: string;
+  instagram_url?: string;
+  tiktok_url?: string;
+  linkedin_url?: string;
 }
 
 interface AuthContextType {

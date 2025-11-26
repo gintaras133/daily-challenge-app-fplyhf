@@ -6,8 +6,11 @@ import { colors, buttonStyles } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function HomeScreen() {
+  const { userProfile } = useAuth();
+  
   // Sample data - in a real app, this would come from an API
   const streak = 15;
   const followers = 142;
@@ -18,6 +21,20 @@ export default function HomeScreen() {
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
     partner: "IKEA"
+  };
+
+  // Get time-based greeting
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return "Good morning";
+    if (hour < 18) return "Good afternoon";
+    return "Good evening";
+  };
+
+  // Get first name from full name
+  const getFirstName = () => {
+    if (!userProfile?.full_name) return "User";
+    return userProfile.full_name.split(' ')[0];
   };
 
   const handleStartChallenge = () => {
@@ -35,8 +52,13 @@ export default function HomeScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with stats */}
+          {/* Header with greeting and stats */}
           <View style={styles.header}>
+            {/* Personalized Greeting */}
+            <Text style={styles.greeting}>
+              {getGreeting()}, {getFirstName()}
+            </Text>
+
             {/* Stats Row */}
             <View style={styles.statsRow}>
               <View style={styles.statBadge}>
@@ -122,6 +144,12 @@ const styles = StyleSheet.create({
   },
   header: {
     marginBottom: 40,
+  },
+  greeting: {
+    color: '#ffffff',
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 16,
   },
   statsRow: {
     flexDirection: 'row',

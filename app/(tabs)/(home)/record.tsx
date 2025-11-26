@@ -87,20 +87,6 @@ export default function RecordScreen() {
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Header with back button */}
-          <View style={styles.header}>
-            <TouchableOpacity 
-              style={styles.backButton}
-              onPress={() => router.back()}
-            >
-              <IconSymbol 
-                android_material_icon_name="arrow-back" 
-                size={28} 
-                color="#ffffff"
-              />
-            </TouchableOpacity>
-          </View>
-
           {/* Title Section */}
           <View style={styles.titleSection}>
             <Text style={styles.title}>FILM YOUR VIDEO</Text>
@@ -170,17 +156,6 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingHorizontal: 24,
     paddingBottom: 120,
-  },
-  header: {
-    marginBottom: 24,
-  },
-  backButton: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-    backgroundColor: '#333333',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
   titleSection: {
     alignItems: 'center',

@@ -11,6 +11,7 @@ import {
 import { router } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
+import { IconSymbol } from '@/components/IconSymbol';
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
@@ -21,10 +22,14 @@ export default function LibraryScreen() {
         <View style={styles.headerTop}>
           <Text style={styles.title}>Library</Text>
           <TouchableOpacity
-            style={styles.profileButton}
+            style={styles.settingsButton}
             onPress={() => router.push('/(tabs)/library/profile')}
           >
-            <Text style={styles.profileButtonText}>Profile</Text>
+            <IconSymbol 
+              android_material_icon_name="settings" 
+              size={28} 
+              color="#FFFFFF"
+            />
           </TouchableOpacity>
         </View>
         {userProfile && (
@@ -92,16 +97,13 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
-  profileButton: {
+  settingsButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  profileButtonText: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '600',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   welcomeText: {
     fontSize: 16,
