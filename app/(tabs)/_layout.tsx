@@ -19,6 +19,12 @@ export default function TabLayout() {
       label: 'Vote',
     },
     {
+      name: 'winner',
+      route: '/(tabs)/winner',
+      icon: 'emoji-events',
+      label: 'Winner',
+    },
+    {
       name: 'profile',
       route: '/(tabs)/profile',
       icon: 'person',
@@ -37,6 +43,7 @@ export default function TabLayout() {
       >
         <Stack.Screen key="home" name="(home)" />
         <Stack.Screen key="vote" name="vote" />
+        <Stack.Screen key="winner" name="winner" />
         <Stack.Screen key="profile" name="profile" />
       </Stack>
       <FloatingTabBar tabs={tabs} />
