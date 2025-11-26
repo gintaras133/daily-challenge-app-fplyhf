@@ -219,7 +219,7 @@ export default function ProfileScreen() {
           <IconSymbol 
             android_material_icon_name="arrow-back" 
             size={24} 
-            color="#FFFFFF"
+            color="#000000"
           />
         </TouchableOpacity>
         <Text style={styles.title}>Settings</Text>
@@ -239,7 +239,7 @@ export default function ProfileScreen() {
                 <IconSymbol 
                   android_material_icon_name="person" 
                   size={60} 
-                  color={colors.textSecondary}
+                  color={colors.text}
                 />
               </View>
             )}
@@ -269,7 +269,7 @@ export default function ProfileScreen() {
                 <IconSymbol 
                   android_material_icon_name="edit" 
                   size={24} 
-                  color={colors.primary}
+                  color={colors.text}
                 />
               </TouchableOpacity>
             )}
@@ -288,7 +288,7 @@ export default function ProfileScreen() {
                 value={fullName}
                 onChangeText={setFullName}
                 placeholder="Enter full name"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
               />
             ) : (
               <Text style={styles.infoValue}>{userProfile?.full_name}</Text>
@@ -304,7 +304,7 @@ export default function ProfileScreen() {
                   value={username}
                   onChangeText={handleUsernameChange}
                   placeholder="Enter username"
-                  placeholderTextColor={colors.textSecondary}
+                  placeholderTextColor={colors.text}
                   autoCapitalize="none"
                 />
                 {usernameError ? (
@@ -324,7 +324,7 @@ export default function ProfileScreen() {
                 value={age}
                 onChangeText={setAge}
                 placeholder="Enter age"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
                 keyboardType="number-pad"
               />
             ) : (
@@ -340,7 +340,7 @@ export default function ProfileScreen() {
                 value={country}
                 onChangeText={setCountry}
                 placeholder="Enter country"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
               />
             ) : (
               <Text style={styles.infoValue}>{userProfile?.country}</Text>
@@ -355,7 +355,7 @@ export default function ProfileScreen() {
                 value={town}
                 onChangeText={setTown}
                 placeholder="Enter town"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
               />
             ) : (
               <Text style={styles.infoValue}>{userProfile?.town}</Text>
@@ -370,7 +370,7 @@ export default function ProfileScreen() {
                 value={phoneNumber}
                 onChangeText={setPhoneNumber}
                 placeholder="Enter phone number"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
                 keyboardType="phone-pad"
               />
             ) : (
@@ -398,7 +398,7 @@ export default function ProfileScreen() {
                 value={facebookUrl}
                 onChangeText={setFacebookUrl}
                 placeholder="Facebook profile URL"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
                 autoCapitalize="none"
               />
             ) : (
@@ -423,7 +423,7 @@ export default function ProfileScreen() {
                 value={instagramUrl}
                 onChangeText={setInstagramUrl}
                 placeholder="Instagram profile URL"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
                 autoCapitalize="none"
               />
             ) : (
@@ -448,7 +448,7 @@ export default function ProfileScreen() {
                 value={tiktokUrl}
                 onChangeText={setTiktokUrl}
                 placeholder="TikTok profile URL"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
                 autoCapitalize="none"
               />
             ) : (
@@ -473,7 +473,7 @@ export default function ProfileScreen() {
                 value={linkedinUrl}
                 onChangeText={setLinkedinUrl}
                 placeholder="LinkedIn profile URL"
-                placeholderTextColor={colors.textSecondary}
+                placeholderTextColor={colors.text}
                 autoCapitalize="none"
               />
             ) : (
@@ -500,7 +500,7 @@ export default function ProfileScreen() {
               disabled={isSaving || !!usernameError}
             >
               {isSaving ? (
-                <ActivityIndicator color="#FFFFFF" />
+                <ActivityIndicator color={colors.text} />
               ) : (
                 <Text style={styles.saveButtonText}>Save Changes</Text>
               )}
@@ -537,14 +537,14 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.text,
   },
   content: {
     padding: 20,
@@ -566,7 +566,7 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#F0F0F0',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -588,12 +588,12 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   changePhotoText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },
   section: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     padding: 20,
     marginBottom: 20,
@@ -612,11 +612,11 @@ const styles = StyleSheet.create({
   infoRow: {
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: colors.secondary,
   },
   infoLabel: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.text,
     marginBottom: 4,
   },
   infoValue: {
@@ -632,11 +632,12 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontWeight: '500',
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: colors.secondary,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
     marginTop: 4,
+    backgroundColor: colors.secondary,
   },
   inputError: {
     borderColor: '#FF3B30',
@@ -649,7 +650,7 @@ const styles = StyleSheet.create({
   socialRow: {
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: colors.secondary,
   },
   socialIconContainer: {
     flexDirection: 'row',
@@ -664,17 +665,18 @@ const styles = StyleSheet.create({
   },
   socialValue: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.text,
     fontStyle: 'italic',
   },
   socialInput: {
     fontSize: 14,
     color: colors.text,
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: colors.secondary,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 8,
+    backgroundColor: colors.secondary,
   },
   editButtons: {
     flexDirection: 'row',
@@ -688,7 +690,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   cancelButton: {
-    backgroundColor: '#F0F0F0',
+    backgroundColor: colors.secondary,
   },
   cancelButtonText: {
     color: colors.text,
@@ -699,18 +701,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   saveButtonText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
   signOutButton: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: colors.accent,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
   },
   signOutButtonText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
