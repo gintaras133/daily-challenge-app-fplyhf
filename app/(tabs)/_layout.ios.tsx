@@ -25,10 +25,6 @@ export default function TabLayout() {
         <Icon sf="play.rectangle.on.rectangle.fill" />
         <Label>Library</Label>
       </NativeTabs.Trigger>
-      <NativeTabs.Trigger key="profile" name="profile">
-        <Icon sf="person.fill" />
-        <Label>Profile</Label>
-      </NativeTabs.Trigger>
     </NativeTabs>
   );
 }

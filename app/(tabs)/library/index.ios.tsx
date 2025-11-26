@@ -241,7 +241,7 @@ export default function LibraryScreen() {
           {/* Back to Community Hub Button */}
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.push('/(tabs)/(home)/')}
+            onPress={() => router.push('/(tabs)/community')}
           >
             <IconSymbol ios_icon_name="arrow.left" size={20} color="#ffffff" />
             <Text style={styles.backButtonText}>Back to Community Hub</Text>

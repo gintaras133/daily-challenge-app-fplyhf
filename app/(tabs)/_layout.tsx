@@ -36,12 +36,6 @@ export default function TabLayout() {
       icon: 'video-library',
       label: 'Library',
     },
-    {
-      name: 'profile',
-      route: '/(tabs)/profile',
-      icon: 'person',
-      label: 'Profile',
-    },
   ];
 
   // For Android and Web, use Stack navigation with custom floating tab bar
@@ -58,7 +52,6 @@ export default function TabLayout() {
         <Stack.Screen key="community" name="community" />
         <Stack.Screen key="winner" name="winner" />
         <Stack.Screen key="library" name="library" />
-        <Stack.Screen key="profile" name="profile" />
       </Stack>
       <FloatingTabBar tabs={tabs} />
     </>

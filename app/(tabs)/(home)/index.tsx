@@ -94,9 +94,7 @@ export default function HomeScreen() {
 
               <View style={styles.challengeSection}>
                 <Text style={styles.challengeLabel}>Phrase to say:</Text>
-                <View style={styles.phraseBox}>
-                  <Text style={styles.phraseText}>{todayChallenge.phrase}</Text>
-                </View>
+                <Text style={styles.phraseText}>{todayChallenge.phrase}</Text>
               </View>
 
               <TouchableOpacity 
@@ -217,17 +215,12 @@ const styles = StyleSheet.create({
     color: '#000000',
     lineHeight: 26,
   },
-  phraseBox: {
-    backgroundColor: '#333333',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 8,
-  },
   phraseText: {
-    color: '#ffffff',
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '500',
+    color: '#000000',
     fontStyle: 'italic',
+    lineHeight: 26,
   },
   startButton: {
     backgroundColor: colors.primary,
