@@ -31,7 +31,7 @@ export default function CommunityScreen() {
       timeAgo: '2h ago',
       likes: 234,
       views: 1240,
-      avatarColor: '#ff6b6b',
+      avatarColor: colors.primary,
     },
     {
       id: '2',
@@ -39,7 +39,7 @@ export default function CommunityScreen() {
       timeAgo: '3h ago',
       likes: 567,
       views: 2130,
-      avatarColor: '#ff6b6b',
+      avatarColor: colors.secondary,
     },
     {
       id: '3',
@@ -47,7 +47,7 @@ export default function CommunityScreen() {
       timeAgo: '4h ago',
       likes: 891,
       views: 3450,
-      avatarColor: '#ff6b6b',
+      avatarColor: colors.accent,
     },
     {
       id: '4',
@@ -55,7 +55,7 @@ export default function CommunityScreen() {
       timeAgo: '5h ago',
       likes: 432,
       views: 1890,
-      avatarColor: '#ff6b6b',
+      avatarColor: colors.primary,
     },
   ];
 
@@ -87,7 +87,7 @@ export default function CommunityScreen() {
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerIcon}>
-            <IconSymbol android_material_icon_name="people" size={28} color="#ffffff" />
+            <IconSymbol android_material_icon_name="people" size={28} color={colors.text} />
           </View>
           <Text style={styles.headerTitle}>COMMUNITY HUB</Text>
           <Text style={styles.headerSubtitle}>See what your friends created today!</Text>
@@ -141,7 +141,7 @@ export default function CommunityScreen() {
 
               <View style={styles.videoStats}>
                 <View style={styles.statItem}>
-                  <IconSymbol android_material_icon_name="favorite" size={16} color="#ff6b6b" />
+                  <IconSymbol android_material_icon_name="favorite" size={16} color={colors.accent} />
                   <Text style={styles.statText}>{video.likes}</Text>
                 </View>
                 <View style={styles.statItem}>
@@ -181,7 +181,7 @@ export default function CommunityScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#9b7dd4',
+    backgroundColor: colors.accent,
   },
   scrollView: {
     flex: 1,
@@ -199,14 +199,14 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   headerTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 24,
     fontWeight: '700',
     letterSpacing: 1,
     marginBottom: 8,
   },
   headerSubtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.textLight,
     fontSize: 15,
     fontWeight: '500',
   },
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#ff6b6b',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 20,
     gap: 8,
@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   sectionTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '700',
     marginBottom: 16,
@@ -319,14 +319,14 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   loadMoreButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 20,
     alignItems: 'center',
     marginBottom: 24,
   },
   loadMoreText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -337,19 +337,19 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: colors.secondary,
     borderRadius: 16,
     padding: 16,
     alignItems: 'center',
   },
   statNumber: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 28,
     fontWeight: '800',
     marginBottom: 4,
   },
   statLabel: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 12,
     fontWeight: '600',
   },

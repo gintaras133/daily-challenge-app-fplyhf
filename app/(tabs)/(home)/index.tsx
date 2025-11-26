@@ -1,7 +1,6 @@
 
 import React from "react";
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors, buttonStyles } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
@@ -43,85 +42,80 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#ff9999', '#ffb3b3']}
-        style={styles.gradient}
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Header with greeting and stats */}
-          <View style={styles.header}>
-            {/* Personalized Greeting */}
-            <Text style={styles.greeting}>
-              {getGreeting()}, {getFirstName()}
-            </Text>
-
-            {/* Stats Row */}
-            <View style={styles.statsRow}>
-              <View style={styles.statBadge}>
-                <IconSymbol 
-                  android_material_icon_name="local-fire-department" 
-                  size={20} 
-                  color="#ffffff"
-                />
-                <Text style={styles.statText}>{streak}</Text>
-              </View>
-              
-              <View style={styles.statBadge}>
-                <IconSymbol 
-                  android_material_icon_name="people" 
-                  size={20} 
-                  color="#ffffff"
-                />
-                <Text style={styles.statText}>{followers}</Text>
-              </View>
-              
-              <View style={styles.statBadge}>
-                <IconSymbol 
-                  android_material_icon_name="emoji-events" 
-                  size={20} 
-                  color="#ffffff"
-                />
-                <Text style={styles.statText}>{todayPlace}</Text>
-              </View>
-            </View>
-          </View>
-
-          {/* Sponsor Section */}
-          <View style={styles.sponsorSection}>
-            <Text style={styles.sponsorTitle}>THIS MONTH&apos;S SPONSOR</Text>
-            <View style={styles.sponsorBadge}>
-              <Text style={styles.sponsorName}>IKEA</Text>
-            </View>
-          </View>
-
-          {/* Challenge Card */}
-          <View style={styles.challengeCardContainer}>
-            <TodaysChallengeCard
-              challenge={todayChallenge.challenge}
-              environment={todayChallenge.environment}
-              phrase={todayChallenge.phrase}
-              partner={todayChallenge.partner}
-            />
-          </View>
-
-          {/* Start Challenge Button */}
-          <TouchableOpacity 
-            style={styles.startButton}
-            onPress={handleStartChallenge}
-          >
-            <Text style={styles.startButtonText}>START CHALLENGE</Text>
-          </TouchableOpacity>
-
-          {/* Bottom Message */}
-          <Text style={styles.bottomMessage}>
-            Complete the challenge to unlock voting & scroll mode
+        {/* Header with greeting and stats */}
+        <View style={styles.header}>
+          {/* Personalized Greeting */}
+          <Text style={styles.greeting}>
+            {getGreeting()}, {getFirstName()}
           </Text>
-        </ScrollView>
-      </LinearGradient>
+
+          {/* Stats Row */}
+          <View style={styles.statsRow}>
+            <View style={styles.statBadge}>
+              <IconSymbol 
+                android_material_icon_name="local-fire-department" 
+                size={20} 
+                color="#000000"
+              />
+              <Text style={styles.statText}>{streak}</Text>
+            </View>
+            
+            <View style={styles.statBadge}>
+              <IconSymbol 
+                android_material_icon_name="people" 
+                size={20} 
+                color="#000000"
+              />
+              <Text style={styles.statText}>{followers}</Text>
+            </View>
+            
+            <View style={styles.statBadge}>
+              <IconSymbol 
+                android_material_icon_name="emoji-events" 
+                size={20} 
+                color="#000000"
+              />
+              <Text style={styles.statText}>{todayPlace}</Text>
+            </View>
+          </View>
+        </View>
+
+        {/* Sponsor Section */}
+        <View style={styles.sponsorSection}>
+          <Text style={styles.sponsorTitle}>THIS MONTH&apos;S SPONSOR</Text>
+          <View style={styles.sponsorBadge}>
+            <Text style={styles.sponsorName}>IKEA</Text>
+          </View>
+        </View>
+
+        {/* Challenge Card */}
+        <View style={styles.challengeCardContainer}>
+          <TodaysChallengeCard
+            challenge={todayChallenge.challenge}
+            environment={todayChallenge.environment}
+            phrase={todayChallenge.phrase}
+            partner={todayChallenge.partner}
+          />
+        </View>
+
+        {/* Start Challenge Button */}
+        <TouchableOpacity 
+          style={styles.startButton}
+          onPress={handleStartChallenge}
+        >
+          <Text style={styles.startButtonText}>START CHALLENGE</Text>
+        </TouchableOpacity>
+
+        {/* Bottom Message */}
+        <Text style={styles.bottomMessage}>
+          Complete the challenge to unlock voting & scroll mode
+        </Text>
+      </ScrollView>
     </View>
   );
 }
@@ -129,10 +123,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ff9999',
-  },
-  gradient: {
-    flex: 1,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -146,7 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 40,
   },
   greeting: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 16,
@@ -159,14 +150,14 @@ const styles = StyleSheet.create({
   statBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.primary,
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
     gap: 6,
   },
   statText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -175,22 +166,22 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   sponsorTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 16,
     letterSpacing: 1,
   },
   sponsorBadge: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.secondary,
     paddingHorizontal: 60,
     paddingVertical: 32,
     borderRadius: 24,
     borderWidth: 4,
-    borderColor: colors.secondary,
+    borderColor: colors.accent,
   },
   sponsorName: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 48,
     fontWeight: '900',
     letterSpacing: 4,
@@ -206,13 +197,13 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   startButtonText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
   },
   bottomMessage: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 15,
     fontWeight: '500',
     textAlign: 'center',

@@ -78,7 +78,7 @@ export default function LoginScreen() {
         options: {
           redirectTo: Platform.OS === 'web' 
             ? window.location.origin 
-            : 'myapp://auth/callback',
+            : 'bloop://auth/callback',
         },
       });
 
@@ -100,7 +100,7 @@ export default function LoginScreen() {
         options: {
           redirectTo: Platform.OS === 'web' 
             ? window.location.origin 
-            : 'myapp://auth/callback',
+            : 'bloop://auth/callback',
         },
       });
 
@@ -121,7 +121,7 @@ export default function LoginScreen() {
       keyboardShouldPersistTaps="handled"
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Welcome!</Text>
+        <Text style={styles.title}>Welcome to Bloop!</Text>
         <Text style={styles.subtitle}>
           {isSignUp ? 'Create your account' : 'Sign in to continue'}
         </Text>
@@ -164,7 +164,7 @@ export default function LoginScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color="#000000" />
           ) : (
             <Text style={styles.buttonText}>
               {isSignUp ? 'Sign Up' : 'Sign In'}
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.textLight,
   },
   form: {
     gap: 16,
@@ -245,8 +245,8 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderWidth: 2,
+    borderColor: colors.primary,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
@@ -267,14 +267,14 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: '#000000',
     fontSize: 16,
     fontWeight: '600',
   },
   socialButton: {
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    backgroundColor: colors.secondary,
+    borderWidth: 2,
+    borderColor: colors.primary,
   },
   socialButtonText: {
     color: colors.text,
@@ -286,9 +286,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   switchButtonText: {
-    color: colors.primary,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
+    textDecorationLine: 'underline',
   },
   divider: {
     flexDirection: 'row',
@@ -297,12 +298,12 @@ const styles = StyleSheet.create({
   },
   dividerLine: {
     flex: 1,
-    height: 1,
-    backgroundColor: '#E0E0E0',
+    height: 2,
+    backgroundColor: colors.primary,
   },
   dividerText: {
     marginHorizontal: 16,
-    color: colors.textSecondary,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },

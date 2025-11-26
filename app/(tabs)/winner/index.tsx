@@ -11,7 +11,7 @@ export default function WinnerScreen() {
   const winner = {
     username: "@winner_user",
     date: "November 25, 2025",
-    avatarColor: "#ffcc00",
+    avatarColor: colors.primary,
   };
 
   const yesterdayChallenge = {
@@ -58,13 +58,13 @@ export default function WinnerScreen() {
             <IconSymbol 
               android_material_icon_name="emoji-events" 
               size={32} 
-              color="#ffffff"
+              color={colors.text}
             />
             <Text style={styles.lastWinnerTitle}>LAST WINNER</Text>
             <IconSymbol 
               android_material_icon_name="emoji-events" 
               size={32} 
-              color="#ffffff"
+              color={colors.text}
             />
           </View>
 
@@ -72,7 +72,7 @@ export default function WinnerScreen() {
             <IconSymbol 
               android_material_icon_name="schedule" 
               size={20} 
-              color="#ffffff"
+              color={colors.text}
             />
             <Text style={styles.timerText}>
               New one announced in {timeUntilNext.hours} hours {timeUntilNext.minutes} min
@@ -127,7 +127,7 @@ export default function WinnerScreen() {
               <IconSymbol 
                 android_material_icon_name="favorite" 
                 size={20} 
-                color="#ff6b6b"
+                color={colors.accent}
               />
               <View style={styles.statTextContainer}>
                 <Text style={styles.statNumber}>{(yesterdayChallenge.likes / 1000).toFixed(1)}k</Text>
@@ -139,7 +139,7 @@ export default function WinnerScreen() {
               <IconSymbol 
                 android_material_icon_name="visibility" 
                 size={20} 
-                color="#5dade2"
+                color={colors.secondary}
               />
               <View style={styles.statTextContainer}>
                 <Text style={styles.statNumber}>{(yesterdayChallenge.views / 1000).toFixed(1)}k</Text>
@@ -151,7 +151,7 @@ export default function WinnerScreen() {
               <IconSymbol 
                 android_material_icon_name="trending-up" 
                 size={20} 
-                color="#51cf66"
+                color={colors.primary}
               />
               <View style={styles.statTextContainer}>
                 <Text style={styles.statNumber}>{yesterdayChallenge.engagement}%</Text>
@@ -234,7 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   lastWinnerTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 24,
     fontWeight: '700',
     letterSpacing: 2,
@@ -246,12 +246,12 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   timerText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
   congratsText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'center',
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 24,
     left: 24,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.accent,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   followButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: colors.accent,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 20,
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   yesterdayTitle: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 20,
     fontWeight: '700',
     marginBottom: 16,
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     paddingBottom: 20,
     borderBottomWidth: 1,
-    borderBottomColor: 'rgba(255, 255, 255, 0.3)',
+    borderBottomColor: 'rgba(0, 0, 0, 0.1)',
   },
   statItem: {
     alignItems: 'center',
@@ -363,12 +363,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statNumber: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '700',
   },
   statLabel: {
-    color: 'rgba(255, 255, 255, 0.8)',
+    color: colors.textLight,
     fontSize: 12,
     fontWeight: '500',
   },
@@ -381,7 +381,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#5dade2',
+    backgroundColor: colors.secondary,
     paddingVertical: 14,
     borderRadius: 16,
     gap: 8,
@@ -390,7 +390,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.accent,
     paddingVertical: 14,
     borderRadius: 16,
   },
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   shareMessage: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 15,
     fontWeight: '500',
     textAlign: 'center',
@@ -411,11 +411,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   winnersLoungeButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
     borderRadius: 24,
     padding: 24,
     marginBottom: 24,
-    boxShadow: '0px 6px 16px rgba(0, 51, 153, 0.4)',
+    boxShadow: '0px 6px 16px rgba(183, 163, 227, 0.4)',
     elevation: 8,
   },
   loungeButtonContent: {

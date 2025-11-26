@@ -52,11 +52,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 24,
     borderWidth: 4,
-    borderColor: colors.secondary,
+    borderColor: colors.primary,
     overflow: 'hidden',
   },
   challengeHeader: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.accent,
     paddingVertical: 16,
     alignItems: 'center',
   },

@@ -28,7 +28,7 @@ export default function LibraryScreen() {
             <IconSymbol 
               android_material_icon_name="settings" 
               size={28} 
-              color="#FFFFFF"
+              color={colors.text}
             />
           </TouchableOpacity>
         </View>
@@ -95,19 +95,19 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: colors.text,
   },
   settingsButton: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   welcomeText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.textLight,
   },
   content: {
     flex: 1,
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
   },
   statCard: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.secondary,
     borderRadius: 12,
     padding: 16,
     marginHorizontal: 4,
@@ -129,12 +129,12 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: colors.primary,
+    color: colors.text,
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 12,
-    color: colors.textSecondary,
+    color: colors.textLight,
   },
   section: {
     marginBottom: 24,
@@ -146,25 +146,25 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   emptyState: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.primary,
     borderRadius: 12,
     padding: 32,
     alignItems: 'center',
   },
   emptyStateText: {
     fontSize: 14,
-    color: colors.textSecondary,
+    color: colors.textLight,
     textAlign: 'center',
   },
   communityButton: {
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.accent,
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
   },
   communityButtonText: {
-    color: colors.text,
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

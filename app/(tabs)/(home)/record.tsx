@@ -1,7 +1,6 @@
 
 import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
-import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
@@ -78,65 +77,60 @@ export default function RecordScreen() {
 
   return (
     <View style={styles.container}>
-      <LinearGradient
-        colors={['#f5f5f5', '#ffffff']}
-        style={styles.gradient}
+      <ScrollView 
+        style={styles.scrollView}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
       >
-        <ScrollView 
-          style={styles.scrollView}
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Title Section */}
-          <View style={styles.titleSection}>
-            <Text style={styles.title}>FILM YOUR VIDEO</Text>
-            <Text style={styles.subtitle}>Make it creative!</Text>
-          </View>
+        {/* Title Section */}
+        <View style={styles.titleSection}>
+          <Text style={styles.title}>FILM YOUR VIDEO</Text>
+          <Text style={styles.subtitle}>Make it creative!</Text>
+        </View>
 
-          {/* Camera Circle */}
-          <View style={styles.cameraSection}>
-            <View style={styles.cameraCircle}>
-              <IconSymbol 
-                android_material_icon_name="photo-camera" 
-                size={80} 
-                color="#ffffff"
-              />
-            </View>
-          </View>
-
-          {/* Today's Challenge Card */}
-          <View style={styles.challengeCardContainer}>
-            <TodaysChallengeCard
-              challenge={todayChallenge.challenge}
-              environment={todayChallenge.environment}
-              phrase={todayChallenge.phrase}
-              partner={todayChallenge.partner}
+        {/* Camera Circle */}
+        <View style={styles.cameraSection}>
+          <View style={styles.cameraCircle}>
+            <IconSymbol 
+              android_material_icon_name="photo-camera" 
+              size={80} 
+              color="#ffffff"
             />
           </View>
+        </View>
 
-          {/* Action Buttons */}
-          <View style={styles.buttonSection}>
-            <TouchableOpacity 
-              style={styles.recordButton}
-              onPress={handleRecordVideo}
-            >
-              <Text style={styles.recordButtonText}>RECORD VIDEO</Text>
-            </TouchableOpacity>
+        {/* Today's Challenge Card */}
+        <View style={styles.challengeCardContainer}>
+          <TodaysChallengeCard
+            challenge={todayChallenge.challenge}
+            environment={todayChallenge.environment}
+            phrase={todayChallenge.phrase}
+            partner={todayChallenge.partner}
+          />
+        </View>
 
-            <TouchableOpacity 
-              style={styles.uploadButton}
-              onPress={handleUploadFromGallery}
-            >
-              <Text style={styles.uploadButtonText}>UPLOAD FROM GALLERY</Text>
-            </TouchableOpacity>
-          </View>
+        {/* Action Buttons */}
+        <View style={styles.buttonSection}>
+          <TouchableOpacity 
+            style={styles.recordButton}
+            onPress={handleRecordVideo}
+          >
+            <Text style={styles.recordButtonText}>RECORD VIDEO</Text>
+          </TouchableOpacity>
 
-          {/* Tip */}
-          <View style={styles.tipSection}>
-            <Text style={styles.tipText}>Tip: Vertical videos work best! 📱</Text>
-          </View>
-        </ScrollView>
-      </LinearGradient>
+          <TouchableOpacity 
+            style={styles.uploadButton}
+            onPress={handleUploadFromGallery}
+          >
+            <Text style={styles.uploadButtonText}>UPLOAD FROM GALLERY</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Tip */}
+        <View style={styles.tipSection}>
+          <Text style={styles.tipText}>Tip: Vertical videos work best! 📱</Text>
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -144,10 +138,7 @@ export default function RecordScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
-  gradient: {
-    flex: 1,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -164,14 +155,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: '900',
-    color: '#000000',
+    color: colors.text,
     letterSpacing: 1,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
     fontWeight: '500',
-    color: '#666666',
+    color: colors.textLight,
   },
   cameraSection: {
     alignItems: 'center',
@@ -181,10 +172,10 @@ const styles = StyleSheet.create({
     width: 220,
     height: 220,
     borderRadius: 110,
-    backgroundColor: '#6ba3e8',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-    boxShadow: '0px 8px 24px rgba(107, 163, 232, 0.4)',
+    boxShadow: '0px 8px 24px rgba(194, 226, 250, 0.4)',
     elevation: 8,
   },
   challengeCardContainer: {
@@ -195,11 +186,11 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   recordButton: {
-    backgroundColor: '#ff7b7b',
+    backgroundColor: colors.accent,
     paddingVertical: 20,
     borderRadius: 30,
     alignItems: 'center',
-    boxShadow: '0px 4px 12px rgba(255, 123, 123, 0.3)',
+    boxShadow: '0px 4px 12px rgba(183, 163, 227, 0.3)',
     elevation: 4,
   },
   recordButtonText: {
@@ -209,15 +200,15 @@ const styles = StyleSheet.create({
     letterSpacing: 1,
   },
   uploadButton: {
-    backgroundColor: '#ffffff',
+    backgroundColor: colors.primary,
     paddingVertical: 20,
     borderRadius: 30,
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#6ba3e8',
+    borderColor: colors.secondary,
   },
   uploadButtonText: {
-    color: '#6ba3e8',
+    color: colors.text,
     fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
@@ -228,7 +219,7 @@ const styles = StyleSheet.create({
   tipText: {
     fontSize: 15,
     fontWeight: '500',
-    color: '#666666',
+    color: colors.textLight,
     textAlign: 'center',
   },
 });

@@ -1,7 +1,8 @@
+
 {
   "expo": {
-    "name": "Daily Challenge",
-    "slug": "Daily Challenge",
+    "name": "Bloop",
+    "slug": "Bloop",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/natively-dark.png",
@@ -10,11 +11,11 @@
     "splash": {
       "image": "./assets/images/natively-dark.png",
       "resizeMode": "contain",
-      "backgroundColor": "#000000"
+      "backgroundColor": "#FF8F8F"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.Natively",
+      "bundleIdentifier": "com.anonymous.Bloop",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
       }
@@ -22,10 +23,10 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/natively-dark.png",
-        "backgroundColor": "#000000"
+        "backgroundColor": "#FF8F8F"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.anonymous.Natively"
+      "package": "com.anonymous.Bloop"
     },
     "web": {
       "favicon": "./assets/images/final_quest_240x240.png",
@@ -36,7 +37,7 @@
       "expo-router",
       "expo-web-browser"
     ],
-    "scheme": "natively",
+    "scheme": "bloop",
     "experiments": {
       "typedRoutes": true
     },
@@ -44,5 +45,5 @@
       "router": {}
     }
   },
-  "scheme": "Daily Challenge"
+  "scheme": "Bloop"
 }

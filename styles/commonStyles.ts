@@ -1,18 +1,39 @@
 
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
 
+// Strict 4-Color Design System for Bloop
 export const colors = {
-  primary: '#003399',      // IKEA Blue
-  secondary: '#ffcc00',    // IKEA Yellow
-  accent: '#0051ba',       // Darker IKEA Blue
-  background: '#ffffff',   // White
-  backgroundAlt: '#f5f5f5', // Light grey
-  text: '#000000',         // Black text
-  textLight: '#666666',    // Grey text
-  card: '#ffffff',         // White card
-  border: '#ffcc00',       // Yellow border
-  gradient1: '#ff9999',    // Coral/Pink gradient start
-  gradient2: '#ffb3b3',    // Lighter coral gradient end
+  // Background Colour – Main Colour
+  // Large surfaces, app backgrounds
+  background: '#FF8F8F',
+  
+  // Primary Colour – Main Action / Brand
+  // Primary buttons and core actions
+  primary: '#FFF1CB',
+  
+  // Secondary Colour – Secondary Actions
+  // Optional buttons, smaller actions, supportive UI
+  secondary: '#C2E2FA',
+  
+  // Accent Colour – Key Indicators / Highlights
+  // Attention elements, alerts, minimal usage
+  accent: '#B7A3E3',
+  
+  // Derived colors for text (for readability on backgrounds)
+  text: '#000000',         // Black text for light backgrounds
+  textLight: '#333333',    // Dark grey for secondary text
+  textSecondary: '#666666', // Medium grey for tertiary text
+  
+  // For cards and surfaces that need to stand out from background
+  card: '#FFFFFF',
+  border: '#FFF1CB',       // Using primary color for borders
+  
+  // Legacy gradient colors (can be removed if not needed)
+  gradient1: '#FF8F8F',
+  gradient2: '#FF8F8F',
+  
+  // Alternative backgrounds using the 4-color system
+  backgroundAlt: '#FFF1CB', // Using primary as alternative background
 };
 
 export const buttonStyles = StyleSheet.create({
@@ -22,7 +43,7 @@ export const buttonStyles = StyleSheet.create({
     width: '100%',
   },
   backButton: {
-    backgroundColor: colors.backgroundAlt,
+    backgroundColor: colors.secondary,
     alignSelf: 'center',
     width: '100%',
   },
@@ -36,7 +57,37 @@ export const buttonStyles = StyleSheet.create({
     width: '100%',
   },
   primaryButtonText: {
-    color: '#ffffff',
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  secondaryButton: {
+    backgroundColor: colors.secondary,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  secondaryButtonText: {
+    color: '#000000',
+    fontSize: 18,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+  },
+  accentButton: {
+    backgroundColor: colors.accent,
+    paddingVertical: 16,
+    paddingHorizontal: 32,
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '100%',
+  },
+  accentButtonText: {
+    color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '700',
     textTransform: 'uppercase',

@@ -22,7 +22,7 @@ export default function VoteScreen() {
     username: "@user_one",
     timeAgo: "2 hours ago",
     views: 124,
-    avatarColor: "#ff6b6b",
+    avatarColor: colors.primary,
   };
 
   const video2: VideoData = {
@@ -30,7 +30,7 @@ export default function VoteScreen() {
     username: "@user_two",
     timeAgo: "1 hour ago",
     views: 98,
-    avatarColor: "#51cf66",
+    avatarColor: colors.secondary,
   };
 
   const handleVote = (vote: 'video1' | 'video2' | 'neither') => {
@@ -158,7 +158,7 @@ export default function VoteScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#9b7dd4',
+    backgroundColor: colors.accent,
   },
   scrollView: {
     flex: 1,
@@ -273,13 +273,13 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   video1Button: {
-    backgroundColor: '#5dade2',
+    backgroundColor: colors.secondary,
   },
   neitherButton: {
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   video2Button: {
-    backgroundColor: '#f4d03f',
+    backgroundColor: colors.primary,
   },
   selectedButton: {
     opacity: 0.7,

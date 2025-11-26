@@ -267,7 +267,7 @@ export default function OnboardingScreen() {
           disabled={loading}
         >
           {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color="#000000" />
           ) : (
             <Text style={styles.buttonText}>Complete Setup</Text>
           )}
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 16,
-    color: colors.textSecondary,
+    color: colors.textLight,
   },
   form: {
     gap: 20,
@@ -313,18 +313,18 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderWidth: 2,
+    borderColor: colors.primary,
     borderRadius: 12,
     padding: 16,
     fontSize: 16,
     color: colors.text,
   },
   inputError: {
-    borderColor: '#FF3B30',
+    borderColor: colors.accent,
   },
   errorText: {
-    color: '#FF3B30',
+    color: colors.accent,
     fontSize: 12,
     marginTop: 4,
   },
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
   },
