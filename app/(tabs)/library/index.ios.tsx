@@ -25,6 +25,15 @@ export default function LibraryScreen() {
     }
   };
 
+  // Extract phone number without country code
+  const getPhoneWithoutCountryCode = (fullPhone: string | null | undefined) => {
+    if (!fullPhone) return 'Not set';
+    
+    // Remove common country code patterns like +1, +44, etc.
+    const phoneWithoutCode = fullPhone.replace(/^\+?\d{1,4}\s*/, '').trim();
+    return phoneWithoutCode || fullPhone;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -51,9 +60,29 @@ export default function LibraryScreen() {
           </View>
         </View>
         {userProfile && (
-          <Text style={styles.welcomeText}>
-            Welcome, {userProfile.full_name}!
-          </Text>
+          <View style={styles.profileInfo}>
+            <Text style={styles.welcomeText}>
+              Welcome, {userProfile.full_name}!
+            </Text>
+            <View style={styles.infoRow}>
+              <IconSymbol 
+                ios_icon_name="location.fill"
+                size={16} 
+                color={colors.text}
+              />
+              <Text style={styles.infoText}>{userProfile.country}</Text>
+            </View>
+            <View style={styles.infoRow}>
+              <IconSymbol 
+                ios_icon_name="phone.fill"
+                size={16} 
+                color={colors.text}
+              />
+              <Text style={styles.infoText}>
+                {getPhoneWithoutCountryCode(userProfile.telephone_number)}
+              </Text>
+            </View>
+          </View>
         )}
       </View>
 
@@ -108,7 +137,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
   },
   title: {
     fontSize: 32,
@@ -139,8 +168,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  profileInfo: {
+    gap: 6,
+  },
   welcomeText: {
     fontSize: 16,
+    fontWeight: '600',
+    color: colors.text,
+    marginBottom: 4,
+  },
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  infoText: {
+    fontSize: 14,
     color: colors.text,
   },
   content: {

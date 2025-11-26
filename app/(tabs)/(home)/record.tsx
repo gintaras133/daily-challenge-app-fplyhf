@@ -5,14 +5,138 @@ import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
+import * as ImagePicker from 'expo-image-picker';
+import { supabase } from '@/app/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function RecordScreen() {
+  const { userProfile } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
+
   // Sample challenge data - in a real app, this would come from navigation params or context
   const todayChallenge = {
     challenge: "Assemble furniture in 60 seconds",
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
     partner: "IKEA"
+  };
+
+  const uploadVideoToSupabase = async (uri: string, fileName: string) => {
+    try {
+      setIsUploading(true);
+
+      // Fetch the video file
+      const response = await fetch(uri);
+      const blob = await response.blob();
+
+      // Generate unique filename
+      const timestamp = Date.now();
+      const uniqueFileName = `${userProfile?.id}_${timestamp}_${fileName}`;
+
+      // Upload to Supabase storage
+      const { data, error } = await supabase.storage
+        .from('challengemedia')
+        .upload(uniqueFileName, blob, {
+          contentType: 'video/mp4',
+          upsert: false
+        });
+
+      if (error) {
+        throw error;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('challengemedia')
+        .getPublicUrl(uniqueFileName);
+
+      console.log('Video uploaded successfully:', urlData.publicUrl);
+      
+      Alert.alert(
+        'Success!',
+        'Your video has been uploaded to your Library!',
+        [
+          {
+            text: 'View Library',
+            onPress: () => router.push('/(tabs)/library')
+          },
+          {
+            text: 'OK',
+            style: 'cancel'
+          }
+        ]
+      );
+
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Error uploading video:', error);
+      Alert.alert('Upload Failed', 'Failed to upload video. Please try again.');
+      throw error;
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleRecordVideo = async () => {
+    try {
+      // Request camera permissions
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Camera permission is needed to record videos.');
+        return;
+      }
+
+      // Launch camera for video recording
+      const result = await ImagePicker.launchCameraAsync({
+        mediaTypes: ['videos'],
+        allowsEditing: true,
+        quality: 1,
+        videoMaxDuration: 60, // 60 seconds max
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const videoUri = result.assets[0].uri;
+        const fileName = `recorded_${Date.now()}.mp4`;
+        
+        // Automatically upload to Library
+        await uploadVideoToSupabase(videoUri, fileName);
+      }
+    } catch (error) {
+      console.error('Error recording video:', error);
+      Alert.alert('Error', 'Failed to record video. Please try again.');
+    }
+  };
+
+  const handleUploadFromGallery = async () => {
+    try {
+      // Request media library permissions
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      
+      if (status !== 'granted') {
+        Alert.alert('Permission Required', 'Media library permission is needed to select videos.');
+        return;
+      }
+
+      // Launch image picker for video selection
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ['videos'],
+        allowsEditing: true,
+        quality: 1,
+        videoMaxDuration: 60, // 60 seconds max
+      });
+
+      if (!result.canceled && result.assets[0]) {
+        const videoUri = result.assets[0].uri;
+        const fileName = result.assets[0].fileName || `upload_${Date.now()}.mp4`;
+        
+        // Automatically upload to Library
+        await uploadVideoToSupabase(videoUri, fileName);
+      }
+    } catch (error) {
+      console.error('Error selecting video:', error);
+      Alert.alert('Error', 'Failed to select video. Please try again.');
+    }
   };
 
   return (
@@ -49,53 +173,43 @@ export default function RecordScreen() {
           />
         </View>
 
-        {/* Video Upload Section - Using Natively Upload Component */}
-        <View style={styles.uploadSection}>
-          <Text style={styles.uploadTitle}>Upload Your Video</Text>
-          <Text style={styles.uploadDescription}>
-            Use the upload button below to select a video from your device.
-            Videos should be under 60 seconds.
-          </Text>
-          
-          {/* Natively Upload Component Placeholder */}
-          {/* Note: The actual Upload component from Natively should be imported and used here */}
-          {/* Example: <Upload storage="challengemedia" accept="video/*" style={styles.uploadButton} /> */}
-          
-          <View style={styles.uploadButton}>
-            <IconSymbol 
-              android_material_icon_name="cloud-upload" 
-              size={32} 
-              color={colors.textOnPrimary}
-            />
-            <Text style={styles.uploadButtonText}>
-              Upload Video (Natively Component)
-            </Text>
-            <Text style={styles.uploadNote}>
-              Storage: challengemedia
-            </Text>
-          </View>
-        </View>
-
         {/* Action Buttons */}
         <View style={styles.buttonSection}>
           <TouchableOpacity 
             style={styles.recordButton}
-            onPress={() => Alert.alert('Info', 'Video recording will be implemented with Natively Upload component')}
+            onPress={handleRecordVideo}
+            disabled={isUploading}
           >
-            <Text style={styles.recordButtonText}>RECORD VIDEO</Text>
+            <IconSymbol 
+              android_material_icon_name="videocam" 
+              size={24} 
+              color={colors.textOnPrimary}
+            />
+            <Text style={styles.recordButtonText}>
+              {isUploading ? 'UPLOADING...' : 'RECORD VIDEO'}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity 
             style={styles.uploadFromGalleryButton}
-            onPress={() => Alert.alert('Info', 'Gallery upload will be implemented with Natively Upload component')}
+            onPress={handleUploadFromGallery}
+            disabled={isUploading}
           >
-            <Text style={styles.uploadFromGalleryButtonText}>UPLOAD FROM GALLERY</Text>
+            <IconSymbol 
+              android_material_icon_name="photo-library" 
+              size={24} 
+              color={colors.textOnPrimary}
+            />
+            <Text style={styles.uploadFromGalleryButtonText}>
+              {isUploading ? 'UPLOADING...' : 'UPLOAD FROM GALLERY'}
+            </Text>
           </TouchableOpacity>
         </View>
 
         {/* Tip */}
         <View style={styles.tipSection}>
           <Text style={styles.tipText}>Tip: Vertical videos work best! 📱</Text>
+          <Text style={styles.tipSubtext}>Videos will be automatically added to your Library</Text>
         </View>
       </ScrollView>
     </View>
@@ -148,43 +262,6 @@ const styles = StyleSheet.create({
   challengeCardContainer: {
     marginBottom: 32,
   },
-  uploadSection: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    borderWidth: 2,
-    borderColor: colors.accent,
-  },
-  uploadTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: colors.textHeader,
-    marginBottom: 8,
-  },
-  uploadDescription: {
-    fontSize: 14,
-    color: colors.text,
-    marginBottom: 16,
-    lineHeight: 20,
-  },
-  uploadButton: {
-    backgroundColor: colors.accent,
-    borderRadius: 12,
-    padding: 20,
-    alignItems: 'center',
-    gap: 8,
-  },
-  uploadButtonText: {
-    color: colors.textOnPrimary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  uploadNote: {
-    color: colors.textMuted,
-    fontSize: 12,
-    fontStyle: 'italic',
-  },
   buttonSection: {
     gap: 16,
     marginBottom: 24,
@@ -194,6 +271,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 30,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
     boxShadow: '0px 4px 12px rgba(183, 163, 227, 0.3)',
     elevation: 4,
   },
@@ -208,6 +288,9 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderRadius: 30,
     alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 12,
     borderWidth: 2,
     borderColor: colors.secondary,
   },
@@ -219,11 +302,19 @@ const styles = StyleSheet.create({
   },
   tipSection: {
     alignItems: 'center',
+    gap: 8,
   },
   tipText: {
     fontSize: 15,
     fontWeight: '500',
     color: colors.textMuted,
     textAlign: 'center',
+  },
+  tipSubtext: {
+    fontSize: 13,
+    fontWeight: '400',
+    color: colors.textMuted,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
 });
