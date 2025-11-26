@@ -19,7 +19,6 @@ export default function WinnersLoungeScreen() {
       views: 98500,
       engagement: 94,
       rank: "#1",
-      avatarColor: "#ffcc00",
     },
     {
       id: 2,
@@ -32,7 +31,6 @@ export default function WinnersLoungeScreen() {
       views: 82100,
       engagement: 91,
       rank: "#2",
-      avatarColor: "#ff9999",
     },
     {
       id: 3,
@@ -45,7 +43,6 @@ export default function WinnersLoungeScreen() {
       views: 105600,
       engagement: 96,
       rank: "#3",
-      avatarColor: "#99ccff",
     },
     {
       id: 4,
@@ -58,18 +55,12 @@ export default function WinnersLoungeScreen() {
       views: 89200,
       engagement: 89,
       rank: "#4",
-      avatarColor: "#99ff99",
     },
   ];
 
-  const handleWatchVideo = (winnerId: number) => {
-    console.log('Watch video for winner:', winnerId);
-    // In a real app, this would play the winner's video
-  };
-
-  const handleShareWinner = (winnerId: number) => {
-    console.log('Share winner:', winnerId);
-    // In a real app, this would open share dialog
+  const handleWinnerDetail = (winnerId: number) => {
+    console.log('Navigate to winner detail:', winnerId);
+    router.push(`/(tabs)/winner?winnerId=${winnerId}`);
   };
 
   const handleLoadMore = () => {
@@ -99,7 +90,7 @@ export default function WinnersLoungeScreen() {
               android_material_icon_name="arrow-back" 
               ios_icon_name="arrow.left"
               size={28} 
-              color="#ffffff"
+              color={colors.text}
             />
           </TouchableOpacity>
         </View>
@@ -110,7 +101,7 @@ export default function WinnersLoungeScreen() {
             android_material_icon_name="emoji-events" 
             ios_icon_name="trophy.fill"
             size={40} 
-            color="#ffffff"
+            color={colors.text}
           />
           <Text style={styles.title}>WINNERS LOUNGE</Text>
           <Text style={styles.subtitle}>Hall of Fame - Past Challenge Winners</Text>
@@ -134,16 +125,12 @@ export default function WinnersLoungeScreen() {
 
         {/* Winners List */}
         {previousWinners.map((winner, index) => (
-          <View key={index} style={styles.winnerCard}>
+          <TouchableOpacity 
+            key={index} 
+            style={styles.winnerCard}
+            onPress={() => handleWinnerDetail(winner.id)}
+          >
             <View style={styles.winnerHeader}>
-              <View style={[styles.avatar, { backgroundColor: winner.avatarColor }]}>
-                <IconSymbol 
-                  android_material_icon_name="emoji-events" 
-                  ios_icon_name="trophy.fill"
-                  size={24} 
-                  color="#ffffff"
-                />
-              </View>
               <View style={styles.winnerHeaderInfo}>
                 <Text style={styles.username}>{winner.username}</Text>
                 <Text style={styles.date}>{winner.date}</Text>
@@ -151,15 +138,6 @@ export default function WinnersLoungeScreen() {
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{winner.rank}</Text>
               </View>
-            </View>
-
-            <View style={styles.videoPreview}>
-              <IconSymbol 
-                android_material_icon_name="play-arrow" 
-                ios_icon_name="play.fill"
-                size={60} 
-                color="#ffffff"
-              />
             </View>
 
             <View style={styles.challengeInfo}>
@@ -181,7 +159,7 @@ export default function WinnersLoungeScreen() {
                   android_material_icon_name="favorite" 
                   ios_icon_name="heart.fill"
                   size={18} 
-                  color="#ff6b6b"
+                  color={colors.accent}
                 />
                 <Text style={styles.statText}>{(winner.likes / 1000).toFixed(1)}k</Text>
               </View>
@@ -190,7 +168,7 @@ export default function WinnersLoungeScreen() {
                   android_material_icon_name="visibility" 
                   ios_icon_name="eye.fill"
                   size={18} 
-                  color="#5dade2"
+                  color={colors.text}
                 />
                 <Text style={styles.statText}>{(winner.views / 1000).toFixed(1)}k</Text>
               </View>
@@ -199,27 +177,12 @@ export default function WinnersLoungeScreen() {
                   android_material_icon_name="trending-up" 
                   ios_icon_name="chart.line.uptrend.xyaxis"
                   size={18} 
-                  color="#51cf66"
+                  color={colors.text}
                 />
                 <Text style={styles.statText}>{winner.engagement}%</Text>
               </View>
             </View>
-
-            <View style={styles.actionButtons}>
-              <TouchableOpacity 
-                style={styles.watchButton}
-                onPress={() => handleWatchVideo(winner.id)}
-              >
-                <Text style={styles.watchButtonText}>Watch Video</Text>
-              </TouchableOpacity>
-              <TouchableOpacity 
-                style={styles.shareButton}
-                onPress={() => handleShareWinner(winner.id)}
-              >
-                <Text style={styles.shareButtonText}>Share Winner</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+          </TouchableOpacity>
         ))}
 
         {/* Load More Button */}
@@ -245,7 +208,7 @@ export default function WinnersLoungeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.secondary,
+    backgroundColor: colors.background,
   },
   scrollView: {
     flex: 1,
@@ -262,7 +225,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -271,7 +234,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   title: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 28,
     fontWeight: '700',
     letterSpacing: 2,
@@ -279,7 +242,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   subtitle: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '500',
     textAlign: 'center',
@@ -289,109 +252,92 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginBottom: 32,
     paddingVertical: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    backgroundColor: colors.secondary,
     borderRadius: 20,
   },
   statBox: {
     alignItems: 'center',
   },
   statNumber: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 28,
     fontWeight: '700',
     marginBottom: 4,
   },
   statLabel: {
-    color: 'rgba(255, 255, 255, 0.9)',
+    color: colors.text,
     fontSize: 12,
     fontWeight: '500',
   },
   winnerCard: {
-    backgroundColor: '#ffffff',
-    borderRadius: 24,
-    padding: 16,
-    marginBottom: 24,
-    boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.15)',
-    elevation: 4,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 18,
+    marginBottom: 12,
   },
   winnerHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 16,
-    gap: 12,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'space-between',
   },
   winnerHeaderInfo: {
     flex: 1,
   },
   username: {
-    color: '#000000',
-    fontSize: 16,
-    fontWeight: '600',
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: 'bold',
     marginBottom: 2,
   },
   date: {
-    color: '#666666',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '400',
+    opacity: 0.8,
   },
   rankBadge: {
-    backgroundColor: colors.secondary,
-    paddingHorizontal: 16,
+    backgroundColor: colors.accent,
+    paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 12,
   },
   rankText: {
-    color: '#000000',
+    color: colors.primary,
     fontSize: 16,
-    fontWeight: '700',
-  },
-  videoPreview: {
-    width: '100%',
-    aspectRatio: 9 / 16,
-    backgroundColor: '#d9d9d9',
-    borderRadius: 16,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: 16,
+    fontWeight: '600',
   },
   challengeInfo: {
     marginBottom: 16,
   },
   challengeLabel: {
-    color: '#666666',
+    color: colors.textMuted,
     fontSize: 13,
     fontWeight: '600',
     marginBottom: 4,
     marginTop: 8,
   },
   challengeValue: {
-    color: '#000000',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     marginBottom: 4,
   },
   phraseBox: {
-    backgroundColor: '#f5f5f5',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 8,
+    backgroundColor: colors.accent,
+    paddingHorizontal: 14,
+    paddingVertical: 12,
+    borderRadius: 12,
     marginBottom: 4,
   },
   phraseText: {
-    color: '#000000',
-    fontSize: 15,
-    fontWeight: '500',
+    color: colors.primary,
+    fontSize: 16,
+    fontWeight: '600',
     fontStyle: 'italic',
   },
   sponsorValue: {
-    color: colors.primary,
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -399,10 +345,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     paddingVertical: 12,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: '#e0e0e0',
-    marginBottom: 16,
+    borderTopWidth: 2,
+    borderTopColor: colors.accent,
   },
   statItem: {
     flexDirection: 'row',
@@ -410,49 +354,19 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   statText: {
-    color: '#000000',
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  watchButton: {
-    flex: 1,
-    backgroundColor: '#5dade2',
-    paddingVertical: 14,
-    borderRadius: 16,
-    alignItems: 'center',
-  },
-  watchButtonText: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  shareButton: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-    paddingVertical: 14,
-    borderRadius: 16,
-    alignItems: 'center',
-    borderWidth: 2,
-    borderColor: '#5dade2',
-  },
-  shareButtonText: {
-    color: '#5dade2',
-    fontSize: 15,
-    fontWeight: '700',
-  },
   loadMoreButton: {
-    backgroundColor: 'rgba(255, 255, 255, 0.3)',
+    backgroundColor: colors.primary,
     paddingVertical: 16,
     borderRadius: 20,
     alignItems: 'center',
     marginBottom: 16,
   },
   loadMoreText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -461,7 +375,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
   },
   backToWinnerText: {
-    color: '#ffffff',
+    color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     textDecorationLine: 'underline',
