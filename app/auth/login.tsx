@@ -86,17 +86,14 @@ export default function LoginScreen() {
         if (error) {
           Alert.alert('Sign Up Error', error.message);
         } else if (data.user && !data.session) {
-          Alert.alert(
-            'Verify Your Email',
-            'Please check your email inbox and click the confirmation link to verify your account before signing in.',
-            [{ text: 'OK' }]
-          );
-          // Clear the form after successful signup
-          setEmail('');
-          setPassword('');
-          setPasswordError('');
-          setIsSignUp(false);
+          // Email confirmation required - redirect to verify email screen
+          console.log('Sign up successful - email verification required');
+          router.replace({
+            pathname: '/auth/verify-email',
+            params: { email },
+          });
         } else if (data.session) {
+          // Instant confirmation (shouldn't happen with email confirmation enabled)
           console.log('Sign up successful with session');
           router.replace('/auth/onboarding');
         }
