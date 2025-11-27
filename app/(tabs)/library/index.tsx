@@ -245,13 +245,6 @@ export default function LibraryScreen() {
         >
           <Text style={styles.communityButtonText}>Back to Community Hub</Text>
         </TouchableOpacity>
-
-        {/* Info Text */}
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText2}>
-            💡 Tap on videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
-          </Text>
-        </View>
       </ScrollView>
 
       {/* Video Comparison Modal */}
@@ -447,24 +440,11 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
-    marginBottom: 16,
+    marginBottom: 100,
   },
   communityButtonText: {
     color: colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '600',
-  },
-  infoBox: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 100,
-  },
-  infoText2: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });

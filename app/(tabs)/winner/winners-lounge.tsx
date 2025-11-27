@@ -289,13 +289,6 @@ export default function WinnersLoungeScreen() {
         >
           <Text style={styles.backToWinnerText}>← Back to Latest Winner</Text>
         </TouchableOpacity>
-
-        {/* Info Text */}
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
-            💡 Tap on winner videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
-          </Text>
-        </View>
       </ScrollView>
 
       {/* Video Comparison Modal */}
@@ -508,18 +501,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     textDecorationLine: 'underline',
-  },
-  infoBox: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-  },
-  infoText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });

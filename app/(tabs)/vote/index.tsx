@@ -250,13 +250,6 @@ export default function VoteScreen() {
             <Text style={styles.voteButtonText}>Video 2</Text>
           </TouchableOpacity>
         </View>
-
-        {/* Info Text */}
-        <View style={styles.infoBox}>
-          <Text style={styles.infoText}>
-            💡 Tap on videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
-          </Text>
-        </View>
       </ScrollView>
 
       {/* Video Comparison Modal */}
@@ -414,18 +407,5 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 16,
     fontWeight: '700',
-  },
-  infoBox: {
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
-  },
-  infoText: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-    textAlign: 'center',
-    lineHeight: 20,
   },
 });
