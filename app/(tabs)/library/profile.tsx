@@ -26,6 +26,7 @@ export default function ProfileScreen() {
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   
   // Form state
   const [fullName, setFullName] = useState(userProfile?.full_name || '');
@@ -68,6 +69,11 @@ export default function ProfileScreen() {
     }
   }, [userProfile]);
 
+  const handleSignIn = () => {
+    console.log('Navigate to sign in');
+    router.push('/auth/login');
+  };
+
   const handleSignOut = () => {
     Alert.alert(
       'Sign Out',
@@ -87,6 +93,67 @@ export default function ProfileScreen() {
         },
       ]
     );
+  };
+
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      'Delete Account',
+      'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Delete',
+          style: 'destructive',
+          onPress: confirmDeleteAccount,
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (!user) {
+      Alert.alert('Error', 'No user found');
+      return;
+    }
+
+    setIsDeleting(true);
+
+    try {
+      // First, delete the user profile
+      const { error: profileError } = await supabase
+        .from('user_profiles')
+        .delete()
+        .eq('id', user.id);
+
+      if (profileError) {
+        console.error('Error deleting profile:', profileError);
+        throw profileError;
+      }
+
+      // Then delete the auth user
+      // Note: This requires admin privileges, so in production you'd call an Edge Function
+      // For now, we'll just sign out and show a message
+      await signOut();
+      
+      Alert.alert(
+        'Account Deletion Requested',
+        'Your account data has been removed. Please contact support to complete the deletion process.',
+        [
+          {
+            text: 'OK',
+            onPress: () => router.replace('/auth/login'),
+          },
+        ]
+      );
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      Alert.alert('Error', 'Failed to delete account. Please try again or contact support.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const checkUsernameAvailability = async (newUsername: string) => {
@@ -255,6 +322,44 @@ export default function ProfileScreen() {
       setIsUploadingPhoto(false);
     }
   };
+
+  // If user is not logged in, show sign-in prompt
+  if (!user) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <IconSymbol 
+              android_material_icon_name="arrow-back" 
+              size={24} 
+              color="#000000"
+            />
+          </TouchableOpacity>
+          <Text style={styles.title}>Settings</Text>
+        </View>
+        <View style={styles.signInPrompt}>
+          <IconSymbol 
+            android_material_icon_name="account-circle" 
+            size={80} 
+            color={colors.text}
+          />
+          <Text style={styles.signInTitle}>Sign In Required</Text>
+          <Text style={styles.signInText}>
+            Please sign in to access your profile and settings.
+          </Text>
+          <TouchableOpacity
+            style={styles.signInButton}
+            onPress={handleSignIn}
+          >
+            <Text style={styles.signInButtonText}>Sign In</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container}>
@@ -548,12 +653,33 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
         ) : (
-          <TouchableOpacity
-            style={styles.signOutButton}
-            onPress={handleSignOut}
-          >
-            <Text style={styles.signOutButtonText}>Sign Out</Text>
-          </TouchableOpacity>
+          <>
+            <TouchableOpacity
+              style={styles.signOutButton}
+              onPress={handleSignOut}
+            >
+              <Text style={styles.signOutButtonText}>Sign Out</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.deleteAccountButton}
+              onPress={handleDeleteAccount}
+              disabled={isDeleting}
+            >
+              {isDeleting ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <>
+                  <IconSymbol 
+                    android_material_icon_name="delete-forever" 
+                    size={20} 
+                    color="#ffffff"
+                  />
+                  <Text style={styles.deleteAccountButtonText}>Delete My Account</Text>
+                </>
+              )}
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </ScrollView>
@@ -586,6 +712,36 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: 'bold',
     color: colors.text,
+  },
+  signInPrompt: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 40,
+    gap: 20,
+  },
+  signInTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: colors.textHeader,
+  },
+  signInText: {
+    fontSize: 16,
+    color: colors.text,
+    textAlign: 'center',
+    lineHeight: 24,
+  },
+  signInButton: {
+    backgroundColor: colors.primary,
+    paddingHorizontal: 40,
+    paddingVertical: 16,
+    borderRadius: 12,
+    marginTop: 12,
+  },
+  signInButtonText: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '700',
   },
   content: {
     padding: 20,
@@ -753,9 +909,24 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
+    marginBottom: 12,
   },
   signOutButtonText: {
     color: colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  deleteAccountButton: {
+    backgroundColor: '#FF3B30',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  deleteAccountButtonText: {
+    color: '#ffffff',
     fontSize: 16,
     fontWeight: '600',
   },

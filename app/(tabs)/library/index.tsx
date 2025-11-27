@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -7,106 +7,48 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
-  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
-import { supabase } from '@/app/integrations/supabase/client';
-import VideoComparisonModal from '@/components/VideoComparisonModal';
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
-  const [clickedVideos, setClickedVideos] = useState<string[]>([]);
-  const [showComparisonModal, setShowComparisonModal] = useState(false);
-  const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
 
-  // Sample saved videos data
-  const savedVideos = [
+  // Sample demo videos data - user's own videos
+  const demoVideos = [
     {
       id: '1',
-      username: '@sarah_adventures',
-      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
-      timeAgo: '2 days ago',
-      likes: 234,
+      title: 'My First Challenge',
+      task: 'Product Hype Reel',
+      date: '2 days ago',
+      views: 1234,
+      likes: 89,
     },
     {
       id: '2',
-      username: '@mike_creates',
-      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
-      timeAgo: '5 days ago',
-      likes: 567,
+      title: 'Speed Challenge',
+      task: 'Furniture Assembly',
+      date: '5 days ago',
+      views: 2456,
+      likes: 156,
+    },
+    {
+      id: '3',
+      title: 'Creative Edit',
+      task: 'Cinematic Transition',
+      date: '1 week ago',
+      views: 3421,
+      likes: 234,
     },
   ];
 
-  // Additional video pairs for the comparison modal
-  const comparisonPairs = [
-    {
-      video1: {
-        id: '3',
-        username: '@library_user_a',
-        avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
-      },
-      video2: {
-        id: '4',
-        username: '@library_user_b',
-        avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
-      },
-    },
-    {
-      video1: {
-        id: '5',
-        username: '@library_user_c',
-        avatarUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop',
-      },
-      video2: {
-        id: '6',
-        username: '@library_user_d',
-        avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop',
-      },
-    },
-  ];
-
-  const handleVideoClick = (videoId: string) => {
-    console.log('Library video clicked:', videoId);
-    
-    // Add to clicked videos if not already clicked
-    if (!clickedVideos.includes(videoId)) {
-      const newClickedVideos = [...clickedVideos, videoId];
-      setClickedVideos(newClickedVideos);
-      
-      // Show comparison modal after 1 or 2 videos are clicked
-      if (newClickedVideos.length === 1 || newClickedVideos.length === 2) {
-        setShowComparisonModal(true);
-      }
-    }
-  };
-
-  const handleComparisonVote = (videoId: string | 'neither') => {
-    console.log('Comparison vote:', videoId);
-    
-    // Move to next comparison pair if available
-    if (currentComparisonPair < comparisonPairs.length - 1) {
-      setCurrentComparisonPair(currentComparisonPair + 1);
-      setShowComparisonModal(true);
-    } else {
-      // Reset for next round
-      setCurrentComparisonPair(0);
-    }
-  };
-
-  const handleCloseModal = () => {
-    setShowComparisonModal(false);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await supabase.auth.signOut();
-      router.replace('/auth/login');
-    } catch (error) {
-      console.error('Error signing out:', error);
-    }
+  // User stats - these would come from the database in a real app
+  const userStats = {
+    videoCount: demoVideos.length,
+    winsCount: 0,
+    streakNumber: 0,
   };
 
   // Extract phone number without country code
@@ -118,31 +60,21 @@ export default function LibraryScreen() {
     return phoneWithoutCode || fullPhone;
   };
 
-  const currentPair = comparisonPairs[currentComparisonPair];
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.title}>Library</Text>
-          <View style={styles.headerButtons}>
-            <TouchableOpacity
-              style={styles.logoutButton}
-              onPress={handleLogout}
-            >
-              <Text style={styles.logoutButtonText}>Logout</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.settingsButton}
-              onPress={() => router.push('/(tabs)/library/profile')}
-            >
-              <IconSymbol 
-                android_material_icon_name="settings" 
-                size={24} 
-                color={colors.accent}
-              />
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity
+            style={styles.settingsButton}
+            onPress={() => router.push('/(tabs)/library/profile')}
+          >
+            <IconSymbol 
+              android_material_icon_name="settings" 
+              size={24} 
+              color={colors.accent}
+            />
+          </TouchableOpacity>
         </View>
         {userProfile && (
           <View style={styles.profileInfo}>
@@ -172,66 +104,85 @@ export default function LibraryScreen() {
       </View>
 
       <ScrollView style={styles.content}>
+        {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>0</Text>
+            <IconSymbol 
+              android_material_icon_name="video-library"
+              size={28} 
+              color={colors.accent}
+            />
+            <Text style={styles.statValue}>{userStats.videoCount}</Text>
             <Text style={styles.statLabel}>Videos</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>0</Text>
+            <IconSymbol 
+              android_material_icon_name="emoji-events"
+              size={28} 
+              color="#FFD700"
+            />
+            <Text style={styles.statValue}>{userStats.winsCount}</Text>
             <Text style={styles.statLabel}>Wins</Text>
           </View>
           <View style={styles.statCard}>
-            <Text style={styles.statValue}>0</Text>
+            <IconSymbol 
+              android_material_icon_name="local-fire-department"
+              size={28} 
+              color="#FF6B6B"
+            />
+            <Text style={styles.statValue}>{userStats.streakNumber}</Text>
             <Text style={styles.statLabel}>Streak</Text>
           </View>
         </View>
 
+        {/* My Videos Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Saved Videos</Text>
-          {savedVideos.length > 0 ? (
-            savedVideos.map((video, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={styles.videoCard}
-                onPress={() => handleVideoClick(video.id)}
-                activeOpacity={0.8}
-              >
+          <Text style={styles.sectionTitle}>My Videos</Text>
+          {demoVideos.length > 0 ? (
+            demoVideos.map((video, index) => (
+              <View key={index} style={styles.videoCard}>
                 <View style={styles.videoThumbnail}>
                   <Text style={styles.videoPlaceholder}>Video</Text>
-                  {clickedVideos.includes(video.id) && (
-                    <View style={styles.clickedBadge}>
-                      <IconSymbol
-                        android_material_icon_name="check-circle"
-                        ios_icon_name="checkmark.circle.fill"
-                        size={24}
-                        color={colors.accent}
-                      />
-                    </View>
-                  )}
+                  <View style={styles.playIconOverlay}>
+                    <IconSymbol 
+                      android_material_icon_name="play-circle"
+                      size={48} 
+                      color="rgba(255, 255, 255, 0.9)"
+                    />
+                  </View>
                 </View>
                 <View style={styles.videoInfo}>
-                  <Image 
-                    source={{ uri: video.avatarUrl }} 
-                    style={styles.avatar}
-                  />
-                  <View style={styles.videoDetails}>
-                    <Text style={styles.username}>{video.username}</Text>
-                    <Text style={styles.timeAgo}>{video.timeAgo}</Text>
-                  </View>
-                  <View style={styles.likesContainer}>
-                    <IconSymbol 
-                      android_material_icon_name="favorite" 
-                      size={16} 
-                      color={colors.accent}
-                    />
-                    <Text style={styles.likesText}>{video.likes}</Text>
+                  <Text style={styles.videoTitle}>{video.title}</Text>
+                  <Text style={styles.videoTask}>{video.task}</Text>
+                  <View style={styles.videoStats}>
+                    <View style={styles.videoStatItem}>
+                      <IconSymbol 
+                        android_material_icon_name="visibility"
+                        size={14} 
+                        color={colors.text}
+                      />
+                      <Text style={styles.videoStatText}>{video.views}</Text>
+                    </View>
+                    <View style={styles.videoStatItem}>
+                      <IconSymbol 
+                        android_material_icon_name="favorite"
+                        size={14} 
+                        color={colors.accent}
+                      />
+                      <Text style={styles.videoStatText}>{video.likes}</Text>
+                    </View>
+                    <Text style={styles.videoDate}>{video.date}</Text>
                   </View>
                 </View>
-              </TouchableOpacity>
+              </View>
             ))
           ) : (
             <View style={styles.emptyState}>
+              <IconSymbol 
+                android_material_icon_name="videocam-off"
+                size={48} 
+                color={colors.text}
+              />
               <Text style={styles.emptyStateText}>
                 No videos yet. Start participating in challenges!
               </Text>
@@ -246,15 +197,6 @@ export default function LibraryScreen() {
           <Text style={styles.communityButtonText}>Back to Community Hub</Text>
         </TouchableOpacity>
       </ScrollView>
-
-      {/* Video Comparison Modal */}
-      <VideoComparisonModal
-        visible={showComparisonModal}
-        onClose={handleCloseModal}
-        onVote={handleComparisonVote}
-        video1={currentPair.video1}
-        video2={currentPair.video2}
-      />
     </View>
   );
 }
@@ -280,22 +222,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: 'bold',
     color: colors.textHeader,
-  },
-  headerButtons: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  logoutButton: {
-    backgroundColor: colors.secondary,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 12,
-  },
-  logoutButtonText: {
-    color: colors.textOnSecondary,
-    fontWeight: 'bold',
-    fontSize: 14,
   },
   settingsButton: {
     width: 44,
@@ -331,48 +257,50 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 24,
+    gap: 12,
   },
   statCard: {
     flex: 1,
     backgroundColor: colors.secondary,
-    borderRadius: 12,
-    padding: 16,
-    marginHorizontal: 4,
+    borderRadius: 16,
+    padding: 20,
     alignItems: 'center',
+    gap: 8,
   },
   statValue: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: 'bold',
     color: colors.text,
-    marginBottom: 4,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 13,
     color: colors.textMuted,
+    fontWeight: '600',
   },
   section: {
     marginBottom: 24,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: 'bold',
     color: colors.textHeader,
-    marginBottom: 12,
+    marginBottom: 16,
   },
   videoCard: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 12,
-    marginBottom: 12,
+    marginBottom: 16,
+    flexDirection: 'row',
+    gap: 12,
   },
   videoThumbnail: {
-    width: '100%',
-    height: 100,
+    width: 120,
+    height: 160,
     backgroundColor: colors.secondary,
-    borderRadius: 8,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
     position: 'relative',
   },
   videoPlaceholder: {
@@ -380,59 +308,61 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-  clickedBadge: {
+  playIconOverlay: {
     position: 'absolute',
-    top: 8,
-    right: 8,
-    backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 4,
   },
   videoInfo: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.secondary,
-  },
-  videoDetails: {
     flex: 1,
+    justifyContent: 'space-between',
+    paddingVertical: 4,
   },
-  username: {
+  videoTitle: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  videoTask: {
     color: colors.text,
     fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 2,
+    fontWeight: '500',
+    opacity: 0.8,
+    marginBottom: 8,
   },
-  timeAgo: {
-    color: colors.text,
-    fontSize: 12,
-    fontWeight: '400',
+  videoStats: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flexWrap: 'wrap',
   },
-  likesContainer: {
+  videoStatItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  likesText: {
+  videoStatText: {
     color: colors.text,
     fontSize: 13,
     fontWeight: '600',
   },
+  videoDate: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '400',
+    opacity: 0.7,
+  },
   emptyState: {
     backgroundColor: colors.primary,
-    borderRadius: 12,
-    padding: 32,
+    borderRadius: 16,
+    padding: 48,
     alignItems: 'center',
+    gap: 16,
   },
   emptyStateText: {
-    fontSize: 14,
+    fontSize: 15,
     color: colors.text,
     textAlign: 'center',
+    lineHeight: 22,
   },
   communityButton: {
     backgroundColor: colors.accent,

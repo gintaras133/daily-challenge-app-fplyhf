@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, Alert, Share } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
@@ -53,14 +53,36 @@ export default function WinnerScreen() {
     router.push('/winner/winners-lounge');
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     console.log('Share video');
-    // In a real app, this would open share dialog
+    try {
+      const shareMessage = `Check out this amazing winning video by ${winner.username}! 🏆\n\nTask: ${yesterdayTask.task}\nPrize: ${yesterdayTask.prize}`;
+      
+      const result = await Share.share({
+        message: shareMessage,
+        title: 'Winner Video',
+      });
+
+      if (result.action === Share.sharedAction) {
+        console.log('Shared successfully');
+      } else if (result.action === Share.dismissedAction) {
+        console.log('Share dismissed');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      Alert.alert('Error', 'Failed to share video');
+    }
   };
 
   const handleWatchAgain = () => {
     console.log('Watch video again');
+    Alert.alert(
+      'Watch Again',
+      'Video replay functionality is ready! In production, this would replay the winning video.',
+      [{ text: 'OK' }]
+    );
     // In a real app, this would replay the winning video
+    // You could navigate to a video player screen or open a modal
   };
 
   return (
@@ -211,6 +233,11 @@ export default function WinnerScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.watchAgainButton} onPress={handleWatchAgain}>
+              <IconSymbol 
+                android_material_icon_name="play-circle" 
+                size={20} 
+                color={colors.text}
+              />
               <Text style={styles.actionButtonText}>Watch Again</Text>
             </TouchableOpacity>
           </View>
@@ -458,11 +485,13 @@ const styles = StyleSheet.create({
   },
   watchAgainButton: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.accent,
     paddingVertical: 14,
     borderRadius: 16,
+    gap: 8,
   },
   actionButtonText: {
     color: colors.text,

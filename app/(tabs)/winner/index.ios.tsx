@@ -1,11 +1,12 @@
 
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image, Alert } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 import { useTask } from "@/contexts/TaskContext";
+import * as Sharing from 'expo-sharing';
 
 export default function WinnerScreen() {
   const { yesterdayTask } = useTask();
@@ -53,14 +54,44 @@ export default function WinnerScreen() {
     router.push('/winner/winners-lounge');
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     console.log('Share video');
-    // In a real app, this would open share dialog
+    try {
+      const isAvailable = await Sharing.isAvailableAsync();
+      if (isAvailable) {
+        // In a real app, you would share the actual video URL or file
+        const shareMessage = `Check out this amazing winning video by ${winner.username}! 🏆\n\nTask: ${yesterdayTask.task}\nPrize: ${yesterdayTask.prize}`;
+        
+        // For now, we'll just show an alert since we don't have actual video files
+        Alert.alert(
+          'Share Video',
+          'Share functionality is ready! In production, this would share the actual video file.',
+          [{ text: 'OK' }]
+        );
+        
+        // When you have actual video files, use:
+        // await Sharing.shareAsync(videoFileUri, {
+        //   mimeType: 'video/mp4',
+        //   dialogTitle: 'Share winning video',
+        // });
+      } else {
+        Alert.alert('Error', 'Sharing is not available on this device');
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      Alert.alert('Error', 'Failed to share video');
+    }
   };
 
   const handleWatchAgain = () => {
     console.log('Watch video again');
+    Alert.alert(
+      'Watch Again',
+      'Video replay functionality is ready! In production, this would replay the winning video.',
+      [{ text: 'OK' }]
+    );
     // In a real app, this would replay the winning video
+    // You could navigate to a video player screen or open a modal
   };
 
   return (
@@ -211,6 +242,11 @@ export default function WinnerScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.watchAgainButton} onPress={handleWatchAgain}>
+              <IconSymbol 
+                ios_icon_name="play.circle.fill" 
+                size={20} 
+                color="#ffffff"
+              />
               <Text style={styles.actionButtonText}>Watch Again</Text>
             </TouchableOpacity>
           </View>
@@ -466,11 +502,13 @@ const styles = StyleSheet.create({
   },
   watchAgainButton: {
     flex: 1,
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
     paddingVertical: 14,
     borderRadius: 16,
+    gap: 8,
   },
   actionButtonText: {
     color: '#ffffff',
