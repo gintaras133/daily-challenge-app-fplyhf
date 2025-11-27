@@ -14,10 +14,12 @@ export default function HomeScreen() {
   const streak = 15;
   const followers = 142;
   
-  const todayChallenge = {
-    challenge: "Assemble furniture in 60 seconds",
-    environment: "Your living room or any indoor space",
-    phrase: "Where's the instructions manual?!",
+  const todayTask = {
+    task: "Story in 3 Clips",
+    constraint: "Tell a mini story in three separate shots or angles.",
+    skillMastery: "Narrative pacing, basic sequencing, and transitions.",
+    duration: "20–40 sec final video\n60 min for shooting + editing.",
+    suggestion: "Use CapCut transition effects between clips",
     partner: "CapCut"
   };
 
@@ -75,27 +77,29 @@ export default function HomeScreen() {
           </View>
         </View>
 
-        {/* Challenge Card */}
+        {/* Task Card */}
         <View style={styles.challengeCardContainer}>
           <TodaysChallengeCard
-            challenge={todayChallenge.challenge}
-            environment={todayChallenge.environment}
-            phrase={todayChallenge.phrase}
-            partner={todayChallenge.partner}
+            task={todayTask.task}
+            constraint={todayTask.constraint}
+            skillMastery={todayTask.skillMastery}
+            duration={todayTask.duration}
+            suggestion={todayTask.suggestion}
+            partner={todayTask.partner}
           />
         </View>
 
-        {/* Start Challenge Button */}
+        {/* Start Task Button */}
         <TouchableOpacity 
           style={styles.startButton}
           onPress={handleStartChallenge}
         >
-          <Text style={styles.startButtonText}>START CHALLENGE</Text>
+          <Text style={styles.startButtonText}>START TASK</Text>
         </TouchableOpacity>
 
         {/* Bottom Message */}
         <Text style={styles.bottomMessage}>
-          Complete the challenge to unlock voting & scroll mode
+          Complete the task to unlock voting & scroll mode
         </Text>
       </ScrollView>
     </View>

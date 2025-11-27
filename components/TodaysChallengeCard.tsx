@@ -4,38 +4,52 @@ import { StyleSheet, View, Text } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 
 interface TodaysChallengeCardProps {
-  challenge: string;
-  environment: string;
-  phrase: string;
+  task: string;
+  constraint: string;
+  skillMastery: string;
+  duration: string;
+  suggestion: string;
   partner: string;
 }
 
 export default function TodaysChallengeCard({ 
-  challenge, 
-  environment, 
-  phrase, 
+  task, 
+  constraint, 
+  skillMastery,
+  duration,
+  suggestion,
   partner 
 }: TodaysChallengeCardProps) {
   return (
     <View style={styles.challengeCard}>
       <View style={styles.challengeHeader}>
-        <Text style={styles.challengeHeaderText}>Today&apos;s Challenge</Text>
+        <Text style={styles.challengeHeaderText}>Today&apos;s Task</Text>
       </View>
 
       <View style={styles.challengeContent}>
         <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Challenge:</Text>
-          <Text style={styles.challengeValue}>{challenge}</Text>
+          <Text style={styles.challengeLabel}>Task:</Text>
+          <Text style={styles.challengeValue}>{task}</Text>
         </View>
 
         <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Environment:</Text>
-          <Text style={styles.challengeValue}>{environment}</Text>
+          <Text style={styles.challengeLabel}>Constraint:</Text>
+          <Text style={styles.challengeValue}>{constraint}</Text>
         </View>
 
         <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Phrase to say:</Text>
-          <Text style={styles.phraseText}>{phrase}</Text>
+          <Text style={styles.challengeLabel}>Skill Mastery:</Text>
+          <Text style={styles.challengeValue}>{skillMastery}</Text>
+        </View>
+
+        <View style={styles.challengeSection}>
+          <Text style={styles.challengeLabel}>Duration:</Text>
+          <Text style={styles.challengeValue}>{duration}</Text>
+        </View>
+
+        <View style={styles.challengeSection}>
+          <Text style={styles.challengeLabel}>Suggestion:</Text>
+          <Text style={styles.suggestionText}>{suggestion}</Text>
         </View>
 
         <View style={styles.partnerSection}>
@@ -69,7 +83,7 @@ const styles = StyleSheet.create({
     padding: 24,
   },
   challengeSection: {
-    marginBottom: 24,
+    marginBottom: 20,
   },
   challengeLabel: {
     fontSize: 16,
@@ -83,7 +97,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     lineHeight: 26,
   },
-  phraseText: {
+  suggestionText: {
     fontSize: 18,
     fontWeight: '500',
     color: colors.text,
@@ -94,6 +108,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     borderTopWidth: 2,
     borderTopColor: colors.accent,
+    marginTop: 4,
   },
   partnerLabel: {
     fontSize: 16,
