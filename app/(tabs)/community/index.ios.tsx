@@ -3,8 +3,6 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
-import { router } from 'expo-router';
-import TodaysChallengeCard from '@/components/TodaysChallengeCard';
 
 interface FriendVideo {
   id: string;
@@ -16,14 +14,6 @@ interface FriendVideo {
 }
 
 export default function CommunityScreen() {
-  // Sample data - in a real app, this would come from an API
-  const todayChallenge = {
-    challenge: "Assemble furniture in 60 seconds",
-    environment: "Your living room or any indoor space",
-    phrase: "Where's the instructions manual?!",
-    partner: "CapCut"
-  };
-
   const friendsVideos: FriendVideo[] = [
     {
       id: '1',
@@ -65,14 +55,6 @@ export default function CommunityScreen() {
     timeLeft: '8h',
   };
 
-  const handleMyLibrary = () => {
-    router.push('/(tabs)/library');
-  };
-
-  const handleWinnersLounge = () => {
-    router.push('/(tabs)/winner');
-  };
-
   const handleLoadMore = () => {
     console.log('Load more friends videos');
   };
@@ -91,29 +73,6 @@ export default function CommunityScreen() {
           </View>
           <Text style={styles.headerTitle}>COMMUNITY HUB</Text>
           <Text style={styles.headerSubtitle}>See what your friends created today!</Text>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtonsRow}>
-          <TouchableOpacity style={styles.myLibraryButton} onPress={handleMyLibrary}>
-            <IconSymbol ios_icon_name="play.rectangle.on.rectangle.fill" android_material_icon_name="video-library" size={20} color="#ffffff" />
-            <Text style={styles.actionButtonText}>My Library</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.winnersLoungeButton} onPress={handleWinnersLounge}>
-            <IconSymbol ios_icon_name="trophy.fill" android_material_icon_name="emoji-events" size={20} color="#ffffff" />
-            <Text style={styles.actionButtonText}>Winners Lounge</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Today's Challenge Card */}
-        <View style={styles.challengeCardContainer}>
-          <TodaysChallengeCard
-            challenge={todayChallenge.challenge}
-            environment={todayChallenge.environment}
-            phrase={todayChallenge.phrase}
-            partner={todayChallenge.partner}
-          />
         </View>
 
         {/* Friends' Today Videos Section */}
@@ -209,39 +168,6 @@ const styles = StyleSheet.create({
     color: 'rgba(255, 255, 255, 0.9)',
     fontSize: 15,
     fontWeight: '500',
-  },
-  actionButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  myLibraryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#ff6b6b',
-    paddingVertical: 16,
-    borderRadius: 20,
-    gap: 8,
-  },
-  winnersLoungeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.secondary,
-    paddingVertical: 16,
-    borderRadius: 20,
-    gap: 8,
-  },
-  actionButtonText: {
-    color: '#ffffff',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  challengeCardContainer: {
-    marginBottom: 24,
   },
   sectionTitle: {
     color: '#ffffff',

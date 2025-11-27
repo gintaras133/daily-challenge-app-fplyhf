@@ -3,9 +3,6 @@ import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
-import { router } from 'expo-router';
-import TodaysChallengeCard from '@/components/TodaysChallengeCard';
-import { useTask } from '@/contexts/TaskContext';
 
 interface FriendVideo {
   id: string;
@@ -17,8 +14,6 @@ interface FriendVideo {
 }
 
 export default function CommunityScreen() {
-  const { todayTask } = useTask();
-
   const friendsVideos: FriendVideo[] = [
     {
       id: '1',
@@ -60,14 +55,6 @@ export default function CommunityScreen() {
     timeLeft: '8h',
   };
 
-  const handleMyLibrary = () => {
-    router.push('/(tabs)/library');
-  };
-
-  const handleWinnersLounge = () => {
-    router.push('/(tabs)/winner');
-  };
-
   const handleLoadMore = () => {
     console.log('Load more friends videos');
   };
@@ -86,31 +73,6 @@ export default function CommunityScreen() {
           </View>
           <Text style={styles.headerTitle}>COMMUNITY HUB</Text>
           <Text style={styles.headerSubtitle}>See what your friends created today!</Text>
-        </View>
-
-        {/* Action Buttons */}
-        <View style={styles.actionButtonsRow}>
-          <TouchableOpacity style={styles.myLibraryButton} onPress={handleMyLibrary}>
-            <IconSymbol android_material_icon_name="video-library" size={20} color={colors.text} />
-            <Text style={styles.actionButtonText}>My Library</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={styles.winnersLoungeButton} onPress={handleWinnersLounge}>
-            <IconSymbol android_material_icon_name="emoji-events" size={20} color={colors.text} />
-            <Text style={styles.actionButtonText}>Winners Lounge</Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Today's Challenge Card */}
-        <View style={styles.challengeCardContainer}>
-          <TodaysChallengeCard
-            task={todayTask.task}
-            constraint={todayTask.constraint}
-            skillMastery={todayTask.skillMastery}
-            duration={todayTask.duration}
-            suggestion={todayTask.suggestion}
-            partner={todayTask.partner}
-          />
         </View>
 
         {/* Friends' Today Videos Section */}
@@ -133,7 +95,7 @@ export default function CommunityScreen() {
               </View>
 
               <Text style={styles.videoDescription}>
-                Nailed the {todayTask.partner} challenge! 🎯{'\n'}#BubblesBubbles
+                Nailed the CapCut challenge! 🎯{'\n'}#BubblesBubbles
               </Text>
 
               <View style={styles.videoStats}>
@@ -206,39 +168,6 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 15,
     fontWeight: '500',
-  },
-  actionButtonsRow: {
-    flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
-  },
-  myLibraryButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 20,
-    gap: 8,
-  },
-  winnersLoungeButton: {
-    flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.secondary,
-    paddingVertical: 16,
-    borderRadius: 20,
-    gap: 8,
-  },
-  actionButtonText: {
-    color: colors.text,
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  challengeCardContainer: {
-    marginBottom: 24,
   },
   sectionTitle: {
     color: colors.text,
