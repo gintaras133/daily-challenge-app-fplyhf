@@ -10,6 +10,7 @@ interface TodaysChallengeCardProps {
   duration: string;
   suggestion: string;
   partner: string;
+  reward?: string;
 }
 
 export default function TodaysChallengeCard({ 
@@ -18,7 +19,8 @@ export default function TodaysChallengeCard({
   skillMastery,
   duration,
   suggestion,
-  partner 
+  partner,
+  reward
 }: TodaysChallengeCardProps) {
   return (
     <View style={styles.challengeCard}>
@@ -33,7 +35,7 @@ export default function TodaysChallengeCard({
         </View>
 
         <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Constraint:</Text>
+          <Text style={styles.challengeLabel}>Guidelines:</Text>
           <Text style={styles.challengeValue}>{constraint}</Text>
         </View>
 
@@ -47,10 +49,19 @@ export default function TodaysChallengeCard({
           <Text style={styles.challengeValue}>{duration}</Text>
         </View>
 
-        <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Suggestion:</Text>
-          <Text style={styles.suggestionText}>{suggestion}</Text>
-        </View>
+        {suggestion && suggestion.trim() !== '' && (
+          <View style={styles.challengeSection}>
+            <Text style={styles.challengeLabel}>Suggestion:</Text>
+            <Text style={styles.suggestionText}>{suggestion}</Text>
+          </View>
+        )}
+
+        {reward && (
+          <View style={styles.challengeSection}>
+            <Text style={styles.challengeLabel}>Reward:</Text>
+            <Text style={styles.rewardText}>{reward}</Text>
+          </View>
+        )}
 
         <View style={styles.partnerSection}>
           <Text style={styles.partnerLabel}>Partner:</Text>
@@ -102,6 +113,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: colors.text,
     fontStyle: 'italic',
+    lineHeight: 26,
+  },
+  rewardText: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: colors.accent,
     lineHeight: 26,
   },
   partnerSection: {

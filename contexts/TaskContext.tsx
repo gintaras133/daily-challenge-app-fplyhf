@@ -8,6 +8,7 @@ export interface TodayTask {
   duration: string;
   suggestion: string;
   partner: string;
+  reward?: string;
 }
 
 export interface YesterdayTask extends TodayTask {
@@ -36,10 +37,11 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [todayTask, setTodayTask] = useState<TodayTask>({
     task: "Story in 3 Clips",
     constraint: "Tell a mini story in three separate shots or angles.",
-    skillMastery: "Narrative pacing, basic sequencing, and transitions.",
-    duration: "20–40 sec final video\n60 min for shooting + editing.",
-    suggestion: "Use CapCut transition effects between clips",
-    partner: "CapCut"
+    skillMastery: "Conquered fear",
+    duration: "20–40 sec final video",
+    suggestion: "",
+    partner: "CapCut",
+    reward: "1 Bloop token"
   });
 
   // Yesterday's task data
