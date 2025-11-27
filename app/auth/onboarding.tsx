@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -40,11 +40,12 @@ export default function OnboardingScreen() {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('username')
+        .select('username, id')
         .eq('username', username)
         .single();
 
-      if (data) {
+      // If username exists and it's not the current user's username
+      if (data && data.id !== user?.id) {
         setUsernameError('Username already taken');
         return false;
       }
@@ -136,7 +137,8 @@ export default function OnboardingScreen() {
     try {
       const fullPhoneNumber = `${selectedCountry?.dialCode} ${formData.phoneNumber}`;
       
-      const { error } = await supabase.from('user_profiles').insert({
+      // Use upsert to handle both insert and update cases
+      const { error } = await supabase.from('user_profiles').upsert({
         id: user?.id,
         full_name: formData.fullName.trim(),
         age: parseInt(formData.age),
@@ -145,10 +147,13 @@ export default function OnboardingScreen() {
         town: formData.town.trim(),
         telephone_number: fullPhoneNumber,
         onboarding_completed: true,
+        updated_at: new Date().toISOString(),
+      }, {
+        onConflict: 'id'
       });
 
       if (error) {
-        console.error('Error creating profile:', error);
+        console.error('Error updating profile:', error);
         Alert.alert('Error', error.message);
         return;
       }

@@ -5,12 +5,12 @@ import { supabase } from '@/app/integrations/supabase/client';
 
 interface UserProfile {
   id: string;
-  full_name: string;
-  age: number;
-  username: string;
-  country: string;
-  town: string;
-  telephone_number: string;
+  full_name?: string;
+  age?: number;
+  username?: string;
+  country?: string;
+  town?: string;
+  telephone_number?: string;
   onboarding_completed: boolean;
   profile_photo_url?: string;
   facebook_url?: string;
