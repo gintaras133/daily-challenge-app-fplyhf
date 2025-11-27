@@ -89,6 +89,7 @@ export default function ProfileScreen() {
           text: 'Sign Out',
           style: 'destructive',
           onPress: async () => {
+            console.log('User confirmed sign out');
             await signOut();
             router.replace('/auth/login');
           },
@@ -124,25 +125,35 @@ export default function ProfileScreen() {
     setIsDeleting(true);
 
     try {
-      // First, delete the user profile
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .delete()
-        .eq('id', user.id);
+      console.log('Calling delete-user-account Edge Function for user:', user.id);
 
-      if (profileError) {
-        console.error('Error deleting profile:', profileError);
-        throw profileError;
+      // Get the current session to get the access token
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        throw new Error('No active session');
       }
 
-      // Then delete the auth user
-      // Note: This requires admin privileges, so in production you'd call an Edge Function
-      // For now, we'll just sign out and show a message
+      // Call the Edge Function to delete the account
+      const { data, error } = await supabase.functions.invoke('delete-user-account', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw error;
+      }
+
+      console.log('Account deletion response:', data);
+
+      // Sign out the user
       await signOut();
       
       Alert.alert(
-        'Account Deletion Requested',
-        'Your account data has been removed. Please contact support to complete the deletion process.',
+        'Account Deleted',
+        'Your account has been permanently deleted.',
         [
           {
             text: 'OK',
@@ -150,9 +161,12 @@ export default function ProfileScreen() {
           },
         ]
       );
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error deleting account:', error);
-      Alert.alert('Error', 'Failed to delete account. Please try again or contact support.');
+      Alert.alert(
+        'Error', 
+        error.message || 'Failed to delete account. Please try again or contact support.'
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -658,7 +672,10 @@ export default function ProfileScreen() {
           <>
             <TouchableOpacity
               style={styles.inviteButton}
-              onPress={() => setShowInviteModal(true)}
+              onPress={() => {
+                console.log('Opening invite modal');
+                setShowInviteModal(true);
+              }}
             >
               <IconSymbol 
                 android_material_icon_name="person-add" 
@@ -699,7 +716,10 @@ export default function ProfileScreen() {
 
       <InviteUserModal
         visible={showInviteModal}
-        onClose={() => setShowInviteModal(false)}
+        onClose={() => {
+          console.log('Closing invite modal');
+          setShowInviteModal(false);
+        }}
       />
     </ScrollView>
   );
