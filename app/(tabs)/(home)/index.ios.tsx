@@ -30,10 +30,9 @@ export default function HomeScreen() {
     PlayfairDisplay_900Black,
   });
   
-  // Get streak and wins from user profile, default to 0 if not available
-  const streak = userProfile?.streak ?? 0;
-  const wins = userProfile?.wins ?? 0;
-  const followers = 142; // This can be fetched from a followers table in the future
+  // Sample data - in a real app, this would come from an API
+  const streak = 15;
+  const followers = 142;
 
   // Get responsive values
   const fontSizes = getFontSizes();
@@ -104,24 +103,6 @@ export default function HomeScreen() {
 
               {/* Stats Row */}
               <View style={[styles.statsRow, { gap: spacing }]}>
-                <View style={[
-                  styles.statBadge, 
-                  { 
-                    paddingHorizontal: spacing * 2, 
-                    paddingVertical: spacing,
-                    borderRadius: getBorderRadius('large'),
-                    gap: spacing * 0.5,
-                  }
-                ]}>
-                  <IconSymbol 
-                    ios_icon_name="trophy.fill"
-                    android_material_icon_name="emoji-events" 
-                    size={getIconSize('medium')} 
-                    color="#ffffff"
-                  />
-                  <Text style={[styles.statText, { fontSize: fontSizes.medium }]}>{wins}</Text>
-                </View>
-
                 <View style={[
                   styles.statBadge, 
                   { 

@@ -17,9 +17,6 @@ interface UserProfile {
   instagram_url?: string;
   tiktok_url?: string;
   linkedin_url?: string;
-  streak?: number;
-  wins?: number;
-  last_activity_date?: string;
 }
 
 interface AuthContextType {
@@ -79,8 +76,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             .insert({
               id: userId,
               onboarding_completed: false,
-              streak: 0,
-              wins: 0,
             })
             .select()
             .single();
@@ -107,8 +102,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .insert({
             id: userId,
             onboarding_completed: false,
-            streak: 0,
-            wins: 0,
           })
           .select()
           .single();
