@@ -31,6 +31,7 @@ interface UserStats {
   videoCount: number;
   winsCount: number;
   streakNumber: number;
+  bloopCoins: number;
 }
 
 export default function LibraryScreen() {
@@ -44,6 +45,7 @@ export default function LibraryScreen() {
     videoCount: 0,
     winsCount: 0,
     streakNumber: 0,
+    bloopCoins: 0,
   });
 
   const fetchUserData = async () => {
@@ -64,10 +66,10 @@ export default function LibraryScreen() {
 
       console.log('Querying data for user ID:', userId);
 
-      // Fetch user profile for wins and streaks
+      // Fetch user profile for wins, streaks, and bloop coins
       const { data: profileData, error: profileError } = await supabase
         .from('user_profiles')
-        .select('wins, streak')
+        .select('wins, streak, bloop_coins')
         .eq('id', userId)
         .single();
 
@@ -99,6 +101,7 @@ export default function LibraryScreen() {
         videoCount: videosData?.length || 0,
         winsCount: profileData?.wins || 0,
         streakNumber: profileData?.streak || 0,
+        bloopCoins: profileData?.bloop_coins || 0,
       });
 
     } catch (error) {
@@ -166,17 +169,28 @@ export default function LibraryScreen() {
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.title}>Library</Text>
-          <TouchableOpacity
-            style={styles.settingsButton}
-            onPress={() => router.push('/(tabs)/library/profile')}
-          >
-            <IconSymbol 
-              ios_icon_name="gearshape.fill"
-              android_material_icon_name="settings" 
-              size={24} 
-              color={colors.accent}
-            />
-          </TouchableOpacity>
+          <View style={styles.headerRight}>
+            <View style={styles.coinsContainer}>
+              <IconSymbol 
+                ios_icon_name="bitcoinsign.circle.fill"
+                android_material_icon_name="monetization-on" 
+                size={20} 
+                color="#FFD700"
+              />
+              <Text style={styles.coinsText}>{userStats.bloopCoins}</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.settingsButton}
+              onPress={() => router.push('/(tabs)/library/profile')}
+            >
+              <IconSymbol 
+                ios_icon_name="gearshape.fill"
+                android_material_icon_name="settings" 
+                size={24} 
+                color={colors.accent}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
 
@@ -339,6 +353,25 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: 12,
+  },
+  headerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  coinsContainer: {
+    backgroundColor: colors.secondary,
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  coinsText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginLeft: 6,
   },
   title: {
     fontSize: 32,
