@@ -20,13 +20,17 @@ export default function RecordScreen() {
     try {
       setIsUploading(true);
 
+      if (!userProfile?.id) {
+        throw new Error('User not authenticated');
+      }
+
       // Fetch the video file
       const response = await fetch(uri);
       const blob = await response.blob();
 
       // Generate unique filename
       const timestamp = Date.now();
-      const uniqueFileName = `${userProfile?.id}_${timestamp}_${fileName}`;
+      const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName}`;
 
       // Upload to Supabase storage
       const { data, error } = await supabase.storage
@@ -46,6 +50,24 @@ export default function RecordScreen() {
         .getPublicUrl(uniqueFileName);
 
       console.log('Video uploaded successfully:', urlData.publicUrl);
+
+      // Save video metadata to database
+      const { error: dbError } = await supabase
+        .from('user_videos')
+        .insert({
+          user_id: userProfile.id,
+          video_url: urlData.publicUrl,
+          file_name: uniqueFileName,
+          title: `${todayTask.task} Challenge`,
+          task: todayTask.task,
+        });
+
+      if (dbError) {
+        console.error('Error saving video to database:', dbError);
+        throw dbError;
+      }
+
+      console.log('Video metadata saved to database');
       
       Alert.alert(
         'Success!',

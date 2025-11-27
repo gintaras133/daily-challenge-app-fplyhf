@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,46 +7,91 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
+import { supabase } from '@/app/integrations/supabase/client';
+
+interface UserVideo {
+  id: string;
+  title: string;
+  task: string;
+  uploaded_at: string;
+  views: number;
+  likes: number;
+  video_url: string;
+}
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
+  const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Sample demo videos data - user's own videos
-  const demoVideos = [
-    {
-      id: '1',
-      title: 'My First Challenge',
-      task: 'Product Hype Reel',
-      date: '2 days ago',
-      views: 1234,
-      likes: 89,
-    },
-    {
-      id: '2',
-      title: 'Speed Challenge',
-      task: 'Furniture Assembly',
-      date: '5 days ago',
-      views: 2456,
-      likes: 156,
-    },
-    {
-      id: '3',
-      title: 'Creative Edit',
-      task: 'Cinematic Transition',
-      date: '1 week ago',
-      views: 3421,
-      likes: 234,
-    },
-  ];
+  const fetchUserVideos = async () => {
+    try {
+      if (!userProfile?.id) {
+        console.log('No user profile found');
+        return;
+      }
 
-  // User stats - these would come from the database in a real app
+      const { data, error } = await supabase
+        .from('user_videos')
+        .select('*')
+        .eq('user_id', userProfile.id)
+        .order('uploaded_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching user videos:', error);
+        throw error;
+      }
+
+      console.log('Fetched user videos:', data);
+      setUserVideos(data || []);
+    } catch (error) {
+      console.error('Error loading videos:', error);
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserVideos();
+  }, [userProfile?.id]);
+
+  // Refresh videos when screen comes into focus
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchUserVideos();
+    }, [userProfile?.id])
+  );
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchUserVideos();
+  };
+
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffInMs = now.getTime() - date.getTime();
+    const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) return 'Today';
+    if (diffInDays === 1) return 'Yesterday';
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
+    return `${Math.floor(diffInDays / 30)} months ago`;
+  };
+
+  // User stats
   const userStats = {
-    videoCount: demoVideos.length,
+    videoCount: userVideos.length,
     winsCount: 0,
     streakNumber: 0,
   };
@@ -103,7 +148,16 @@ export default function LibraryScreen() {
         )}
       </View>
 
-      <ScrollView style={styles.content}>
+      <ScrollView 
+        style={styles.content}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.accent}
+          />
+        }
+      >
         {/* Stats Cards */}
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
@@ -138,8 +192,14 @@ export default function LibraryScreen() {
         {/* My Videos Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>My Videos</Text>
-          {demoVideos.length > 0 ? (
-            demoVideos.map((video, index) => (
+          
+          {isLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color={colors.accent} />
+              <Text style={styles.loadingText}>Loading your videos...</Text>
+            </View>
+          ) : userVideos.length > 0 ? (
+            userVideos.map((video, index) => (
               <View key={index} style={styles.videoCard}>
                 <View style={styles.videoThumbnail}>
                   <Text style={styles.videoPlaceholder}>Video</Text>
@@ -171,7 +231,7 @@ export default function LibraryScreen() {
                       />
                       <Text style={styles.videoStatText}>{video.likes}</Text>
                     </View>
-                    <Text style={styles.videoDate}>{video.date}</Text>
+                    <Text style={styles.videoDate}>{formatDate(video.uploaded_at)}</Text>
                   </View>
                 </View>
               </View>
@@ -186,6 +246,12 @@ export default function LibraryScreen() {
               <Text style={styles.emptyStateText}>
                 No videos yet. Start participating in challenges!
               </Text>
+              <TouchableOpacity
+                style={styles.recordButton}
+                onPress={() => router.push('/(tabs)/(home)/record')}
+              >
+                <Text style={styles.recordButtonText}>Record Your First Video</Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -286,6 +352,18 @@ const styles = StyleSheet.create({
     color: colors.textHeader,
     marginBottom: 16,
   },
+  loadingContainer: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 48,
+    alignItems: 'center',
+    gap: 16,
+  },
+  loadingText: {
+    fontSize: 15,
+    color: colors.text,
+    textAlign: 'center',
+  },
   videoCard: {
     backgroundColor: colors.primary,
     borderRadius: 16,
@@ -363,6 +441,18 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
     lineHeight: 22,
+  },
+  recordButton: {
+    backgroundColor: colors.accent,
+    borderRadius: 12,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    marginTop: 8,
+  },
+  recordButtonText: {
+    color: colors.textOnPrimary,
+    fontSize: 15,
+    fontWeight: '600',
   },
   communityButton: {
     backgroundColor: colors.accent,
