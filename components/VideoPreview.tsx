@@ -29,40 +29,85 @@ export default function VideoPreview({
   const videoRef = useRef<Video>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(autoPlay);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [loadAttempts, setLoadAttempts] = useState(0);
 
   useEffect(() => {
-    console.log('VideoPreview mounted with URL:', videoUrl);
+    console.log('=== VideoPreview Component ===');
+    console.log('Video URL:', videoUrl);
+    console.log('Dimensions:', width, 'x', height);
+    console.log('Auto play:', autoPlay);
+    
+    // Reset states when URL changes
+    setIsLoading(true);
+    setHasError(false);
+    setIsPlaying(false);
+    setLoadAttempts(0);
+
+    // Set a timeout to show error if video doesn't load
+    const timeout = setTimeout(() => {
+      if (isLoading) {
+        console.warn('Video loading timeout after 10 seconds');
+        setIsLoading(false);
+        // Don't set error, just stop loading indicator
+      }
+    }, 10000);
+
+    return () => clearTimeout(timeout);
   }, [videoUrl]);
 
   const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     if (status.isLoaded) {
+      if (loadAttempts === 0) {
+        console.log('✅ Video loaded successfully!');
+        console.log('Duration:', status.durationMillis, 'ms');
+        if (status.naturalSize) {
+          console.log('Natural size:', status.naturalSize.width, 'x', status.naturalSize.height);
+        }
+      }
+      
       setIsLoading(false);
       setIsPlaying(status.isPlaying);
+      setHasError(false);
+      setLoadAttempts(prev => prev + 1);
+    } else if (status.error) {
+      console.error('❌ Playback error:', status.error);
+      setHasError(true);
+      setIsLoading(false);
     }
   };
 
   const handleError = (error: string) => {
-    console.error('Video preview error:', error);
-    console.error('Video URL:', videoUrl);
+    console.error('❌ Video error:', error);
+    console.error('Failed URL:', videoUrl);
     setHasError(true);
     setIsLoading(false);
   };
 
   const handleLoad = () => {
-    console.log('Video loaded successfully:', videoUrl);
+    console.log('📹 Video onLoad triggered');
     setIsLoading(false);
     setHasError(false);
   };
 
+  const handleReadyForDisplay = () => {
+    console.log('✨ Video ready for display');
+    setIsLoading(false);
+  };
+
   const togglePlayPause = async () => {
-    if (!videoRef.current) return;
+    if (!videoRef.current) {
+      console.log('⚠️ Video ref not available');
+      return;
+    }
 
     try {
       if (isPlaying) {
         await videoRef.current.pauseAsync();
+        console.log('⏸️ Video paused');
       } else {
         await videoRef.current.playAsync();
+        console.log('▶️ Video playing');
       }
     } catch (error) {
       console.error('Error toggling play/pause:', error);
@@ -70,6 +115,7 @@ export default function VideoPreview({
   };
 
   const handlePress = () => {
+    console.log('👆 Video preview pressed');
     if (onPress) {
       onPress();
     } else {
@@ -98,7 +144,7 @@ export default function VideoPreview({
             size={32}
             color={colors.textMuted}
           />
-          <Text style={styles.errorText}>Failed to load video</Text>
+          <Text style={styles.errorText}>Video unavailable</Text>
         </View>
       ) : (
         <>
@@ -107,29 +153,33 @@ export default function VideoPreview({
             source={{ uri: videoUrl }}
             style={[styles.video, { borderRadius }]}
             resizeMode={ResizeMode.COVER}
-            shouldPlay={autoPlay}
+            shouldPlay={false}
             isLooping={false}
-            isMuted={muted}
+            isMuted={true}
             onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
             onError={handleError}
             onLoad={handleLoad}
+            onReadyForDisplay={handleReadyForDisplay}
             useNativeControls={false}
+            positionMillis={100}
           />
           
           {isLoading && (
-            <View style={styles.loadingOverlay}>
+            <View style={[styles.loadingOverlay, { borderRadius }]}>
               <ActivityIndicator size="small" color={colors.accent} />
             </View>
           )}
 
-          {showPlayButton && !isLoading && !hasError && (
+          {!isLoading && !hasError && showPlayButton && (
             <View style={styles.playButtonOverlay}>
-              <IconSymbol
-                ios_icon_name={isPlaying ? 'pause.circle.fill' : 'play.circle.fill'}
-                android_material_icon_name={isPlaying ? 'pause-circle' : 'play-circle'}
-                size={48}
-                color="rgba(255, 255, 255, 0.9)"
-              />
+              <View style={styles.playButtonBackground}>
+                <IconSymbol
+                  ios_icon_name="play.circle.fill"
+                  android_material_icon_name="play-circle-filled"
+                  size={48}
+                  color="rgba(255, 255, 255, 0.95)"
+                />
+              </View>
             </View>
           )}
         </>
@@ -147,10 +197,11 @@ const styles = StyleSheet.create({
   video: {
     width: '100%',
     height: '100%',
+    backgroundColor: colors.secondary,
   },
   loadingOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.secondary,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -158,7 +209,12 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    pointerEvents: 'none',
+  },
+  playButtonBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 50,
+    padding: 4,
   },
   errorContainer: {
     width: '100%',

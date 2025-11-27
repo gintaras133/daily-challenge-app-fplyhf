@@ -69,7 +69,7 @@ export default function LibraryScreen() {
 
   const fetchUserData = async () => {
     try {
-      console.log('=== Fetching user data ===');
+      console.log('=== FETCHING USER DATA ===');
       console.log('User profile ID:', userProfile?.id);
       console.log('Auth user ID:', user?.id);
       
@@ -77,13 +77,13 @@ export default function LibraryScreen() {
       const userId = user?.id || userProfile?.id;
       
       if (!userId) {
-        console.log('No user ID found - user not authenticated');
+        console.log('❌ No user ID found - user not authenticated');
         setIsLoading(false);
         setIsRefreshing(false);
         return;
       }
 
-      console.log('Querying data for user ID:', userId);
+      console.log('✅ Querying data for user ID:', userId);
 
       // Fetch user profile for wins, streaks, and bloop coins
       const { data: profileData, error: profileError } = await supabase
@@ -93,12 +93,13 @@ export default function LibraryScreen() {
         .single();
 
       if (profileError) {
-        console.error('Error fetching user profile:', profileError);
+        console.error('❌ Error fetching user profile:', profileError);
       } else {
-        console.log('Profile data:', profileData);
+        console.log('✅ Profile data:', profileData);
       }
 
       // Fetch user videos
+      console.log('📹 Fetching user videos...');
       const { data: videosData, error: videosError } = await supabase
         .from('user_videos')
         .select('*')
@@ -106,13 +107,27 @@ export default function LibraryScreen() {
         .order('uploaded_at', { ascending: false });
 
       if (videosError) {
-        console.error('Error fetching user videos:', videosError);
+        console.error('❌ Error fetching user videos:', videosError);
         console.error('Error details:', JSON.stringify(videosError, null, 2));
         throw videosError;
       }
 
-      console.log('Fetched user videos count:', videosData?.length || 0);
-      console.log('Video data:', JSON.stringify(videosData, null, 2));
+      console.log('✅ Fetched', videosData?.length || 0, 'videos');
+      
+      // Log each video URL for debugging
+      if (videosData && videosData.length > 0) {
+        console.log('=== VIDEO DETAILS ===');
+        videosData.forEach((video, index) => {
+          console.log(`Video ${index + 1}:`);
+          console.log('  - Title:', video.title);
+          console.log('  - URL:', video.video_url);
+          console.log('  - Uploaded:', video.uploaded_at);
+          console.log('  - Views:', video.views, '| Likes:', video.likes);
+        });
+      } else {
+        console.log('ℹ️ No videos found for this user');
+      }
+      
       setUserVideos(videosData || []);
 
       // Update stats
@@ -123,8 +138,10 @@ export default function LibraryScreen() {
         bloopCoins: profileData?.bloop_coins || 0,
       });
 
+      console.log('=== DATA FETCH COMPLETE ===');
+
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error('❌ Error loading user data:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -132,10 +149,11 @@ export default function LibraryScreen() {
   };
 
   useEffect(() => {
-    console.log('Library screen mounted, user profile:', userProfile?.id, 'auth user:', user?.id);
+    console.log('📱 Library screen mounted');
     if (user?.id || userProfile?.id) {
       fetchUserData();
     } else {
+      console.log('⚠️ No user authenticated');
       setIsLoading(false);
     }
   }, [userProfile?.id, user?.id]);
@@ -143,7 +161,7 @@ export default function LibraryScreen() {
   // Refresh data when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      console.log('Library screen focused, refreshing data');
+      console.log('🔄 Library screen focused, refreshing data');
       if (user?.id || userProfile?.id) {
         fetchUserData();
       }
@@ -151,19 +169,20 @@ export default function LibraryScreen() {
   );
 
   const handleRefresh = () => {
-    console.log('Manual refresh triggered');
+    console.log('🔄 Manual refresh triggered');
     setIsRefreshing(true);
     fetchUserData();
   };
 
   const handleVideoPress = (video: UserVideo) => {
-    console.log('Video pressed:', video.title);
+    console.log('👆 Video pressed:', video.title);
+    console.log('Opening video URL:', video.video_url);
     setSelectedVideo(video);
     setIsModalVisible(true);
   };
 
   const handleCloseModal = () => {
-    console.log('Closing video modal');
+    console.log('❌ Closing video modal');
     setIsModalVisible(false);
     setTimeout(() => {
       setSelectedVideo(null);
@@ -302,7 +321,7 @@ export default function LibraryScreen() {
             <View style={[styles.videosGrid, { gap: spacing * 2 }]}>
               {userVideos.map((video, index) => (
                 <TouchableOpacity
-                  key={index}
+                  key={video.id || index}
                   style={[
                     styles.videoCard,
                     {
