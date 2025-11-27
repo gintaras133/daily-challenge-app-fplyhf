@@ -14,6 +14,7 @@ import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
 import VideoPreview from '@/components/VideoPreview';
+import VideoPlayerModal from '@/components/VideoPlayerModal';
 import { supabase } from '@/app/integrations/supabase/client';
 
 interface UserVideo {
@@ -31,6 +32,8 @@ export default function LibraryScreen() {
   const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<UserVideo | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   const fetchUserVideos = async () => {
     try {
@@ -96,6 +99,20 @@ export default function LibraryScreen() {
     console.log('Manual refresh triggered');
     setIsRefreshing(true);
     fetchUserVideos();
+  };
+
+  const handleVideoPress = (video: UserVideo) => {
+    console.log('Video pressed:', video.title);
+    setSelectedVideo(video);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    console.log('Closing video modal');
+    setIsModalVisible(false);
+    setTimeout(() => {
+      setSelectedVideo(null);
+    }, 300);
   };
 
   const formatDate = (dateString: string) => {
@@ -189,7 +206,12 @@ export default function LibraryScreen() {
             </View>
           ) : userVideos.length > 0 ? (
             userVideos.map((video, index) => (
-              <View key={index} style={styles.videoCard}>
+              <TouchableOpacity
+                key={index}
+                style={styles.videoCard}
+                onPress={() => handleVideoPress(video)}
+                activeOpacity={0.7}
+              >
                 <VideoPreview
                   videoUrl={video.video_url}
                   width={120}
@@ -198,6 +220,7 @@ export default function LibraryScreen() {
                   showPlayButton={true}
                   autoPlay={false}
                   muted={true}
+                  onPress={() => handleVideoPress(video)}
                 />
                 <View style={styles.videoInfo}>
                   <Text style={styles.videoTitle}>{video.title}</Text>
@@ -222,7 +245,7 @@ export default function LibraryScreen() {
                     <Text style={styles.videoDate}>{formatDate(video.uploaded_at)}</Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           ) : (
             <View style={styles.emptyState}>
@@ -251,6 +274,17 @@ export default function LibraryScreen() {
           <Text style={styles.communityButtonText}>Back to Community Hub</Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Video Player Modal */}
+      {selectedVideo && (
+        <VideoPlayerModal
+          visible={isModalVisible}
+          videoUrl={selectedVideo.video_url}
+          videoTitle={selectedVideo.title}
+          videoTask={selectedVideo.task}
+          onClose={handleCloseModal}
+        />
+      )}
     </View>
   );
 }

@@ -15,6 +15,7 @@ import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
 import VideoPreview from '@/components/VideoPreview';
+import VideoPlayerModal from '@/components/VideoPlayerModal';
 import { supabase } from '@/app/integrations/supabase/client';
 import { 
   getTopSafePadding, 
@@ -42,6 +43,8 @@ export default function LibraryScreen() {
   const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<UserVideo | null>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   // Get responsive values
   const fontSizes = getFontSizes();
@@ -115,6 +118,20 @@ export default function LibraryScreen() {
     console.log('Manual refresh triggered');
     setIsRefreshing(true);
     fetchUserVideos();
+  };
+
+  const handleVideoPress = (video: UserVideo) => {
+    console.log('Video pressed:', video.title);
+    setSelectedVideo(video);
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    console.log('Closing video modal');
+    setIsModalVisible(false);
+    setTimeout(() => {
+      setSelectedVideo(null);
+    }, 300);
   };
 
   const formatDate = (dateString: string) => {
@@ -234,8 +251,8 @@ export default function LibraryScreen() {
             </View>
           ) : userVideos.length > 0 ? (
             userVideos.map((video, index) => (
-              <View 
-                key={index} 
+              <TouchableOpacity
+                key={index}
                 style={[
                   styles.videoCard,
                   {
@@ -245,6 +262,8 @@ export default function LibraryScreen() {
                     gap: spacing,
                   }
                 ]}
+                onPress={() => handleVideoPress(video)}
+                activeOpacity={0.7}
               >
                 <VideoPreview
                   videoUrl={video.video_url}
@@ -254,6 +273,7 @@ export default function LibraryScreen() {
                   showPlayButton={true}
                   autoPlay={false}
                   muted={true}
+                  onPress={() => handleVideoPress(video)}
                 />
                 <View style={styles.videoInfo}>
                   <Text style={[styles.videoTitle, { fontSize: fontSizes.medium, marginBottom: spacing * 0.5 }]}>
@@ -284,7 +304,7 @@ export default function LibraryScreen() {
                     </Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           ) : (
             <View style={[
@@ -340,6 +360,17 @@ export default function LibraryScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Video Player Modal */}
+      {selectedVideo && (
+        <VideoPlayerModal
+          visible={isModalVisible}
+          videoUrl={selectedVideo.video_url}
+          videoTitle={selectedVideo.title}
+          videoTask={selectedVideo.task}
+          onClose={handleCloseModal}
+        />
+      )}
     </View>
   );
 }
