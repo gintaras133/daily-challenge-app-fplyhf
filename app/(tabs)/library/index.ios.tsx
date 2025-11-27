@@ -27,6 +27,12 @@ interface UserVideo {
   video_url: string;
 }
 
+interface UserStats {
+  videoCount: number;
+  winsCount: number;
+  streakNumber: number;
+}
+
 export default function LibraryScreen() {
   const { userProfile, user } = useAuth();
   const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
@@ -34,10 +40,15 @@ export default function LibraryScreen() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<UserVideo | null>(null);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [userStats, setUserStats] = useState<UserStats>({
+    videoCount: 0,
+    winsCount: 0,
+    streakNumber: 0,
+  });
 
-  const fetchUserVideos = async () => {
+  const fetchUserData = async () => {
     try {
-      console.log('=== Fetching user videos ===');
+      console.log('=== Fetching user data ===');
       console.log('User profile ID:', userProfile?.id);
       console.log('Auth user ID:', user?.id);
       
@@ -51,25 +62,47 @@ export default function LibraryScreen() {
         return;
       }
 
-      console.log('Querying videos for user ID:', userId);
+      console.log('Querying data for user ID:', userId);
 
-      const { data, error } = await supabase
+      // Fetch user profile for wins and streaks
+      const { data: profileData, error: profileError } = await supabase
+        .from('user_profiles')
+        .select('wins, streak')
+        .eq('id', userId)
+        .single();
+
+      if (profileError) {
+        console.error('Error fetching user profile:', profileError);
+      } else {
+        console.log('Profile data:', profileData);
+      }
+
+      // Fetch user videos
+      const { data: videosData, error: videosError } = await supabase
         .from('user_videos')
         .select('*')
         .eq('user_id', userId)
         .order('uploaded_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching user videos:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
-        throw error;
+      if (videosError) {
+        console.error('Error fetching user videos:', videosError);
+        console.error('Error details:', JSON.stringify(videosError, null, 2));
+        throw videosError;
       }
 
-      console.log('Fetched user videos count:', data?.length || 0);
-      console.log('Video data:', JSON.stringify(data, null, 2));
-      setUserVideos(data || []);
+      console.log('Fetched user videos count:', videosData?.length || 0);
+      console.log('Video data:', JSON.stringify(videosData, null, 2));
+      setUserVideos(videosData || []);
+
+      // Update stats
+      setUserStats({
+        videoCount: videosData?.length || 0,
+        winsCount: profileData?.wins || 0,
+        streakNumber: profileData?.streak || 0,
+      });
+
     } catch (error) {
-      console.error('Error loading videos:', error);
+      console.error('Error loading user data:', error);
     } finally {
       setIsLoading(false);
       setIsRefreshing(false);
@@ -79,18 +112,18 @@ export default function LibraryScreen() {
   useEffect(() => {
     console.log('Library screen mounted, user profile:', userProfile?.id, 'auth user:', user?.id);
     if (user?.id || userProfile?.id) {
-      fetchUserVideos();
+      fetchUserData();
     } else {
       setIsLoading(false);
     }
   }, [userProfile?.id, user?.id]);
 
-  // Refresh videos when screen comes into focus
+  // Refresh data when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      console.log('Library screen focused, refreshing videos');
+      console.log('Library screen focused, refreshing data');
       if (user?.id || userProfile?.id) {
-        fetchUserVideos();
+        fetchUserData();
       }
     }, [userProfile?.id, user?.id])
   );
@@ -98,7 +131,7 @@ export default function LibraryScreen() {
   const handleRefresh = () => {
     console.log('Manual refresh triggered');
     setIsRefreshing(true);
-    fetchUserVideos();
+    fetchUserData();
   };
 
   const handleVideoPress = (video: UserVideo) => {
@@ -126,13 +159,6 @@ export default function LibraryScreen() {
     if (diffInDays < 7) return `${diffInDays} days ago`;
     if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} weeks ago`;
     return `${Math.floor(diffInDays / 30)} months ago`;
-  };
-
-  // User stats
-  const userStats = {
-    videoCount: userVideos.length,
-    winsCount: 0,
-    streakNumber: 0,
   };
 
   return (
@@ -205,48 +231,56 @@ export default function LibraryScreen() {
               <Text style={styles.loadingText}>Loading your videos...</Text>
             </View>
           ) : userVideos.length > 0 ? (
-            userVideos.map((video, index) => (
-              <TouchableOpacity
-                key={index}
-                style={styles.videoCard}
-                onPress={() => handleVideoPress(video)}
-                activeOpacity={0.7}
-              >
-                <VideoPreview
-                  videoUrl={video.video_url}
-                  width={120}
-                  height={160}
-                  borderRadius={12}
-                  showPlayButton={true}
-                  autoPlay={false}
-                  muted={true}
+            <View style={styles.videosGrid}>
+              {userVideos.map((video, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.videoCard}
                   onPress={() => handleVideoPress(video)}
-                />
-                <View style={styles.videoInfo}>
-                  <Text style={styles.videoTitle}>{video.title}</Text>
-                  <Text style={styles.videoTask}>{video.task}</Text>
-                  <View style={styles.videoStats}>
-                    <View style={styles.videoStatItem}>
-                      <IconSymbol 
-                        ios_icon_name="eye.fill"
-                        size={14} 
-                        color={colors.text}
-                      />
-                      <Text style={styles.videoStatText}>{video.views}</Text>
-                    </View>
-                    <View style={styles.videoStatItem}>
-                      <IconSymbol 
-                        ios_icon_name="heart.fill"
-                        size={14} 
-                        color={colors.accent}
-                      />
-                      <Text style={styles.videoStatText}>{video.likes}</Text>
-                    </View>
-                    <Text style={styles.videoDate}>{formatDate(video.uploaded_at)}</Text>
+                  activeOpacity={0.7}
+                >
+                  <View style={styles.videoPreviewContainer}>
+                    <VideoPreview
+                      videoUrl={video.video_url}
+                      width={120}
+                      height={160}
+                      borderRadius={12}
+                      showPlayButton={true}
+                      autoPlay={false}
+                      muted={true}
+                      onPress={() => handleVideoPress(video)}
+                    />
                   </View>
-                </View>
-              </TouchableOpacity>
-            ))
+                  <View style={styles.videoInfo}>
+                    <Text style={styles.videoTitle} numberOfLines={2}>
+                      {video.title}
+                    </Text>
+                    <Text style={styles.videoTask} numberOfLines={2}>
+                      {video.task}
+                    </Text>
+                    <View style={styles.videoStats}>
+                      <View style={styles.videoStatItem}>
+                        <IconSymbol 
+                          ios_icon_name="eye.fill"
+                          size={14} 
+                          color={colors.text}
+                        />
+                        <Text style={styles.videoStatText}>{video.views}</Text>
+                      </View>
+                      <View style={styles.videoStatItem}>
+                        <IconSymbol 
+                          ios_icon_name="heart.fill"
+                          size={14} 
+                          color={colors.accent}
+                        />
+                        <Text style={styles.videoStatText}>{video.likes}</Text>
+                      </View>
+                      <Text style={styles.videoDate}>{formatDate(video.uploaded_at)}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
           ) : (
             <View style={styles.emptyState}>
               <IconSymbol 
@@ -368,31 +402,36 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
   },
+  videosGrid: {
+    gap: 16,
+  },
   videoCard: {
     backgroundColor: colors.primary,
     borderRadius: 16,
-    padding: 12,
-    marginBottom: 16,
+    padding: 16,
     flexDirection: 'row',
-    gap: 12,
+    gap: 16,
+    alignItems: 'flex-start',
+  },
+  videoPreviewContainer: {
+    flexShrink: 0,
   },
   videoInfo: {
     flex: 1,
-    justifyContent: 'space-between',
-    paddingVertical: 4,
+    justifyContent: 'flex-start',
   },
   videoTitle: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '700',
-    marginBottom: 4,
+    marginBottom: 6,
   },
   videoTask: {
     color: colors.text,
     fontSize: 14,
     fontWeight: '500',
     opacity: 0.8,
-    marginBottom: 8,
+    marginBottom: 12,
   },
   videoStats: {
     flexDirection: 'row',
