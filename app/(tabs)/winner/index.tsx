@@ -18,7 +18,7 @@ export default function WinnerScreen() {
     challenge: "Assemble furniture in 60 seconds",
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
-    partner: "IKEA",
+    partner: "CapCut",
     likes: 45200,
     views: 98500,
     engagement: 94,

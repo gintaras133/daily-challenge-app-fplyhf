@@ -21,7 +21,7 @@ export default function CommunityScreen() {
     challenge: "Assemble furniture in 60 seconds",
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
-    partner: "IKEA"
+    partner: "CapCut"
   };
 
   const friendsVideos: FriendVideo[] = [
@@ -136,7 +136,7 @@ export default function CommunityScreen() {
               </View>
 
               <Text style={styles.videoDescription}>
-                Nailed the IKEA challenge! 🎯{'\n'}#BubblesBubbles
+                Nailed the CapCut challenge! 🎯{'\n'}#BubblesBubbles
               </Text>
 
               <View style={styles.videoStats}>
