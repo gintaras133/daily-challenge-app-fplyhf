@@ -7,6 +7,10 @@ const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const BASE_WIDTH = 375;
 const BASE_HEIGHT = 812;
 
+// iPhone 17 Pro Max dimensions (approximate - using iPhone 15 Pro Max as reference)
+export const IPHONE_17_PRO_MAX_WIDTH = 430;
+export const IPHONE_17_PRO_MAX_HEIGHT = 932;
+
 /**
  * Responsive width based on screen size
  * @param size - The size you want to scale
@@ -75,6 +79,13 @@ export const isLargeDevice = (): boolean => {
  */
 export const isTablet = (): boolean => {
   return SCREEN_WIDTH >= 768;
+};
+
+/**
+ * Check if device is desktop/web with large screen
+ */
+export const isDesktop = (): boolean => {
+  return Platform.OS === 'web' && SCREEN_WIDTH > IPHONE_17_PRO_MAX_WIDTH;
 };
 
 /**
@@ -162,13 +173,17 @@ export const getScreenDimensions = () => {
     isSmall: isSmallDevice(),
     isLarge: isLargeDevice(),
     isTablet: isTablet(),
+    isDesktop: isDesktop(),
   };
 };
 
 /**
- * Get responsive max width for content (useful for tablets)
+ * Get responsive max width for content (useful for tablets and desktop)
  */
 export const getMaxContentWidth = (): number => {
+  if (isDesktop()) {
+    return IPHONE_17_PRO_MAX_WIDTH;
+  }
   if (isTablet()) {
     return 600;
   }
@@ -226,6 +241,24 @@ export const getFontSizes = () => {
   };
 };
 
+/**
+ * Get constrained dimensions for desktop view (iPhone 17 Pro Max size)
+ */
+export const getConstrainedDimensions = () => {
+  if (isDesktop()) {
+    return {
+      width: IPHONE_17_PRO_MAX_WIDTH,
+      height: IPHONE_17_PRO_MAX_HEIGHT,
+      isConstrained: true,
+    };
+  }
+  return {
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    isConstrained: false,
+  };
+};
+
 export default {
   wp,
   hp,
@@ -235,6 +268,7 @@ export default {
   isSmallDevice,
   isLargeDevice,
   isTablet,
+  isDesktop,
   getHorizontalPadding,
   getVerticalPadding,
   getCardPadding,
@@ -248,4 +282,7 @@ export default {
   getVideoCardDimensions,
   getAvatarSize,
   getFontSizes,
+  getConstrainedDimensions,
+  IPHONE_17_PRO_MAX_WIDTH,
+  IPHONE_17_PRO_MAX_HEIGHT,
 };

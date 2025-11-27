@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform, Image } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
+import { router } from 'expo-router';
 import VideoComparisonModal from '@/components/VideoComparisonModal';
 import { 
   getTopSafePadding, 
@@ -144,6 +145,11 @@ export default function CommunityScreen() {
     console.log('Load more friends videos');
   };
 
+  const handleAdDemoPress = () => {
+    console.log('Navigating to Ad Demo');
+    router.push('/(tabs)/community/ad-demo');
+  };
+
   const currentPair = comparisonPairs[currentComparisonPair];
 
   return (
@@ -172,6 +178,28 @@ export default function CommunityScreen() {
             See what your friends created today!
           </Text>
         </View>
+
+        {/* Ad Demo Button */}
+        <TouchableOpacity 
+          style={[
+            styles.adDemoButton,
+            {
+              paddingVertical: spacing * 1.5,
+              borderRadius: getBorderRadius('large'),
+              marginBottom: spacing * 3,
+            }
+          ]}
+          onPress={handleAdDemoPress}
+        >
+          <IconSymbol 
+            android_material_icon_name="ad-units" 
+            size={getIconSize('medium')} 
+            color={colors.text}
+          />
+          <Text style={[styles.adDemoText, { fontSize: fontSizes.medium }]}>
+            View Responsive Ad Demo
+          </Text>
+        </TouchableOpacity>
 
         {/* Friends' Today Videos Section */}
         <Text style={[styles.sectionTitle, { fontSize: fontSizes.large, marginBottom: spacing * 2 }]}>
@@ -322,6 +350,17 @@ const styles = StyleSheet.create({
   headerSubtitle: {
     color: colors.text,
     fontWeight: '500',
+  },
+  adDemoButton: {
+    backgroundColor: colors.primary,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  adDemoText: {
+    color: colors.text,
+    fontWeight: '700',
   },
   sectionTitle: {
     color: colors.text,
