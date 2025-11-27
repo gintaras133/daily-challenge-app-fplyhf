@@ -6,9 +6,15 @@ import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 import { useAuth } from "@/contexts/AuthContext";
+import { useFonts, PlayfairDisplay_900Black } from '@expo-google-fonts/playfair-display';
 
 export default function HomeScreen() {
   const { userProfile } = useAuth();
+  
+  // Load Playfair Display font
+  const [fontsLoaded] = useFonts({
+    PlayfairDisplay_900Black,
+  });
   
   // Sample data - in a real app, this would come from an API
   const streak = 15;
@@ -40,6 +46,11 @@ export default function HomeScreen() {
   const handleStartChallenge = () => {
     router.push('/(tabs)/(home)/record');
   };
+
+  // Don't render until fonts are loaded
+  if (!fontsLoaded) {
+    return null;
+  }
 
   return (
     <View style={styles.container}>
@@ -125,16 +136,19 @@ const styles = StyleSheet.create({
     paddingBottom: 120,
   },
   logoContainer: {
-    alignSelf: 'flex-start',
-    marginBottom: 24,
+    position: 'absolute',
+    top: 48,
+    left: 24,
+    zIndex: 10,
   },
   logo: {
-    fontSize: 32,
-    fontWeight: '900',
+    fontSize: 36,
+    fontFamily: 'PlayfairDisplay_900Black',
     color: '#003399',
-    letterSpacing: 2,
+    letterSpacing: 1,
   },
   header: {
+    marginTop: 60,
     marginBottom: 40,
   },
   greeting: {
