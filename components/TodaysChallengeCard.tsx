@@ -11,6 +11,7 @@ interface TodaysChallengeCardProps {
   reward: string;
   partner?: string;
   showTitle?: boolean;
+  sampleVideoUrl?: string;
 }
 
 export default function TodaysChallengeCard({ 
@@ -20,7 +21,7 @@ export default function TodaysChallengeCard({
   duration,
   reward,
   partner,
-  showTitle = false
+  showTitle = false,
 }: TodaysChallengeCardProps) {
   return (
     <View style={styles.challengeCard}>

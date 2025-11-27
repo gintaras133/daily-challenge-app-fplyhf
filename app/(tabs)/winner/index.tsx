@@ -141,6 +141,7 @@ export default function WinnerScreen() {
             conqueredFear={yesterdayTask.conqueredFear}
             duration={yesterdayTask.duration}
             reward={yesterdayTask.reward}
+            sampleVideoUrl={yesterdayTask.sampleVideoUrl}
           />
         </View>
 
