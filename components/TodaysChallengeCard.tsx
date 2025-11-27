@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   challengeLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: colors.textMuted,
     marginBottom: 8,
   },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   partnerLabel: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: 'bold',
     color: colors.textMuted,
     marginBottom: 8,
   },
