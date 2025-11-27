@@ -10,6 +10,7 @@ interface TodaysChallengeCardProps {
   duration: string;
   reward: string;
   partner?: string;
+  showTitle?: boolean;
 }
 
 export default function TodaysChallengeCard({ 
@@ -18,13 +19,16 @@ export default function TodaysChallengeCard({
   conqueredFear,
   duration,
   reward,
-  partner
+  partner,
+  showTitle = false
 }: TodaysChallengeCardProps) {
   return (
     <View style={styles.challengeCard}>
-      <View style={styles.challengeHeader}>
-        <Text style={styles.challengeHeaderText}>Today&apos;s Task</Text>
-      </View>
+      {showTitle && (
+        <View style={styles.challengeHeader}>
+          <Text style={styles.challengeHeaderText}>Today&apos;s Task</Text>
+        </View>
+      )}
 
       <View style={styles.challengeContent}>
         <View style={styles.challengeSection}>

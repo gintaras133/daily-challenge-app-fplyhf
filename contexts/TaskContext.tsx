@@ -44,11 +44,10 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Yesterday's task data
   const [yesterdayTask, setYesterdayTask] = useState<YesterdayTask>({
     challenge: "Show a \"before and after\" of something small you improved today.",
-    guidelines: "Can be cleaning, organizing, outfit, workspace..",
+    guidelines: "Can be cleaning, organizing, outfit, workspace.",
     conqueredFear: "Fear of being judged for imperfection.",
-    duration: "15–20 sec.",
-    reward: "100 Bloop tokens",
-    partner: "CapCut",
+    duration: "10–15 sec.",
+    reward: "1 Bloop token",
     prize: "100 Bloop tokens"
   });
 

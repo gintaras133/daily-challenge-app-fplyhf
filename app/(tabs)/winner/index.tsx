@@ -32,7 +32,7 @@ export default function WinnerScreen() {
   const handleShare = async () => {
     console.log('Share video');
     try {
-      const shareMessage = `Check out this amazing winning video by ${winner.username}! 🏆\n\nTask: ${yesterdayTask.task}\nPrize: ${yesterdayTask.prize}`;
+      const shareMessage = `Check out this amazing winning video by ${winner.username}! 🏆\n\nTask: ${yesterdayTask.challenge}\nPrize: ${yesterdayTask.prize}`;
       
       const result = await Share.share({
         message: shareMessage,
@@ -136,12 +136,11 @@ export default function WinnerScreen() {
         <View style={styles.challengeCardContainer}>
           <Text style={styles.yesterdayTitle}>Yesterday&apos;s Task</Text>
           <TodaysChallengeCard
-            task={yesterdayTask.task}
-            constraint={yesterdayTask.constraint}
-            skillMastery={yesterdayTask.skillMastery}
+            challenge={yesterdayTask.challenge}
+            guidelines={yesterdayTask.guidelines}
+            conqueredFear={yesterdayTask.conqueredFear}
             duration={yesterdayTask.duration}
-            suggestion={yesterdayTask.suggestion}
-            partner={yesterdayTask.partner}
+            reward={yesterdayTask.reward}
           />
         </View>
 

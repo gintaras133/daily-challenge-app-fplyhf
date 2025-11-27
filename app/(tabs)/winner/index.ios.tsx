@@ -36,7 +36,7 @@ export default function WinnerScreen() {
       const isAvailable = await Sharing.isAvailableAsync();
       if (isAvailable) {
         // In a real app, you would share the actual video URL or file
-        const shareMessage = `Check out this amazing winning video by ${winner.username}! 🏆\n\nTask: ${yesterdayTask.task}\nPrize: ${yesterdayTask.prize}`;
+        const shareMessage = `Check out this amazing winning video by ${winner.username}! 🏆\n\nTask: ${yesterdayTask.challenge}\nPrize: ${yesterdayTask.prize}`;
         
         // For now, we'll just show an alert since we don't have actual video files
         Alert.alert(
@@ -145,12 +145,11 @@ export default function WinnerScreen() {
         <View style={styles.challengeCardContainer}>
           <Text style={styles.yesterdayTitle}>Yesterday&apos;s Task</Text>
           <TodaysChallengeCard
-            task={yesterdayTask.task}
-            constraint={yesterdayTask.constraint}
-            skillMastery={yesterdayTask.skillMastery}
+            challenge={yesterdayTask.challenge}
+            guidelines={yesterdayTask.guidelines}
+            conqueredFear={yesterdayTask.conqueredFear}
             duration={yesterdayTask.duration}
-            suggestion={yesterdayTask.suggestion}
-            partner={yesterdayTask.partner}
+            reward={yesterdayTask.reward}
           />
         </View>
 
