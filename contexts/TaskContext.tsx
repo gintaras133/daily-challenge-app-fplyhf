@@ -2,12 +2,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface TodayTask {
-  Challenge: string;
-  Guidelines: string;
-  Conquered_fear: string;
-  Duration: string;
-  Partner: string;
-  Reward: string;
+  challenge: string;
+  guidelines: string;
+  conqueredFear: string;
+  duration: string;
+  partner: string;
+  reward: string;
 }
 
 export interface YesterdayTask extends TodayTask {
@@ -34,23 +34,23 @@ export const useTask = () => {
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Default task data - in a real app, this would come from an API
   const [todayTask, setTodayTask] = useState<TodayTask>({
-    Challenge: "Tell a mini story in three separate shots or angles.",
-    Guidelines: "Speak directly to the camera, 10–15 seconds.",
-    Conquered_fear: "Fear of sounding \"cringe\" or not deep enough.",
-    Duration: "15–20 sec.",
-    Partner: "CapCut",
-    Reward: "1 Bloop token"
+    challenge: "Tell a mini story in three separate shots or angles.",
+    guidelines: "Speak directly to the camera, 10–15 seconds.",
+    conqueredFear: "Fear of sounding \"cringe\" or not deep enough.",
+    duration: "15–20 sec.",
+    reward: "1 Bloop token",
+    partner: "CapCut"
   });
 
   // Yesterday's task data
   const [yesterdayTask, setYesterdayTask] = useState<YesterdayTask>({
-    Challenge: "Show a \"before and after\" of something small you improved today.",
-    Guidelines: "Can be cleaning, organizing, outfit, workspace..",
-    Conquered_fear: "Fear of being judged for imperfection.",
-    Duration: "15–20 sec.",
-    Partner: "CapCut",
-    Reward: "100 Bloop token",
-    prize: "100 Bloop token"
+    challenge: "Show a \"before and after\" of something small you improved today.",
+    guidelines: "Can be cleaning, organizing, outfit, workspace..",
+    conqueredFear: "Fear of being judged for imperfection.",
+    duration: "15–20 sec.",
+    reward: "100 Bloop tokens",
+    partner: "CapCut",
+    prize: "100 Bloop tokens"
   });
 
   const updateTodayTask = (task: TodayTask) => {
@@ -66,7 +66,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Example: fetchTodayTask().then(setTodayTask);
     console.log('Today\'s task loaded:', todayTask);
     console.log('Yesterday\'s task loaded:', yesterdayTask);
-  }, []);
+  }, [todayTask, yesterdayTask]);
 
   return (
     <TaskContext.Provider value={{ todayTask, yesterdayTask, updateTodayTask, updateYesterdayTask }}>

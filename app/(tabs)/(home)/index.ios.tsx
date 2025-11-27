@@ -144,11 +144,11 @@ export default function HomeScreen() {
             {/* Task Card */}
             <View style={[styles.challengeCardContainer, { marginBottom: spacing * 2 }]}>
               <TodaysChallengeCard
-                task={todayTask.task}
-                constraint={todayTask.constraint}
-                skillMastery={todayTask.skillMastery}
+                challenge={todayTask.challenge}
+                guidelines={todayTask.guidelines}
+                conqueredFear={todayTask.conqueredFear}
                 duration={todayTask.duration}
-                suggestion={todayTask.suggestion}
+                reward={todayTask.reward}
                 partner={todayTask.partner}
               />
             </View>

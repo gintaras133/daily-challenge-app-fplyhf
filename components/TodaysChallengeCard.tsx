@@ -4,23 +4,21 @@ import { StyleSheet, View, Text } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 
 interface TodaysChallengeCardProps {
-  task: string;
-  constraint: string;
-  skillMastery: string;
+  challenge: string;
+  guidelines: string;
+  conqueredFear: string;
   duration: string;
-  suggestion: string;
+  reward: string;
   partner: string;
-  reward?: string;
 }
 
 export default function TodaysChallengeCard({ 
-  task, 
-  constraint, 
-  skillMastery,
+  challenge, 
+  guidelines, 
+  conqueredFear,
   duration,
-  suggestion,
-  partner,
-  reward
+  reward,
+  partner
 }: TodaysChallengeCardProps) {
   return (
     <View style={styles.challengeCard}>
@@ -30,18 +28,18 @@ export default function TodaysChallengeCard({
 
       <View style={styles.challengeContent}>
         <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Task:</Text>
-          <Text style={styles.challengeValue}>{task}</Text>
+          <Text style={styles.challengeLabel}>Challenge:</Text>
+          <Text style={styles.challengeValue}>{challenge}</Text>
         </View>
 
         <View style={styles.challengeSection}>
           <Text style={styles.challengeLabel}>Guidelines:</Text>
-          <Text style={styles.challengeValue}>{constraint}</Text>
+          <Text style={styles.challengeValue}>{guidelines}</Text>
         </View>
 
         <View style={styles.challengeSection}>
-          <Text style={styles.challengeLabel}>Skill Mastery:</Text>
-          <Text style={styles.challengeValue}>{skillMastery}</Text>
+          <Text style={styles.challengeLabel}>Conquered fear:</Text>
+          <Text style={styles.challengeValue}>{conqueredFear}</Text>
         </View>
 
         <View style={styles.challengeSection}>
@@ -49,19 +47,10 @@ export default function TodaysChallengeCard({
           <Text style={styles.challengeValue}>{duration}</Text>
         </View>
 
-        {suggestion && suggestion.trim() !== '' && (
-          <View style={styles.challengeSection}>
-            <Text style={styles.challengeLabel}>Suggestion:</Text>
-            <Text style={styles.suggestionText}>{suggestion}</Text>
-          </View>
-        )}
-
-        {reward && (
-          <View style={styles.challengeSection}>
-            <Text style={styles.challengeLabel}>Reward:</Text>
-            <Text style={styles.rewardText}>{reward}</Text>
-          </View>
-        )}
+        <View style={styles.challengeSection}>
+          <Text style={styles.challengeLabel}>Reward:</Text>
+          <Text style={styles.rewardText}>{reward}</Text>
+        </View>
 
         <View style={styles.partnerSection}>
           <Text style={styles.partnerLabel}>Partner:</Text>
@@ -106,13 +95,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
     color: colors.text,
-    lineHeight: 26,
-  },
-  suggestionText: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: colors.text,
-    fontStyle: 'italic',
     lineHeight: 26,
   },
   rewardText: {
