@@ -9,7 +9,6 @@ import { useTask } from "@/contexts/TaskContext";
 
 export default function WinnerScreen() {
   const { yesterdayTask } = useTask();
-  const [timeRemaining, setTimeRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   // Sample data - in a real app, this would come from an API
   const winner = {
@@ -24,29 +23,6 @@ export default function WinnerScreen() {
     engagement: 94,
     shareCount: 2341,
   };
-
-  // Calculate time until next winner announcement (next day at midnight)
-  useEffect(() => {
-    const calculateTimeRemaining = () => {
-      const now = new Date();
-      const tomorrow = new Date();
-      tomorrow.setDate(tomorrow.getDate() + 1);
-      tomorrow.setHours(0, 0, 0, 0);
-      
-      const diff = tomorrow.getTime() - now.getTime();
-      
-      const hours = Math.floor(diff / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-      
-      setTimeRemaining({ hours, minutes, seconds });
-    };
-
-    calculateTimeRemaining();
-    const intervalId = setInterval(calculateTimeRemaining, 1000);
-
-    return () => clearInterval(intervalId);
-  }, []);
 
   const handleWinnersLounge = () => {
     console.log('Navigate to Winners Lounge');
@@ -94,18 +70,6 @@ export default function WinnerScreen() {
       >
         {/* Winner Announcement Section */}
         <View style={styles.winnerSection}>
-          {/* Countdown Timer at the top */}
-          <View style={styles.timerContainer}>
-            <IconSymbol 
-              android_material_icon_name="schedule" 
-              size={20} 
-              color={colors.text}
-            />
-            <Text style={styles.timerText}>
-              New one announced in {timeRemaining.hours}h {timeRemaining.minutes}m {timeRemaining.seconds}s
-            </Text>
-          </View>
-
           {/* Last Winner Title */}
           <View style={styles.trophyRow}>
             <IconSymbol 
@@ -292,21 +256,6 @@ const styles = StyleSheet.create({
   winnerSection: {
     alignItems: 'center',
     marginBottom: 24,
-  },
-  timerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 16,
-    backgroundColor: colors.primary,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-    borderRadius: 20,
-  },
-  timerText: {
-    color: colors.text,
-    fontSize: 16,
-    fontWeight: '700',
   },
   trophyRow: {
     flexDirection: 'row',
