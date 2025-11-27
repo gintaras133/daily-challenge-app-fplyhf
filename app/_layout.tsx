@@ -6,9 +6,10 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import { TaskProvider } from '@/contexts/TaskContext';
+import { colors } from '@/styles/commonStyles';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
@@ -28,25 +29,40 @@ function RootLayoutNav() {
   }, [loaded]);
 
   useEffect(() => {
+    console.log('=== AUTH STATE DEBUG ===');
+    console.log('Loading:', loading);
+    console.log('Profile Checked:', profileChecked);
+    console.log('Session exists:', !!session);
+    console.log('User Profile:', userProfile);
+    console.log('Onboarding completed:', userProfile?.onboarding_completed);
+    console.log('========================');
+
     if (!loading && profileChecked) {
-      console.log('Session:', session);
-      console.log('User Profile:', userProfile);
-      
       if (!session) {
         // No session, redirect to login
+        console.log('No session - redirecting to login');
         router.replace('/auth/login');
       } else if (!userProfile || !userProfile.onboarding_completed) {
         // Session exists but onboarding not completed
+        console.log('Session exists but onboarding not completed - redirecting to onboarding');
         router.replace('/auth/onboarding');
       } else {
         // Session exists and onboarding completed
+        console.log('Session and onboarding complete - redirecting to home');
         router.replace('/(tabs)/(home)');
       }
     }
   }, [session, userProfile, loading, profileChecked]);
 
+  // Show loading screen while fonts are loading or auth is checking
   if (!loaded || loading || !profileChecked) {
-    return null;
+    return (
+      <View style={styles.loadingContainer}>
+        <Text style={styles.loadingTitle}>BLOOP</Text>
+        <ActivityIndicator size="large" color={colors.primary} style={styles.loadingSpinner} />
+        <Text style={styles.loadingText}>Loading...</Text>
+      </View>
+    );
   }
 
   return (
@@ -94,3 +110,27 @@ export default function RootLayout() {
     </AuthProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: colors.background,
+  },
+  loadingTitle: {
+    fontSize: 48,
+    fontWeight: '900',
+    color: '#003399',
+    letterSpacing: 2,
+    marginBottom: 40,
+  },
+  loadingSpinner: {
+    marginBottom: 20,
+  },
+  loadingText: {
+    fontSize: 16,
+    color: colors.text,
+    fontWeight: '600',
+  },
+});

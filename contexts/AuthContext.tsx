@@ -56,6 +56,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      console.log('Fetching user profile for userId:', userId);
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
@@ -63,12 +64,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .single();
 
       if (error) {
-        console.log('No profile found or error fetching profile:', error);
+        console.log('No profile found or error fetching profile:', error.message);
         setUserProfile(null);
         setProfileChecked(true);
         return;
       }
 
+      console.log('User profile fetched successfully:', data);
       setUserProfile(data);
       setProfileChecked(true);
     } catch (error) {
@@ -80,21 +82,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     if (user) {
+      console.log('Refreshing profile for user:', user.id);
       setProfileChecked(false);
       await fetchUserProfile(user.id);
     }
   };
 
   useEffect(() => {
+    console.log('AuthProvider: Initializing...');
+    
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      console.log('Initial session:', session);
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error('Error getting initial session:', error);
+      }
+      
+      console.log('Initial session retrieved:', !!session);
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserProfile(session.user.id).finally(() => setLoading(false));
+        fetchUserProfile(session.user.id).finally(() => {
+          console.log('Initial profile fetch complete, setting loading to false');
+          setLoading(false);
+        });
       } else {
+        console.log('No session found, setting loading to false');
         setLoading(false);
         setProfileChecked(true);
       }
@@ -102,8 +115,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
-        console.log('Auth state changed:', _event, session);
+      async (event, session) => {
+        console.log('Auth state changed:', event, 'Session exists:', !!session);
         setSession(session);
         setUser(session?.user ?? null);
 
@@ -120,11 +133,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     return () => {
+      console.log('AuthProvider: Cleaning up subscription');
       subscription.unsubscribe();
     };
   }, []);
 
   const signOut = async () => {
+    console.log('Signing out user');
     await supabase.auth.signOut();
     setSession(null);
     setUser(null);
