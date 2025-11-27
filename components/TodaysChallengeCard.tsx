@@ -9,7 +9,7 @@ interface TodaysChallengeCardProps {
   conqueredFear: string;
   duration: string;
   reward: string;
-  partner: string;
+  partner?: string;
 }
 
 export default function TodaysChallengeCard({ 
@@ -52,10 +52,12 @@ export default function TodaysChallengeCard({
           <Text style={styles.rewardText}>{reward}</Text>
         </View>
 
-        <View style={styles.partnerSection}>
-          <Text style={styles.partnerLabel}>Partner:</Text>
-          <Text style={styles.partnerValue}>{partner}</Text>
-        </View>
+        {partner && (
+          <View style={styles.partnerSection}>
+            <Text style={styles.partnerLabel}>Partner:</Text>
+            <Text style={styles.partnerValue}>{partner}</Text>
+          </View>
+        )}
       </View>
     </View>
   );

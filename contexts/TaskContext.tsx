@@ -6,8 +6,8 @@ export interface TodayTask {
   guidelines: string;
   conqueredFear: string;
   duration: string;
-  partner: string;
   reward: string;
+  partner?: string;
 }
 
 export interface YesterdayTask extends TodayTask {
@@ -34,12 +34,11 @@ export const useTask = () => {
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Default task data - in a real app, this would come from an API
   const [todayTask, setTodayTask] = useState<TodayTask>({
-    challenge: "Tell a mini story in three separate shots or angles.",
-    guidelines: "Speak directly to the camera, 10–15 seconds.",
+    challenge: "Film yourself recommending one thing that genuinely changed your life recently.",
+    guidelines: "Speak directly to the camera",
     conqueredFear: "Fear of sounding \"cringe\" or not deep enough.",
     duration: "15–20 sec.",
-    reward: "1 Bloop token",
-    partner: "CapCut"
+    reward: "1 Bloop token"
   });
 
   // Yesterday's task data
