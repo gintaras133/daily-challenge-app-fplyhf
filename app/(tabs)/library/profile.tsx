@@ -83,6 +83,7 @@ export default function ProfileScreen() {
   };
 
   const handleDeleteAccount = () => {
+    console.log('Delete account button pressed');
     Alert.alert(
       'Delete Account',
       'Are you sure you want to permanently delete your account? This cannot be undone.',
@@ -90,33 +91,48 @@ export default function ProfileScreen() {
         {
           text: 'Cancel',
           style: 'cancel',
+          onPress: () => console.log('Account deletion cancelled'),
         },
         {
           text: 'Delete',
           style: 'destructive',
-          onPress: confirmDeleteAccount,
+          onPress: () => {
+            console.log('User confirmed account deletion');
+            confirmDeleteAccount();
+          },
         },
       ]
     );
   };
 
   const confirmDeleteAccount = async () => {
+    console.log('confirmDeleteAccount called');
+    
     if (!user) {
+      console.log('No user found');
       Alert.alert('Error', 'No user found');
       return;
     }
 
     setIsDeleting(true);
+    console.log('Starting account deletion process for user:', user.id);
 
     try {
-      console.log('Calling delete-user-account Edge Function for user:', user.id);
-
       // Get the current session to get the access token
-      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Getting current session...');
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error('Session error:', sessionError);
+        throw new Error('Failed to get session: ' + sessionError.message);
+      }
       
       if (!session) {
+        console.error('No active session found');
         throw new Error('No active session');
       }
+
+      console.log('Session retrieved successfully, calling Edge Function...');
 
       // Call the Edge Function to delete the account
       const { data, error } = await supabase.functions.invoke('delete-user-account', {
@@ -125,33 +141,41 @@ export default function ProfileScreen() {
         },
       });
 
+      console.log('Edge Function response:', { data, error });
+
       if (error) {
         console.error('Edge function error:', error);
-        throw error;
+        throw new Error(error.message || 'Failed to delete account');
       }
 
-      console.log('Account deletion response:', data);
+      console.log('Account deletion successful, signing out...');
 
       // Sign out the user
       await signOut();
       
+      console.log('Showing success alert and redirecting...');
       Alert.alert(
         'Account Deleted',
         'Your account has been permanently deleted.',
         [
           {
             text: 'OK',
-            onPress: () => router.replace('/auth/onboarding'),
+            onPress: () => {
+              console.log('Redirecting to onboarding...');
+              router.replace('/auth/onboarding');
+            },
           },
         ]
       );
     } catch (error: any) {
       console.error('Error deleting account:', error);
+      console.error('Error details:', JSON.stringify(error, null, 2));
       Alert.alert(
         'Error', 
         error.message || 'Failed to delete account. Please try again or contact support.'
       );
     } finally {
+      console.log('Setting isDeleting to false');
       setIsDeleting(false);
     }
   };
