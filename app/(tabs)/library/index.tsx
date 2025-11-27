@@ -294,8 +294,8 @@ export default function LibraryScreen() {
                   <View style={styles.videoPreviewContainer}>
                     <VideoPreview
                       videoUrl={video.video_url}
-                      width={120}
-                      height={160}
+                      width={100}
+                      height={140}
                       borderRadius={getBorderRadius('small')}
                       showPlayButton={true}
                       autoPlay={false}
@@ -473,14 +473,14 @@ const styles = StyleSheet.create({
   videoCard: {
     backgroundColor: colors.primary,
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   videoPreviewContainer: {
     flexShrink: 0,
   },
   videoInfo: {
     flex: 1,
-    justifyContent: 'flex-start',
+    justifyContent: 'center',
   },
   videoTitle: {
     color: colors.text,
