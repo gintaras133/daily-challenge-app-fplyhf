@@ -137,15 +137,6 @@ export default function LibraryScreen() {
     streakNumber: 0,
   };
 
-  // Extract phone number without country code
-  const getPhoneWithoutCountryCode = (fullPhone: string | null | undefined) => {
-    if (!fullPhone) return 'Not set';
-    
-    // Remove common country code patterns like +1, +44, etc.
-    const phoneWithoutCode = fullPhone.replace(/^\+?\d{1,4}\s*/, '').trim();
-    return phoneWithoutCode || fullPhone;
-  };
-
   return (
     <View style={styles.container}>
       <View style={[
@@ -176,31 +167,6 @@ export default function LibraryScreen() {
             />
           </TouchableOpacity>
         </View>
-        {userProfile && (
-          <View style={[styles.profileInfo, { gap: spacing * 0.5 }]}>
-            <Text style={[styles.welcomeText, { fontSize: fontSizes.medium, marginBottom: spacing * 0.5 }]}>
-              Welcome, {userProfile.full_name}!
-            </Text>
-            <View style={[styles.infoRow, { gap: spacing * 0.5 }]}>
-              <IconSymbol 
-                android_material_icon_name="location-on" 
-                size={getIconSize('small')} 
-                color={colors.text}
-              />
-              <Text style={[styles.infoText, { fontSize: fontSizes.body }]}>{userProfile.country}</Text>
-            </View>
-            <View style={[styles.infoRow, { gap: spacing * 0.5 }]}>
-              <IconSymbol 
-                android_material_icon_name="phone" 
-                size={getIconSize('small')} 
-                color={colors.text}
-              />
-              <Text style={[styles.infoText, { fontSize: fontSizes.body }]}>
-                {getPhoneWithoutCountryCode(userProfile.telephone_number)}
-              </Text>
-            </View>
-          </View>
-        )}
       </View>
 
       <ScrollView 
@@ -399,20 +365,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profileInfo: {
-    // Dynamic gap applied inline
-  },
-  welcomeText: {
-    fontWeight: '600',
-    color: colors.text,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  infoText: {
-    color: colors.text,
   },
   content: {
     flex: 1,

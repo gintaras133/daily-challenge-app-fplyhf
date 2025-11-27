@@ -118,15 +118,6 @@ export default function LibraryScreen() {
     streakNumber: 0,
   };
 
-  // Extract phone number without country code
-  const getPhoneWithoutCountryCode = (fullPhone: string | null | undefined) => {
-    if (!fullPhone) return 'Not set';
-    
-    // Remove common country code patterns like +1, +44, etc.
-    const phoneWithoutCode = fullPhone.replace(/^\+?\d{1,4}\s*/, '').trim();
-    return phoneWithoutCode || fullPhone;
-  };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -144,31 +135,6 @@ export default function LibraryScreen() {
             />
           </TouchableOpacity>
         </View>
-        {userProfile && (
-          <View style={styles.profileInfo}>
-            <Text style={styles.welcomeText}>
-              Welcome, {userProfile.full_name}!
-            </Text>
-            <View style={styles.infoRow}>
-              <IconSymbol 
-                ios_icon_name="location.fill"
-                size={16} 
-                color={colors.text}
-              />
-              <Text style={styles.infoText}>{userProfile.country}</Text>
-            </View>
-            <View style={styles.infoRow}>
-              <IconSymbol 
-                ios_icon_name="phone.fill"
-                size={16} 
-                color={colors.text}
-              />
-              <Text style={styles.infoText}>
-                {getPhoneWithoutCountryCode(userProfile.telephone_number)}
-              </Text>
-            </View>
-          </View>
-        )}
       </View>
 
       <ScrollView 
@@ -318,24 +284,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  profileInfo: {
-    gap: 6,
-  },
-  welcomeText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.text,
-    marginBottom: 4,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  infoText: {
-    fontSize: 14,
-    color: colors.text,
   },
   content: {
     flex: 1,
