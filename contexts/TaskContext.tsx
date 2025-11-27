@@ -2,8 +2,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 export interface TodayTask {
- Challenge: string;
- Guidelines: string;
+  Challenge: string;
+  Guidelines: string;
   Conquered_fear: string;
   Duration: string;
   Partner: string;
@@ -34,22 +34,23 @@ export const useTask = () => {
 export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   // Default task data - in a real app, this would come from an API
   const [todayTask, setTodayTask] = useState<TodayTask>({
-		Challenge:  "Tell a mini story in three separate shots or angles.",
- 		Guidelines: "Speak directly to the camera, 10–15 seconds.";
-	  Conquered_fear:"Fear of sounding “cringe” or not deep enough.";
-	  Duration:"15–20 sec.";
-	  Partner: "CapCut",
+    Challenge: "Tell a mini story in three separate shots or angles.",
+    Guidelines: "Speak directly to the camera, 10–15 seconds.",
+    Conquered_fear: "Fear of sounding \"cringe\" or not deep enough.",
+    Duration: "15–20 sec.",
+    Partner: "CapCut",
     Reward: "1 Bloop token"
   });
 
   // Yesterday's task data
   const [yesterdayTask, setYesterdayTask] = useState<YesterdayTask>({
-    Challenge:  "Show a “before and after” of something small you improved today."
- 		Guidelines: "Can be cleaning, organizing, outfit, workspace..";
-	  Conquered_fear:" Fear of being judged for imperfection.";
-	  Duration:"15–20 sec.";
-	  Partner: "CapCut",
-   Reward: "100 Bloop token"
+    Challenge: "Show a \"before and after\" of something small you improved today.",
+    Guidelines: "Can be cleaning, organizing, outfit, workspace..",
+    Conquered_fear: "Fear of being judged for imperfection.",
+    Duration: "15–20 sec.",
+    Partner: "CapCut",
+    Reward: "100 Bloop token",
+    prize: "100 Bloop token"
   });
 
   const updateTodayTask = (task: TodayTask) => {

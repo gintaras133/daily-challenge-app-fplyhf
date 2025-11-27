@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   View,
   Text,
@@ -48,7 +48,7 @@ export default function LibraryScreen() {
     bloopCoins: 0,
   });
 
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
       console.log('=== FETCHING USER DATA (iOS) ===');
       console.log('User profile ID:', userProfile?.id);
@@ -127,7 +127,7 @@ export default function LibraryScreen() {
       setIsLoading(false);
       setIsRefreshing(false);
     }
-  };
+  }, [user?.id, userProfile?.id]);
 
   useEffect(() => {
     console.log('📱 Library screen mounted (iOS)');
@@ -137,7 +137,7 @@ export default function LibraryScreen() {
       console.log('⚠️ No user authenticated');
       setIsLoading(false);
     }
-  }, [userProfile?.id, user?.id]);
+  }, [userProfile?.id, user?.id, fetchUserData]);
 
   // Refresh data when screen comes into focus
   useFocusEffect(
@@ -146,7 +146,7 @@ export default function LibraryScreen() {
       if (user?.id || userProfile?.id) {
         fetchUserData();
       }
-    }, [userProfile?.id, user?.id])
+    }, [userProfile?.id, user?.id, fetchUserData])
   );
 
   const handleRefresh = () => {

@@ -54,7 +54,7 @@ export default function VideoPreview({
     }, 10000);
 
     return () => clearTimeout(timeout);
-  }, [videoUrl]);
+  }, [videoUrl, autoPlay, height, width, isLoading]);
 
   const handlePlaybackStatusUpdate = (status: AVPlaybackStatus) => {
     if (status.isLoaded) {

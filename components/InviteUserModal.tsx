@@ -22,7 +22,7 @@
  * - In production, this should integrate with an email service
  */
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -57,7 +57,7 @@ export default function InviteUserModal({ visible, onClose }: InviteUserModalPro
     return emailRegex.test(email);
   };
 
-  const loadInvitations = async () => {
+  const loadInvitations = useCallback(async () => {
     if (!user) return;
 
     try {
@@ -76,7 +76,7 @@ export default function InviteUserModal({ visible, onClose }: InviteUserModalPro
     } catch (error) {
       console.error('Error loading invitations:', error);
     }
-  };
+  }, [user]);
 
   const handleInvite = async () => {
     if (!email.trim()) {
@@ -248,7 +248,7 @@ export default function InviteUserModal({ visible, onClose }: InviteUserModalPro
     if (visible) {
       loadInvitations();
     }
-  }, [visible]);
+  }, [visible, loadInvitations]);
 
   return (
     <Modal
