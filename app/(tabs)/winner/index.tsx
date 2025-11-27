@@ -132,9 +132,15 @@ export default function WinnerScreen() {
 
         {/* Prize Information */}
         <View style={styles.prizeContainer}>
-          <Text style={styles.prizeText}>
-            The prize yesterday ({yesterdayTask.prize})
-          </Text>
+          <View style={styles.prizeHeader}>
+            <IconSymbol 
+              android_material_icon_name="card-giftcard" 
+              size={24} 
+              color={colors.text}
+            />
+            <Text style={styles.prizeLabel}>PRIZE</Text>
+          </View>
+          <Text style={styles.prizeValue}>{yesterdayTask.prize}</Text>
         </View>
 
         {/* Yesterday's Challenge Card */}
@@ -365,17 +371,31 @@ const styles = StyleSheet.create({
   },
   prizeContainer: {
     backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 20,
+    padding: 24,
     marginBottom: 24,
     alignItems: 'center',
+    borderWidth: 3,
+    borderColor: colors.accent,
   },
-  prizeText: {
+  prizeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  prizeLabel: {
     color: colors.text,
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 2,
+  },
+  prizeValue: {
+    color: colors.text,
+    fontSize: 20,
     fontWeight: '700',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 28,
   },
   challengeCardContainer: {
     marginBottom: 24,

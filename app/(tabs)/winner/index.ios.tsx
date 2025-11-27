@@ -132,9 +132,15 @@ export default function WinnerScreen() {
 
         {/* Prize Information */}
         <View style={styles.prizeContainer}>
-          <Text style={styles.prizeText}>
-            The prize yesterday ({yesterdayTask.prize})
-          </Text>
+          <View style={styles.prizeHeader}>
+            <IconSymbol 
+              ios_icon_name="gift.fill" 
+              size={24} 
+              color="#ffffff"
+            />
+            <Text style={styles.prizeLabel}>PRIZE</Text>
+          </View>
+          <Text style={styles.prizeValue}>{yesterdayTask.prize}</Text>
         </View>
 
         {/* Yesterday's Challenge Card */}
@@ -369,17 +375,35 @@ const styles = StyleSheet.create({
   },
   prizeContainer: {
     backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 20,
+    borderRadius: 20,
+    padding: 24,
     marginBottom: 24,
     alignItems: 'center',
+    borderWidth: 3,
+    borderColor: '#ffcc00',
+    shadowColor: '#ffcc00',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
-  prizeText: {
+  prizeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    marginBottom: 12,
+  },
+  prizeLabel: {
     color: '#ffffff',
-    fontSize: 18,
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: 2,
+  },
+  prizeValue: {
+    color: '#ffffff',
+    fontSize: 20,
     fontWeight: '700',
     textAlign: 'center',
-    lineHeight: 26,
+    lineHeight: 28,
   },
   challengeCardContainer: {
     marginBottom: 24,
