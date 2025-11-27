@@ -14,6 +14,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
+import VideoPreview from '@/components/VideoPreview';
 import { supabase } from '@/app/integrations/supabase/client';
 import { 
   getTopSafePadding, 
@@ -279,21 +280,15 @@ export default function LibraryScreen() {
                   }
                 ]}
               >
-                <View style={[
-                  styles.videoThumbnail,
-                  {
-                    borderRadius: getBorderRadius('medium'),
-                  }
-                ]}>
-                  <Text style={[styles.videoPlaceholder, { fontSize: fontSizes.body }]}>Video</Text>
-                  <View style={styles.playIconOverlay}>
-                    <IconSymbol 
-                      android_material_icon_name="play-circle"
-                      size={48} 
-                      color="rgba(255, 255, 255, 0.9)"
-                    />
-                  </View>
-                </View>
+                <VideoPreview
+                  videoUrl={video.video_url}
+                  width={120}
+                  height={160}
+                  borderRadius={getBorderRadius('medium')}
+                  showPlayButton={true}
+                  autoPlay={false}
+                  muted={true}
+                />
                 <View style={styles.videoInfo}>
                   <Text style={[styles.videoTitle, { fontSize: fontSizes.medium, marginBottom: spacing * 0.5 }]}>
                     {video.title}
@@ -457,21 +452,6 @@ const styles = StyleSheet.create({
   videoCard: {
     backgroundColor: colors.primary,
     flexDirection: 'row',
-  },
-  videoThumbnail: {
-    width: 120,
-    height: 160,
-    backgroundColor: colors.secondary,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  videoPlaceholder: {
-    color: colors.text,
-    fontWeight: '500',
-  },
-  playIconOverlay: {
-    position: 'absolute',
   },
   videoInfo: {
     flex: 1,

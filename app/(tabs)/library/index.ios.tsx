@@ -13,6 +13,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
+import VideoPreview from '@/components/VideoPreview';
 import { supabase } from '@/app/integrations/supabase/client';
 
 interface UserVideo {
@@ -223,16 +224,15 @@ export default function LibraryScreen() {
           ) : userVideos.length > 0 ? (
             userVideos.map((video, index) => (
               <View key={index} style={styles.videoCard}>
-                <View style={styles.videoThumbnail}>
-                  <Text style={styles.videoPlaceholder}>Video</Text>
-                  <View style={styles.playIconOverlay}>
-                    <IconSymbol 
-                      ios_icon_name="play.circle.fill"
-                      size={48} 
-                      color="rgba(255, 255, 255, 0.9)"
-                    />
-                  </View>
-                </View>
+                <VideoPreview
+                  videoUrl={video.video_url}
+                  width={120}
+                  height={160}
+                  borderRadius={12}
+                  showPlayButton={true}
+                  autoPlay={false}
+                  muted={true}
+                />
                 <View style={styles.videoInfo}>
                   <Text style={styles.videoTitle}>{video.title}</Text>
                   <Text style={styles.videoTask}>{video.task}</Text>
@@ -393,23 +393,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     flexDirection: 'row',
     gap: 12,
-  },
-  videoThumbnail: {
-    width: 120,
-    height: 160,
-    backgroundColor: colors.secondary,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'relative',
-  },
-  videoPlaceholder: {
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '500',
-  },
-  playIconOverlay: {
-    position: 'absolute',
   },
   videoInfo: {
     flex: 1,
