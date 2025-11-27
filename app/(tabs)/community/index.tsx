@@ -152,17 +152,17 @@ const styles = StyleSheet.create({
   },
   header: {
     alignItems: 'center',
-    marginBottom: 24,
+    marginBottom: 32,
   },
   headerIcon: {
-    marginBottom: 12,
+    marginBottom: 4,
   },
   headerTitle: {
     color: colors.text,
     fontSize: 24,
     fontWeight: '700',
     letterSpacing: 1,
-    marginBottom: 8,
+    marginBottom: 16,
   },
   headerSubtitle: {
     color: colors.text,
