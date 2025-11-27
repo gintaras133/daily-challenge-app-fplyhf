@@ -20,6 +20,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '@/app/integrations/supabase/client';
 import CountryPicker, { Country, COUNTRIES } from '@/components/CountryPicker';
 import PhoneInput from '@/components/PhoneInput';
+import InviteUserModal from '@/components/InviteUserModal';
 
 export default function ProfileScreen() {
   const { user, userProfile, signOut, refreshProfile } = useAuth();
@@ -27,6 +28,7 @@ export default function ProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showInviteModal, setShowInviteModal] = useState(false);
   
   // Form state
   const [fullName, setFullName] = useState(userProfile?.full_name || '');
@@ -655,6 +657,18 @@ export default function ProfileScreen() {
         ) : (
           <>
             <TouchableOpacity
+              style={styles.inviteButton}
+              onPress={() => setShowInviteModal(true)}
+            >
+              <IconSymbol 
+                android_material_icon_name="person-add" 
+                size={20} 
+                color={colors.text}
+              />
+              <Text style={styles.inviteButtonText}>Invite New User</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               style={styles.signOutButton}
               onPress={handleSignOut}
             >
@@ -682,6 +696,11 @@ export default function ProfileScreen() {
           </>
         )}
       </View>
+
+      <InviteUserModal
+        visible={showInviteModal}
+        onClose={() => setShowInviteModal(false)}
+      />
     </ScrollView>
   );
 }
@@ -900,6 +919,21 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   saveButtonText: {
+    color: colors.text,
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  inviteButton: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  inviteButtonText: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '600',

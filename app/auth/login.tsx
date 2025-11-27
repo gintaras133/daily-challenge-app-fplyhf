@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -11,16 +11,28 @@ import {
   ActivityIndicator,
   Platform,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { supabase } from '@/app/integrations/supabase/client';
 import { colors } from '@/styles/commonStyles';
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
+  const params = useLocalSearchParams();
+  const [email, setEmail] = useState((params.email as string) || '');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState((params.invited as string) === 'true');
   const [passwordError, setPasswordError] = useState('');
+  const [wasInvited, setWasInvited] = useState((params.invited as string) === 'true');
+
+  useEffect(() => {
+    if (params.email) {
+      setEmail(params.email as string);
+    }
+    if (params.invited === 'true') {
+      setIsSignUp(true);
+      setWasInvited(true);
+    }
+  }, [params]);
 
   const validatePassword = (pass: string): boolean => {
     if (pass.length < 7) {
@@ -120,6 +132,20 @@ export default function LoginScreen() {
         <Text style={styles.subtitle}>
           {isSignUp ? 'Create your account' : 'Sign in to continue'}
         </Text>
+        {wasInvited && (
+          <View style={[styles.infoBox, styles.invitedBox]}>
+            <Text style={styles.infoText}>
+              🎉 You&apos;ve been invited! Complete your registration below.
+            </Text>
+          </View>
+        )}
+        {isSignUp && !wasInvited && (
+          <View style={styles.infoBox}>
+            <Text style={styles.infoText}>
+              💡 Use your Gmail address to sign up. You can also be invited by existing users!
+            </Text>
+          </View>
+        )}
       </View>
 
       <View style={styles.form}>
@@ -215,6 +241,23 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: colors.text,
+  },
+  infoBox: {
+    backgroundColor: colors.secondary,
+    borderRadius: 12,
+    padding: 12,
+    marginTop: 16,
+    borderWidth: 2,
+    borderColor: colors.accent,
+  },
+  invitedBox: {
+    backgroundColor: '#4CAF50',
+    borderColor: '#2E7D32',
+  },
+  infoText: {
+    fontSize: 14,
+    color: colors.text,
+    lineHeight: 20,
   },
   form: {
     gap: 16,
