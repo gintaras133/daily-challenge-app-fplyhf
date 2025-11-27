@@ -21,7 +21,7 @@ export default function HomeScreen() {
     challenge: "Assemble furniture in 60 seconds",
     environment: "Your living room or any indoor space",
     phrase: "Where's the instructions manual?!",
-    partner: "IKEA"
+    partner: "CapCut"
   };
 
   // Get time-based greeting
@@ -105,7 +105,7 @@ export default function HomeScreen() {
             <View style={styles.sponsorSection}>
               <Text style={styles.sponsorTitle}>THIS MONTH&apos;S SPONSOR</Text>
               <View style={styles.sponsorBadge}>
-                <Text style={styles.sponsorName}>IKEA</Text>
+                <Text style={styles.sponsorName}>CapCut</Text>
               </View>
             </View>
 
