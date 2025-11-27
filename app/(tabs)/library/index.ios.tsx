@@ -6,6 +6,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
 } from 'react-native';
 import { router } from 'expo-router';
 import { colors } from '@/styles/commonStyles';
@@ -15,6 +16,24 @@ import { supabase } from '@/app/integrations/supabase/client';
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
+
+  // Sample saved videos data
+  const savedVideos = [
+    {
+      id: '1',
+      username: '@sarah_adventures',
+      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+      timeAgo: '2 days ago',
+      likes: 234,
+    },
+    {
+      id: '2',
+      username: '@mike_creates',
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
+      timeAgo: '5 days ago',
+      likes: 567,
+    },
+  ];
 
   const handleLogout = async () => {
     try {
@@ -103,12 +122,40 @@ export default function LibraryScreen() {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Your Videos</Text>
-          <View style={styles.emptyState}>
-            <Text style={styles.emptyStateText}>
-              No videos yet. Start participating in challenges!
-            </Text>
-          </View>
+          <Text style={styles.sectionTitle}>Saved Videos</Text>
+          {savedVideos.length > 0 ? (
+            savedVideos.map((video, index) => (
+              <View key={index} style={styles.videoCard}>
+                <View style={styles.videoThumbnail}>
+                  <Text style={styles.videoPlaceholder}>Video</Text>
+                </View>
+                <View style={styles.videoInfo}>
+                  <Image 
+                    source={{ uri: video.avatarUrl }} 
+                    style={styles.avatar}
+                  />
+                  <View style={styles.videoDetails}>
+                    <Text style={styles.username}>{video.username}</Text>
+                    <Text style={styles.timeAgo}>{video.timeAgo}</Text>
+                  </View>
+                  <View style={styles.likesContainer}>
+                    <IconSymbol 
+                      ios_icon_name="heart.fill"
+                      size={16} 
+                      color={colors.accent}
+                    />
+                    <Text style={styles.likesText}>{video.likes}</Text>
+                  </View>
+                </View>
+              </View>
+            ))
+          ) : (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyStateText}>
+                No videos yet. Start participating in challenges!
+              </Text>
+            </View>
+          )}
         </View>
 
         <TouchableOpacity
@@ -221,6 +268,61 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colors.textHeader,
     marginBottom: 12,
+  },
+  videoCard: {
+    backgroundColor: colors.primary,
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 12,
+  },
+  videoThumbnail: {
+    width: '100%',
+    height: 100,
+    backgroundColor: colors.secondary,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  videoPlaceholder: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  videoInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: colors.secondary,
+  },
+  videoDetails: {
+    flex: 1,
+  },
+  username: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '600',
+    marginBottom: 2,
+  },
+  timeAgo: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '400',
+  },
+  likesContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  likesText: {
+    color: colors.text,
+    fontSize: 13,
+    fontWeight: '600',
   },
   emptyState: {
     backgroundColor: colors.primary,

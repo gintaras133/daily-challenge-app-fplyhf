@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 
@@ -10,7 +10,7 @@ interface FriendVideo {
   timeAgo: string;
   likes: number;
   views: number;
-  avatarColor: string;
+  avatarUrl: string;
 }
 
 export default function CommunityScreen() {
@@ -21,7 +21,7 @@ export default function CommunityScreen() {
       timeAgo: '2h ago',
       likes: 234,
       views: 1240,
-      avatarColor: '#ff6b6b',
+      avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
     },
     {
       id: '2',
@@ -29,7 +29,7 @@ export default function CommunityScreen() {
       timeAgo: '3h ago',
       likes: 567,
       views: 2130,
-      avatarColor: '#ff6b6b',
+      avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
     },
     {
       id: '3',
@@ -37,7 +37,7 @@ export default function CommunityScreen() {
       timeAgo: '4h ago',
       likes: 891,
       views: 3450,
-      avatarColor: '#ff6b6b',
+      avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
     },
     {
       id: '4',
@@ -45,7 +45,7 @@ export default function CommunityScreen() {
       timeAgo: '5h ago',
       likes: 432,
       views: 1890,
-      avatarColor: '#ff6b6b',
+      avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
     },
   ];
 
@@ -87,7 +87,10 @@ export default function CommunityScreen() {
 
             <View style={styles.videoInfo}>
               <View style={styles.videoHeader}>
-                <View style={[styles.avatar, { backgroundColor: video.avatarColor }]} />
+                <Image 
+                  source={{ uri: video.avatarUrl }} 
+                  style={styles.avatar}
+                />
                 <View style={styles.userDetails}>
                   <Text style={styles.username}>{video.username}</Text>
                   <Text style={styles.timeAgo}>{video.timeAgo}</Text>
@@ -209,6 +212,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
+    backgroundColor: '#d9d9d9',
   },
   userDetails: {
     flex: 1,

@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 
@@ -9,7 +9,7 @@ interface VideoData {
   username: string;
   timeAgo: string;
   views: number;
-  avatarColor: string;
+  avatarUrl: string;
   videoUrl?: string;
 }
 
@@ -19,18 +19,18 @@ export default function VoteScreen() {
   // Sample data - in a real app, this would come from an API
   const video1: VideoData = {
     id: 1,
-    username: "@user_one",
+    username: "@sarah_creates",
     timeAgo: "2 hours ago",
     views: 124,
-    avatarColor: colors.primary,
+    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
   };
 
   const video2: VideoData = {
     id: 2,
-    username: "@user_two",
+    username: "@mike_vision",
     timeAgo: "1 hour ago",
     views: 98,
-    avatarColor: colors.secondary,
+    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
   };
 
   const handleVote = (vote: 'video1' | 'video2' | 'neither') => {
@@ -61,7 +61,10 @@ export default function VoteScreen() {
           </View>
           
           <View style={styles.videoInfo}>
-            <View style={[styles.avatar, { backgroundColor: video1.avatarColor }]} />
+            <Image 
+              source={{ uri: video1.avatarUrl }} 
+              style={styles.avatar}
+            />
             <View style={styles.userInfo}>
               <Text style={styles.username}>{video1.username}</Text>
               <Text style={styles.timeAgo}>{video1.timeAgo}</Text>
@@ -89,7 +92,10 @@ export default function VoteScreen() {
           </View>
           
           <View style={styles.videoInfo}>
-            <View style={[styles.avatar, { backgroundColor: video2.avatarColor }]} />
+            <Image 
+              source={{ uri: video2.avatarUrl }} 
+              style={styles.avatar}
+            />
             <View style={styles.userInfo}>
               <Text style={styles.username}>{video2.username}</Text>
               <Text style={styles.timeAgo}>{video2.timeAgo}</Text>
@@ -216,6 +222,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
+    backgroundColor: colors.secondary,
   },
   userInfo: {
     flex: 1,

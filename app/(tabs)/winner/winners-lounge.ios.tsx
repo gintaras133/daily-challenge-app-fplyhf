@@ -1,6 +1,6 @@
 
 import React from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
@@ -10,7 +10,8 @@ export default function WinnersLoungeScreen() {
   const previousWinners = [
     {
       id: 1,
-      username: "@winner_user",
+      username: "@jessica_films",
+      avatarUrl: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop",
       date: "Nov 25, 2025",
       challenge: "Dance in a library",
       phrase: "Shhh... it's party time!",
@@ -23,6 +24,7 @@ export default function WinnersLoungeScreen() {
     {
       id: 2,
       username: "@yoga_queen",
+      avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop",
       date: "Nov 24, 2025",
       challenge: "Yoga pose at a bus stop",
       phrase: "Namaste everyone!",
@@ -35,6 +37,7 @@ export default function WinnersLoungeScreen() {
     {
       id: 3,
       username: "@singin_sam",
+      avatarUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop",
       date: "Nov 23, 2025",
       challenge: "Sing in a car wash",
       phrase: "Splish splash taking a bath!",
@@ -47,6 +50,7 @@ export default function WinnersLoungeScreen() {
     {
       id: 4,
       username: "@chef_mike",
+      avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
       date: "Nov 22, 2025",
       challenge: "Cook an egg on the street",
       phrase: "Too hot to handle!",
@@ -130,8 +134,16 @@ export default function WinnersLoungeScreen() {
           >
             <View style={styles.winnerHeader}>
               <View style={styles.winnerHeaderInfo}>
-                <Text style={styles.username}>{winner.username}</Text>
-                <Text style={styles.date}>{winner.date}</Text>
+                <View style={styles.userRow}>
+                  <Image 
+                    source={{ uri: winner.avatarUrl }} 
+                    style={styles.avatar}
+                  />
+                  <View style={styles.userTextInfo}>
+                    <Text style={styles.username}>{winner.username}</Text>
+                    <Text style={styles.date}>{winner.date}</Text>
+                  </View>
+                </View>
               </View>
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{winner.rank}</Text>
@@ -277,6 +289,20 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   winnerHeaderInfo: {
+    flex: 1,
+  },
+  userRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  avatar: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#d9d9d9',
+  },
+  userTextInfo: {
     flex: 1,
   },
   username: {

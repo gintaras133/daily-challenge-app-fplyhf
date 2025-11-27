@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
@@ -13,9 +13,9 @@ export default function WinnerScreen() {
 
   // Sample data - in a real app, this would come from an API
   const winner = {
-    username: "@winner_user",
+    username: "@jessica_films",
     date: "November 25, 2025",
-    avatarColor: colors.primary,
+    avatarUrl: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop",
   };
 
   const yesterdayStats = {
@@ -119,7 +119,10 @@ export default function WinnerScreen() {
           </View>
 
           <View style={styles.winnerInfo}>
-            <View style={[styles.avatar, { backgroundColor: winner.avatarColor }]} />
+            <Image 
+              source={{ uri: winner.avatarUrl }} 
+              style={styles.avatar}
+            />
             <View style={styles.userInfo}>
               <Text style={styles.username}>{winner.username}</Text>
               <Text style={styles.date}>{winner.date}</Text>
@@ -343,6 +346,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
+    backgroundColor: colors.secondary,
   },
   userInfo: {
     flex: 1,
