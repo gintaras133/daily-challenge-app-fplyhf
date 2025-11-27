@@ -3,9 +3,10 @@ import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
+import VideoComparisonModal from "@/components/VideoComparisonModal";
 
 interface VideoData {
-  id: number;
+  id: string;
   username: string;
   timeAgo: string;
   views: number;
@@ -15,10 +16,13 @@ interface VideoData {
 
 export default function VoteScreen() {
   const [selectedVote, setSelectedVote] = useState<'video1' | 'video2' | 'neither' | null>(null);
+  const [clickedVideos, setClickedVideos] = useState<string[]>([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
 
   // Sample data - in a real app, this would come from an API
   const video1: VideoData = {
-    id: 1,
+    id: '1',
     username: "@sarah_creates",
     timeAgo: "2 hours ago",
     views: 124,
@@ -26,11 +30,54 @@ export default function VoteScreen() {
   };
 
   const video2: VideoData = {
-    id: 2,
+    id: '2',
     username: "@mike_vision",
     timeAgo: "1 hour ago",
     views: 98,
     avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
+  };
+
+  // Additional video pairs for the comparison modal
+  const comparisonPairs = [
+    {
+      video1: {
+        id: '3',
+        username: '@emma_vibes',
+        avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '4',
+        username: '@alex_creative',
+        avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
+      },
+    },
+    {
+      video1: {
+        id: '5',
+        username: '@lisa_films',
+        avatarUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '6',
+        username: '@john_edits',
+        avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop',
+      },
+    },
+  ];
+
+  const handleVideoClick = (videoId: string) => {
+    console.log('Video clicked:', videoId);
+    
+    // Add to clicked videos if not already clicked
+    if (!clickedVideos.includes(videoId)) {
+      const newClickedVideos = [...clickedVideos, videoId];
+      setClickedVideos(newClickedVideos);
+      
+      // Show comparison modal after 1 or 2 videos are clicked
+      if (newClickedVideos.length === 1 || newClickedVideos.length === 2) {
+        setShowComparisonModal(true);
+      }
+    }
   };
 
   const handleVote = (vote: 'video1' | 'video2' | 'neither') => {
@@ -38,6 +85,25 @@ export default function VoteScreen() {
     console.log('Voted for:', vote);
     // In a real app, this would send the vote to the backend
   };
+
+  const handleComparisonVote = (videoId: string | 'neither') => {
+    console.log('Comparison vote:', videoId);
+    
+    // Move to next comparison pair if available
+    if (currentComparisonPair < comparisonPairs.length - 1) {
+      setCurrentComparisonPair(currentComparisonPair + 1);
+      setShowComparisonModal(true);
+    } else {
+      // Reset for next round
+      setCurrentComparisonPair(0);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowComparisonModal(false);
+  };
+
+  const currentPair = comparisonPairs[currentComparisonPair];
 
   return (
     <View style={styles.container}>
@@ -55,9 +121,23 @@ export default function VoteScreen() {
         </View>
 
         {/* Video 1 */}
-        <View style={styles.videoCard}>
+        <TouchableOpacity 
+          style={styles.videoCard}
+          onPress={() => handleVideoClick(video1.id)}
+          activeOpacity={0.8}
+        >
           <View style={styles.videoPreview}>
             <Text style={styles.videoPlaceholder}>Video Preview 1</Text>
+            {clickedVideos.includes(video1.id) && (
+              <View style={styles.clickedBadge}>
+                <IconSymbol
+                  android_material_icon_name="check-circle"
+                  ios_icon_name="checkmark.circle.fill"
+                  size={32}
+                  color={colors.accent}
+                />
+              </View>
+            )}
           </View>
           
           <View style={styles.videoInfo}>
@@ -78,7 +158,7 @@ export default function VoteScreen() {
               <Text style={styles.viewsText}>{video1.views} views</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* VS Badge */}
         <View style={styles.vsBadge}>
@@ -86,9 +166,23 @@ export default function VoteScreen() {
         </View>
 
         {/* Video 2 */}
-        <View style={styles.videoCard}>
+        <TouchableOpacity 
+          style={styles.videoCard}
+          onPress={() => handleVideoClick(video2.id)}
+          activeOpacity={0.8}
+        >
           <View style={styles.videoPreview}>
             <Text style={styles.videoPlaceholder}>Video Preview 2</Text>
+            {clickedVideos.includes(video2.id) && (
+              <View style={styles.clickedBadge}>
+                <IconSymbol
+                  android_material_icon_name="check-circle"
+                  ios_icon_name="checkmark.circle.fill"
+                  size={32}
+                  color={colors.accent}
+                />
+              </View>
+            )}
           </View>
           
           <View style={styles.videoInfo}>
@@ -109,7 +203,7 @@ export default function VoteScreen() {
               <Text style={styles.viewsText}>{video2.views} views</Text>
             </View>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Voting Buttons */}
         <View style={styles.votingButtons}>
@@ -156,7 +250,23 @@ export default function VoteScreen() {
             <Text style={styles.voteButtonText}>Video 2</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Info Text */}
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>
+            💡 Tap on videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
+          </Text>
+        </View>
       </ScrollView>
+
+      {/* Video Comparison Modal */}
+      <VideoComparisonModal
+        visible={showComparisonModal}
+        onClose={handleCloseModal}
+        onVote={handleComparisonVote}
+        video1={currentPair.video1}
+        video2={currentPair.video2}
+      />
     </View>
   );
 }
@@ -207,11 +317,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    position: 'relative',
   },
   videoPlaceholder: {
     color: colors.text,
     fontSize: 18,
     fontWeight: '500',
+  },
+  clickedBadge: {
+    position: 'absolute',
+    top: 12,
+    right: 12,
+    backgroundColor: colors.primary,
+    borderRadius: 20,
+    padding: 4,
   },
   videoInfo: {
     flexDirection: 'row',
@@ -295,5 +414,18 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 16,
     fontWeight: '700',
+  },
+  infoBox: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+  },
+  infoText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

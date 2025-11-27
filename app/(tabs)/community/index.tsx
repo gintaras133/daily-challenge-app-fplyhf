@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform, Image } from 'react-native';
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
+import VideoComparisonModal from '@/components/VideoComparisonModal';
 
 interface FriendVideo {
   id: string;
@@ -14,6 +15,10 @@ interface FriendVideo {
 }
 
 export default function CommunityScreen() {
+  const [clickedVideos, setClickedVideos] = useState<string[]>([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
+
   const friendsVideos: FriendVideo[] = [
     {
       id: '1',
@@ -49,15 +54,77 @@ export default function CommunityScreen() {
     },
   ];
 
+  // Additional video pairs for the comparison modal
+  const comparisonPairs = [
+    {
+      video1: {
+        id: '5',
+        username: '@lisa_films',
+        avatarUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '6',
+        username: '@john_edits',
+        avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop',
+      },
+    },
+    {
+      video1: {
+        id: '7',
+        username: '@kate_creates',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '8',
+        username: '@tom_films',
+        avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
+      },
+    },
+  ];
+
   const communityStats = {
     friendsActive: 24,
     totalVideos: 156,
     timeLeft: '8h',
   };
 
+  const handleVideoClick = (videoId: string) => {
+    console.log('Video clicked:', videoId);
+    
+    // Add to clicked videos if not already clicked
+    if (!clickedVideos.includes(videoId)) {
+      const newClickedVideos = [...clickedVideos, videoId];
+      setClickedVideos(newClickedVideos);
+      
+      // Show comparison modal after 1 or 2 videos are clicked
+      if (newClickedVideos.length === 1 || newClickedVideos.length === 2) {
+        setShowComparisonModal(true);
+      }
+    }
+  };
+
+  const handleComparisonVote = (videoId: string | 'neither') => {
+    console.log('Comparison vote:', videoId);
+    
+    // Move to next comparison pair if available
+    if (currentComparisonPair < comparisonPairs.length - 1) {
+      setCurrentComparisonPair(currentComparisonPair + 1);
+      setShowComparisonModal(true);
+    } else {
+      // Reset for next round
+      setCurrentComparisonPair(0);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowComparisonModal(false);
+  };
+
   const handleLoadMore = () => {
     console.log('Load more friends videos');
   };
+
+  const currentPair = comparisonPairs[currentComparisonPair];
 
   return (
     <View style={styles.container}>
@@ -80,9 +147,24 @@ export default function CommunityScreen() {
 
         {/* Video Cards */}
         {friendsVideos.map((video, index) => (
-          <View key={index} style={styles.videoCard}>
+          <TouchableOpacity 
+            key={index} 
+            style={styles.videoCard}
+            onPress={() => handleVideoClick(video.id)}
+            activeOpacity={0.8}
+          >
             <View style={styles.videoThumbnail}>
               <Text style={styles.videoPlaceholder}>Video</Text>
+              {clickedVideos.includes(video.id) && (
+                <View style={styles.clickedBadge}>
+                  <IconSymbol
+                    android_material_icon_name="check-circle"
+                    ios_icon_name="checkmark.circle.fill"
+                    size={24}
+                    color={colors.accent}
+                  />
+                </View>
+              )}
             </View>
 
             <View style={styles.videoInfo}>
@@ -112,7 +194,7 @@ export default function CommunityScreen() {
                 </View>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
 
         {/* Load More Button */}
@@ -135,7 +217,23 @@ export default function CommunityScreen() {
             <Text style={styles.statLabel}>Left Today</Text>
           </View>
         </View>
+
+        {/* Info Text */}
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>
+            💡 Tap on videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
+          </Text>
+        </View>
       </ScrollView>
+
+      {/* Video Comparison Modal */}
+      <VideoComparisonModal
+        visible={showComparisonModal}
+        onClose={handleCloseModal}
+        onVote={handleComparisonVote}
+        video1={currentPair.video1}
+        video2={currentPair.video2}
+      />
     </View>
   );
 }
@@ -192,11 +290,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    position: 'relative',
   },
   videoPlaceholder: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '500',
+  },
+  clickedBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 4,
   },
   videoInfo: {
     gap: 12,
@@ -280,5 +387,18 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 12,
     fontWeight: '600',
+  },
+  infoBox: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+  },
+  infoText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

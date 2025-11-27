@@ -1,15 +1,20 @@
 
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
+import VideoComparisonModal from "@/components/VideoComparisonModal";
 
 export default function WinnersLoungeScreen() {
+  const [clickedVideos, setClickedVideos] = useState<string[]>([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
+
   // Sample data for previous winners
   const previousWinners = [
     {
-      id: 1,
+      id: '1',
       username: "@jessica_films",
       avatarUrl: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop",
       date: "Nov 25, 2025",
@@ -22,7 +27,7 @@ export default function WinnersLoungeScreen() {
       rank: "#1",
     },
     {
-      id: 2,
+      id: '2',
       username: "@yoga_queen",
       avatarUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&h=200&fit=crop",
       date: "Nov 24, 2025",
@@ -35,7 +40,7 @@ export default function WinnersLoungeScreen() {
       rank: "#2",
     },
     {
-      id: 3,
+      id: '3',
       username: "@singin_sam",
       avatarUrl: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop",
       date: "Nov 23, 2025",
@@ -48,7 +53,7 @@ export default function WinnersLoungeScreen() {
       rank: "#3",
     },
     {
-      id: 4,
+      id: '4',
       username: "@chef_mike",
       avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
       date: "Nov 22, 2025",
@@ -62,7 +67,67 @@ export default function WinnersLoungeScreen() {
     },
   ];
 
-  const handleWinnerDetail = (winnerId: number) => {
+  // Additional video pairs for the comparison modal
+  const comparisonPairs = [
+    {
+      video1: {
+        id: '5',
+        username: '@winner_a',
+        avatarUrl: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '6',
+        username: '@winner_b',
+        avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
+      },
+    },
+    {
+      video1: {
+        id: '7',
+        username: '@winner_c',
+        avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '8',
+        username: '@winner_d',
+        avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
+      },
+    },
+  ];
+
+  const handleVideoClick = (videoId: string) => {
+    console.log('Winner video clicked:', videoId);
+    
+    // Add to clicked videos if not already clicked
+    if (!clickedVideos.includes(videoId)) {
+      const newClickedVideos = [...clickedVideos, videoId];
+      setClickedVideos(newClickedVideos);
+      
+      // Show comparison modal after 1 or 2 videos are clicked
+      if (newClickedVideos.length === 1 || newClickedVideos.length === 2) {
+        setShowComparisonModal(true);
+      }
+    }
+  };
+
+  const handleComparisonVote = (videoId: string | 'neither') => {
+    console.log('Comparison vote:', videoId);
+    
+    // Move to next comparison pair if available
+    if (currentComparisonPair < comparisonPairs.length - 1) {
+      setCurrentComparisonPair(currentComparisonPair + 1);
+      setShowComparisonModal(true);
+    } else {
+      // Reset for next round
+      setCurrentComparisonPair(0);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowComparisonModal(false);
+  };
+
+  const handleWinnerDetail = (winnerId: string) => {
     console.log('Navigate to winner detail:', winnerId);
     router.push(`/(tabs)/winner?winnerId=${winnerId}`);
   };
@@ -76,6 +141,8 @@ export default function WinnersLoungeScreen() {
     console.log('Navigate back to Winner screen');
     router.push('/(tabs)/winner');
   };
+
+  const currentPair = comparisonPairs[currentComparisonPair];
 
   return (
     <View style={styles.container}>
@@ -132,7 +199,7 @@ export default function WinnersLoungeScreen() {
           <TouchableOpacity 
             key={index} 
             style={styles.winnerCard}
-            onPress={() => handleWinnerDetail(winner.id)}
+            onPress={() => handleVideoClick(winner.id)}
           >
             <View style={styles.winnerHeader}>
               <View style={styles.winnerHeaderInfo}>
@@ -150,6 +217,16 @@ export default function WinnersLoungeScreen() {
               <View style={styles.rankBadge}>
                 <Text style={styles.rankText}>{winner.rank}</Text>
               </View>
+              {clickedVideos.includes(winner.id) && (
+                <View style={styles.clickedBadge}>
+                  <IconSymbol
+                    android_material_icon_name="check-circle"
+                    ios_icon_name="checkmark.circle.fill"
+                    size={24}
+                    color={colors.accent}
+                  />
+                </View>
+              )}
             </View>
 
             <View style={styles.challengeInfo}>
@@ -212,7 +289,23 @@ export default function WinnersLoungeScreen() {
         >
           <Text style={styles.backToWinnerText}>← Back to Latest Winner</Text>
         </TouchableOpacity>
+
+        {/* Info Text */}
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText}>
+            💡 Tap on winner videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
+          </Text>
+        </View>
       </ScrollView>
+
+      {/* Video Comparison Modal */}
+      <VideoComparisonModal
+        visible={showComparisonModal}
+        onClose={handleCloseModal}
+        onVote={handleComparisonVote}
+        video1={currentPair.video1}
+        video2={currentPair.video2}
+      />
     </View>
   );
 }
@@ -286,6 +379,7 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 18,
     marginBottom: 12,
+    position: 'relative',
   },
   winnerHeader: {
     flexDirection: 'row',
@@ -332,6 +426,14 @@ const styles = StyleSheet.create({
     color: colors.secondary,
     fontSize: 16,
     fontWeight: '600',
+  },
+  clickedBadge: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 4,
   },
   challengeInfo: {
     marginBottom: 16,
@@ -399,11 +501,25 @@ const styles = StyleSheet.create({
   backToWinnerButton: {
     alignItems: 'center',
     paddingVertical: 16,
+    marginBottom: 16,
   },
   backToWinnerText: {
     color: colors.text,
     fontSize: 16,
     fontWeight: '600',
     textDecorationLine: 'underline',
+  },
+  infoBox: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 24,
+  },
+  infoText: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });

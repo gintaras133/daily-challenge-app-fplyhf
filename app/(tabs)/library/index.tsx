@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -14,9 +14,13 @@ import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
 import { supabase } from '@/app/integrations/supabase/client';
+import VideoComparisonModal from '@/components/VideoComparisonModal';
 
 export default function LibraryScreen() {
   const { userProfile } = useAuth();
+  const [clickedVideos, setClickedVideos] = useState<string[]>([]);
+  const [showComparisonModal, setShowComparisonModal] = useState(false);
+  const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
 
   // Sample saved videos data
   const savedVideos = [
@@ -36,6 +40,66 @@ export default function LibraryScreen() {
     },
   ];
 
+  // Additional video pairs for the comparison modal
+  const comparisonPairs = [
+    {
+      video1: {
+        id: '3',
+        username: '@library_user_a',
+        avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '4',
+        username: '@library_user_b',
+        avatarUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop',
+      },
+    },
+    {
+      video1: {
+        id: '5',
+        username: '@library_user_c',
+        avatarUrl: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=200&h=200&fit=crop',
+      },
+      video2: {
+        id: '6',
+        username: '@library_user_d',
+        avatarUrl: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=200&h=200&fit=crop',
+      },
+    },
+  ];
+
+  const handleVideoClick = (videoId: string) => {
+    console.log('Library video clicked:', videoId);
+    
+    // Add to clicked videos if not already clicked
+    if (!clickedVideos.includes(videoId)) {
+      const newClickedVideos = [...clickedVideos, videoId];
+      setClickedVideos(newClickedVideos);
+      
+      // Show comparison modal after 1 or 2 videos are clicked
+      if (newClickedVideos.length === 1 || newClickedVideos.length === 2) {
+        setShowComparisonModal(true);
+      }
+    }
+  };
+
+  const handleComparisonVote = (videoId: string | 'neither') => {
+    console.log('Comparison vote:', videoId);
+    
+    // Move to next comparison pair if available
+    if (currentComparisonPair < comparisonPairs.length - 1) {
+      setCurrentComparisonPair(currentComparisonPair + 1);
+      setShowComparisonModal(true);
+    } else {
+      // Reset for next round
+      setCurrentComparisonPair(0);
+    }
+  };
+
+  const handleCloseModal = () => {
+    setShowComparisonModal(false);
+  };
+
   const handleLogout = async () => {
     try {
       await supabase.auth.signOut();
@@ -53,6 +117,8 @@ export default function LibraryScreen() {
     const phoneWithoutCode = fullPhone.replace(/^\+?\d{1,4}\s*/, '').trim();
     return phoneWithoutCode || fullPhone;
   };
+
+  const currentPair = comparisonPairs[currentComparisonPair];
 
   return (
     <View style={styles.container}>
@@ -125,9 +191,24 @@ export default function LibraryScreen() {
           <Text style={styles.sectionTitle}>Saved Videos</Text>
           {savedVideos.length > 0 ? (
             savedVideos.map((video, index) => (
-              <View key={index} style={styles.videoCard}>
+              <TouchableOpacity 
+                key={index} 
+                style={styles.videoCard}
+                onPress={() => handleVideoClick(video.id)}
+                activeOpacity={0.8}
+              >
                 <View style={styles.videoThumbnail}>
                   <Text style={styles.videoPlaceholder}>Video</Text>
+                  {clickedVideos.includes(video.id) && (
+                    <View style={styles.clickedBadge}>
+                      <IconSymbol
+                        android_material_icon_name="check-circle"
+                        ios_icon_name="checkmark.circle.fill"
+                        size={24}
+                        color={colors.accent}
+                      />
+                    </View>
+                  )}
                 </View>
                 <View style={styles.videoInfo}>
                   <Image 
@@ -147,7 +228,7 @@ export default function LibraryScreen() {
                     <Text style={styles.likesText}>{video.likes}</Text>
                   </View>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))
           ) : (
             <View style={styles.emptyState}>
@@ -164,7 +245,23 @@ export default function LibraryScreen() {
         >
           <Text style={styles.communityButtonText}>Back to Community Hub</Text>
         </TouchableOpacity>
+
+        {/* Info Text */}
+        <View style={styles.infoBox}>
+          <Text style={styles.infoText2}>
+            💡 Tap on videos to watch them! After viewing 1-2 videos, you&apos;ll be asked to compare more videos.
+          </Text>
+        </View>
       </ScrollView>
+
+      {/* Video Comparison Modal */}
+      <VideoComparisonModal
+        visible={showComparisonModal}
+        onClose={handleCloseModal}
+        onVote={handleComparisonVote}
+        video1={currentPair.video1}
+        video2={currentPair.video2}
+      />
     </View>
   );
 }
@@ -283,11 +380,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
+    position: 'relative',
   },
   videoPlaceholder: {
     color: colors.text,
     fontSize: 14,
     fontWeight: '500',
+  },
+  clickedBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 4,
   },
   videoInfo: {
     flexDirection: 'row',
@@ -341,10 +447,24 @@ const styles = StyleSheet.create({
     padding: 16,
     alignItems: 'center',
     marginTop: 16,
+    marginBottom: 16,
   },
   communityButtonText: {
     color: colors.textOnPrimary,
     fontSize: 16,
     fontWeight: '600',
+  },
+  infoBox: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 16,
+    marginBottom: 100,
+  },
+  infoText2: {
+    color: colors.text,
+    fontSize: 14,
+    fontWeight: '500',
+    textAlign: 'center',
+    lineHeight: 20,
   },
 });
