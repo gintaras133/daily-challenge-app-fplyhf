@@ -141,20 +141,6 @@ export default function RecordScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Back Arrow */}
-      <View style={styles.headerContainer}>
-        <TouchableOpacity 
-          style={styles.backButton}
-          onPress={() => router.push('/(tabs)/(home)')}
-        >
-          <IconSymbol 
-            android_material_icon_name="arrow-back" 
-            size={28} 
-            color={colors.text}
-          />
-        </TouchableOpacity>
-      </View>
-
       <ScrollView 
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -235,22 +221,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  headerContainer: {
-    paddingTop: 48,
-    paddingHorizontal: 20,
-    paddingBottom: 12,
-    backgroundColor: colors.background,
-  },
-  backButton: {
-    width: 44,
-    height: 44,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
+    paddingTop: 48,
     paddingHorizontal: 24,
     paddingBottom: 120,
   },
