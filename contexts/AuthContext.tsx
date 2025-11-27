@@ -57,24 +57,70 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const fetchUserProfile = async (userId: string) => {
     try {
       console.log('Fetching user profile for userId:', userId);
+      
+      // First, try to get the profile
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', userId)
-        .single();
+        .maybeSingle(); // Use maybeSingle() instead of single() to avoid errors when no row exists
 
       if (error) {
-        console.log('No profile found or error fetching profile:', error.message);
-        setUserProfile(null);
+        console.error('Error fetching profile:', error.message);
+        
+        // If profile doesn't exist, create a basic one
+        if (error.code === 'PGRST116') {
+          console.log('Profile not found, creating basic profile...');
+          const { data: newProfile, error: insertError } = await supabase
+            .from('user_profiles')
+            .insert({
+              id: userId,
+              onboarding_completed: false,
+            })
+            .select()
+            .single();
+
+          if (insertError) {
+            console.error('Error creating profile:', insertError.message);
+            setUserProfile(null);
+          } else {
+            console.log('Basic profile created successfully');
+            setUserProfile(newProfile);
+          }
+        } else {
+          setUserProfile(null);
+        }
         setProfileChecked(true);
         return;
       }
 
-      console.log('User profile fetched successfully:', data);
-      setUserProfile(data);
+      if (!data) {
+        console.log('No profile found, creating basic profile...');
+        // Create a basic profile if it doesn't exist
+        const { data: newProfile, error: insertError } = await supabase
+          .from('user_profiles')
+          .insert({
+            id: userId,
+            onboarding_completed: false,
+          })
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('Error creating profile:', insertError.message);
+          setUserProfile(null);
+        } else {
+          console.log('Basic profile created successfully');
+          setUserProfile(newProfile);
+        }
+      } else {
+        console.log('User profile fetched successfully:', data);
+        setUserProfile(data);
+      }
+      
       setProfileChecked(true);
     } catch (error) {
-      console.error('Error fetching user profile:', error);
+      console.error('Unexpected error fetching user profile:', error);
       setUserProfile(null);
       setProfileChecked(true);
     }
