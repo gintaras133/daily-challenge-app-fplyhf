@@ -50,7 +50,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     duration: "Final Video: 15–25 sec\nProduction Window: 45 minutes",
     suggestion: "Use CapCut Speed Ramp → \"Hero\" to accentuate the reveal in the final clip.",
     partner: "CapCut",
-    prize: "1 year subscription of CapCut Pro"
+    prize: "100 Bloop token"
   });
 
   const updateTodayTask = (task: TodayTask) => {
