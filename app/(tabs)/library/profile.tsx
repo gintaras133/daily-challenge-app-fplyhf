@@ -21,6 +21,7 @@ import { supabase } from '@/app/integrations/supabase/client';
 import CountryPicker, { Country, COUNTRIES } from '@/components/CountryPicker';
 import PhoneInput from '@/components/PhoneInput';
 import InviteUserModal from '@/components/InviteUserModal';
+import { WinsStreaksCard } from '@/components/WinsStreaksCard';
 
 export default function ProfileScreen() {
   const { user, userProfile, signOut, refreshProfile } = useAuth();
@@ -435,6 +436,12 @@ export default function ProfileScreen() {
             </Text>
           </TouchableOpacity>
         </View>
+
+        {/* Wins and Streaks Card */}
+        <WinsStreaksCard 
+          wins={userProfile?.wins || 0} 
+          streak={userProfile?.streak || 0} 
+        />
 
         {/* Account Information Section */}
         <View style={styles.section}>
