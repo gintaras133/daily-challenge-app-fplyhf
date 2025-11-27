@@ -149,6 +149,20 @@ export default function RecordScreen() {
         }}
       />
       <View style={styles.container}>
+        {/* Back Arrow */}
+        <View style={styles.headerContainer}>
+          <TouchableOpacity 
+            style={styles.backButton}
+            onPress={() => router.push('/(tabs)/(home)')}
+          >
+            <IconSymbol 
+              ios_icon_name="chevron.left"
+              size={28} 
+              color={colors.text}
+            />
+          </TouchableOpacity>
+        </View>
+
         <ScrollView 
           style={styles.scrollView}
           contentContainerStyle={styles.scrollContent}
@@ -230,11 +244,22 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  headerContainer: {
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+    backgroundColor: colors.background,
+  },
+  backButton: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 120,
   },
