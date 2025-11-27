@@ -5,8 +5,10 @@ import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
+import { useTask } from "@/contexts/TaskContext";
 
 export default function WinnerScreen() {
+  const { yesterdayTask } = useTask();
   const [timeRemaining, setTimeRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   // Sample data - in a real app, this would come from an API
@@ -16,11 +18,7 @@ export default function WinnerScreen() {
     avatarColor: "#ffcc00",
   };
 
-  const yesterdayChallenge = {
-    challenge: "Assemble furniture in 60 seconds",
-    environment: "Your living room or any indoor space",
-    phrase: "Where's the instructions manual?!",
-    partner: "CapCut",
+  const yesterdayStats = {
     likes: 45200,
     views: 98500,
     engagement: 94,
@@ -132,14 +130,23 @@ export default function WinnerScreen() {
           </View>
         </View>
 
+        {/* Prize Information */}
+        <View style={styles.prizeContainer}>
+          <Text style={styles.prizeText}>
+            The prize yesterday ({yesterdayTask.prize})
+          </Text>
+        </View>
+
         {/* Yesterday's Challenge Card */}
         <View style={styles.challengeCardContainer}>
-          <Text style={styles.yesterdayTitle}>Yesterday&apos;s Challenge</Text>
+          <Text style={styles.yesterdayTitle}>Yesterday&apos;s Task</Text>
           <TodaysChallengeCard
-            challenge={yesterdayChallenge.challenge}
-            environment={yesterdayChallenge.environment}
-            phrase={yesterdayChallenge.phrase}
-            partner={yesterdayChallenge.partner}
+            task={yesterdayTask.task}
+            constraint={yesterdayTask.constraint}
+            skillMastery={yesterdayTask.skillMastery}
+            duration={yesterdayTask.duration}
+            suggestion={yesterdayTask.suggestion}
+            partner={yesterdayTask.partner}
           />
         </View>
 
@@ -153,7 +160,7 @@ export default function WinnerScreen() {
                 color="#ff6b6b"
               />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statNumber}>{(yesterdayChallenge.likes / 1000).toFixed(1)}k</Text>
+                <Text style={styles.statNumber}>{(yesterdayStats.likes / 1000).toFixed(1)}k</Text>
                 <Text style={styles.statLabel}>Likes</Text>
               </View>
             </View>
@@ -165,7 +172,7 @@ export default function WinnerScreen() {
                 color="#5dade2"
               />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statNumber}>{(yesterdayChallenge.views / 1000).toFixed(1)}k</Text>
+                <Text style={styles.statNumber}>{(yesterdayStats.views / 1000).toFixed(1)}k</Text>
                 <Text style={styles.statLabel}>Views</Text>
               </View>
             </View>
@@ -177,7 +184,7 @@ export default function WinnerScreen() {
                 color="#51cf66"
               />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statNumber}>{yesterdayChallenge.engagement}%</Text>
+                <Text style={styles.statNumber}>{yesterdayStats.engagement}%</Text>
                 <Text style={styles.statLabel}>Engagement</Text>
               </View>
             </View>
@@ -202,7 +209,7 @@ export default function WinnerScreen() {
 
         {/* Social Share Message */}
         <Text style={styles.shareMessage}>
-          <Text style={styles.shareMessageBold}>This video was shared {yesterdayChallenge.shareCount.toLocaleString()} times on social media!</Text> 🚀
+          <Text style={styles.shareMessageBold}>This video was shared {yesterdayStats.shareCount.toLocaleString()} times on social media!</Text> 🚀
         </Text>
 
         {/* Winners Lounge Button */}
@@ -359,6 +366,20 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 14,
     fontWeight: '700',
+  },
+  prizeContainer: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  prizeText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 26,
   },
   challengeCardContainer: {
     marginBottom: 24,

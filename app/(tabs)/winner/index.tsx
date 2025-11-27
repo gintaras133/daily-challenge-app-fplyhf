@@ -8,7 +8,7 @@ import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 import { useTask } from "@/contexts/TaskContext";
 
 export default function WinnerScreen() {
-  const { todayTask } = useTask();
+  const { yesterdayTask } = useTask();
   const [timeRemaining, setTimeRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
 
   // Sample data - in a real app, this would come from an API
@@ -130,16 +130,23 @@ export default function WinnerScreen() {
           </View>
         </View>
 
+        {/* Prize Information */}
+        <View style={styles.prizeContainer}>
+          <Text style={styles.prizeText}>
+            The prize yesterday ({yesterdayTask.prize})
+          </Text>
+        </View>
+
         {/* Yesterday's Challenge Card */}
         <View style={styles.challengeCardContainer}>
           <Text style={styles.yesterdayTitle}>Yesterday&apos;s Task</Text>
           <TodaysChallengeCard
-            task={todayTask.task}
-            constraint={todayTask.constraint}
-            skillMastery={todayTask.skillMastery}
-            duration={todayTask.duration}
-            suggestion={todayTask.suggestion}
-            partner={todayTask.partner}
+            task={yesterdayTask.task}
+            constraint={yesterdayTask.constraint}
+            skillMastery={yesterdayTask.skillMastery}
+            duration={yesterdayTask.duration}
+            suggestion={yesterdayTask.suggestion}
+            partner={yesterdayTask.partner}
           />
         </View>
 
@@ -355,6 +362,20 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontSize: 14,
     fontWeight: '700',
+  },
+  prizeContainer: {
+    backgroundColor: colors.primary,
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 24,
+    alignItems: 'center',
+  },
+  prizeText: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '700',
+    textAlign: 'center',
+    lineHeight: 26,
   },
   challengeCardContainer: {
     marginBottom: 24,

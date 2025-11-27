@@ -10,9 +10,15 @@ export interface TodayTask {
   partner: string;
 }
 
+export interface YesterdayTask extends TodayTask {
+  prize: string;
+}
+
 interface TaskContextType {
   todayTask: TodayTask;
+  yesterdayTask: YesterdayTask;
   updateTodayTask: (task: TodayTask) => void;
+  updateYesterdayTask: (task: YesterdayTask) => void;
 }
 
 const TaskContext = createContext<TaskContextType | undefined>(undefined);
@@ -36,18 +42,34 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     partner: "CapCut"
   });
 
+  // Yesterday's task data
+  const [yesterdayTask, setYesterdayTask] = useState<YesterdayTask>({
+    task: "Create a Product Hype Reel",
+    constraint: "Showcase one product using three angles: top shot, side shot, hero shot.",
+    skillMastery: "Cinematic framing, micro-motion editing, CapCut speed ramping.",
+    duration: "Final Video: 15–25 sec\nProduction Window: 45 minutes",
+    suggestion: "Use CapCut Speed Ramp → \"Hero\" to accentuate the reveal in the final clip.",
+    partner: "CapCut",
+    prize: "1 year subscription of CapCut Pro"
+  });
+
   const updateTodayTask = (task: TodayTask) => {
     setTodayTask(task);
+  };
+
+  const updateYesterdayTask = (task: YesterdayTask) => {
+    setYesterdayTask(task);
   };
 
   // In a real app, you would fetch the task from an API here
   useEffect(() => {
     // Example: fetchTodayTask().then(setTodayTask);
     console.log('Today\'s task loaded:', todayTask);
+    console.log('Yesterday\'s task loaded:', yesterdayTask);
   }, []);
 
   return (
-    <TaskContext.Provider value={{ todayTask, updateTodayTask }}>
+    <TaskContext.Provider value={{ todayTask, yesterdayTask, updateTodayTask, updateYesterdayTask }}>
       {children}
     </TaskContext.Provider>
   );
