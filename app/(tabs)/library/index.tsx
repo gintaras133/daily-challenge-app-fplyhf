@@ -15,6 +15,16 @@ import { colors } from '@/styles/commonStyles';
 import { useAuth } from '@/contexts/AuthContext';
 import { IconSymbol } from '@/components/IconSymbol';
 import { supabase } from '@/app/integrations/supabase/client';
+import { 
+  getTopSafePadding, 
+  getBottomSafePadding, 
+  getHorizontalPadding,
+  getSpacing,
+  getBorderRadius,
+  getFontSizes,
+  getIconSize,
+  getCardPadding,
+} from '@/utils/responsive';
 
 interface UserVideo {
   id: string;
@@ -31,6 +41,14 @@ export default function LibraryScreen() {
   const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Get responsive values
+  const fontSizes = getFontSizes();
+  const topPadding = getTopSafePadding();
+  const bottomPadding = getBottomSafePadding();
+  const horizontalPadding = getHorizontalPadding();
+  const spacing = getSpacing();
+  const cardPadding = getCardPadding();
 
   const fetchUserVideos = async () => {
     try {
@@ -107,40 +125,54 @@ export default function LibraryScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <View style={styles.headerTop}>
-          <Text style={styles.title}>Library</Text>
+      <View style={[
+        styles.header,
+        {
+          paddingTop: topPadding,
+          paddingHorizontal: horizontalPadding,
+          paddingBottom: spacing * 2,
+        }
+      ]}>
+        <View style={[styles.headerTop, { marginBottom: spacing }]}>
+          <Text style={[styles.title, { fontSize: fontSizes.hero }]}>Library</Text>
           <TouchableOpacity
-            style={styles.settingsButton}
+            style={[
+              styles.settingsButton,
+              {
+                width: 44,
+                height: 44,
+                borderRadius: 22,
+              }
+            ]}
             onPress={() => router.push('/(tabs)/library/profile')}
           >
             <IconSymbol 
               android_material_icon_name="settings" 
-              size={24} 
+              size={getIconSize('medium')} 
               color={colors.accent}
             />
           </TouchableOpacity>
         </View>
         {userProfile && (
-          <View style={styles.profileInfo}>
-            <Text style={styles.welcomeText}>
+          <View style={[styles.profileInfo, { gap: spacing * 0.5 }]}>
+            <Text style={[styles.welcomeText, { fontSize: fontSizes.medium, marginBottom: spacing * 0.5 }]}>
               Welcome, {userProfile.full_name}!
             </Text>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, { gap: spacing * 0.5 }]}>
               <IconSymbol 
                 android_material_icon_name="location-on" 
-                size={16} 
+                size={getIconSize('small')} 
                 color={colors.text}
               />
-              <Text style={styles.infoText}>{userProfile.country}</Text>
+              <Text style={[styles.infoText, { fontSize: fontSizes.body }]}>{userProfile.country}</Text>
             </View>
-            <View style={styles.infoRow}>
+            <View style={[styles.infoRow, { gap: spacing * 0.5 }]}>
               <IconSymbol 
                 android_material_icon_name="phone" 
-                size={16} 
+                size={getIconSize('small')} 
                 color={colors.text}
               />
-              <Text style={styles.infoText}>
+              <Text style={[styles.infoText, { fontSize: fontSizes.body }]}>
                 {getPhoneWithoutCountryCode(userProfile.telephone_number)}
               </Text>
             </View>
@@ -150,6 +182,10 @@ export default function LibraryScreen() {
 
       <ScrollView 
         style={styles.content}
+        contentContainerStyle={{
+          padding: horizontalPadding,
+          paddingBottom: bottomPadding,
+        }}
         refreshControl={
           <RefreshControl
             refreshing={isRefreshing}
@@ -159,50 +195,75 @@ export default function LibraryScreen() {
         }
       >
         {/* Stats Cards */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
+        <View style={[styles.statsContainer, { marginBottom: spacing * 2, gap: spacing }]}>
+          <View style={[styles.statCard, { borderRadius: getBorderRadius('medium'), padding: cardPadding, gap: spacing }]}>
             <IconSymbol 
               android_material_icon_name="video-library"
-              size={28} 
+              size={getIconSize('large')} 
               color={colors.accent}
             />
-            <Text style={styles.statValue}>{userStats.videoCount}</Text>
-            <Text style={styles.statLabel}>Videos</Text>
+            <Text style={[styles.statValue, { fontSize: fontSizes.title }]}>{userStats.videoCount}</Text>
+            <Text style={[styles.statLabel, { fontSize: fontSizes.small }]}>Videos</Text>
           </View>
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { borderRadius: getBorderRadius('medium'), padding: cardPadding, gap: spacing }]}>
             <IconSymbol 
               android_material_icon_name="emoji-events"
-              size={28} 
+              size={getIconSize('large')} 
               color="#FFD700"
             />
-            <Text style={styles.statValue}>{userStats.winsCount}</Text>
-            <Text style={styles.statLabel}>Wins</Text>
+            <Text style={[styles.statValue, { fontSize: fontSizes.title }]}>{userStats.winsCount}</Text>
+            <Text style={[styles.statLabel, { fontSize: fontSizes.small }]}>Wins</Text>
           </View>
-          <View style={styles.statCard}>
+          <View style={[styles.statCard, { borderRadius: getBorderRadius('medium'), padding: cardPadding, gap: spacing }]}>
             <IconSymbol 
               android_material_icon_name="local-fire-department"
-              size={28} 
+              size={getIconSize('large')} 
               color="#FF6B6B"
             />
-            <Text style={styles.statValue}>{userStats.streakNumber}</Text>
-            <Text style={styles.statLabel}>Streak</Text>
+            <Text style={[styles.statValue, { fontSize: fontSizes.title }]}>{userStats.streakNumber}</Text>
+            <Text style={[styles.statLabel, { fontSize: fontSizes.small }]}>Streak</Text>
           </View>
         </View>
 
         {/* My Videos Section */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>My Videos</Text>
+          <Text style={[styles.sectionTitle, { fontSize: fontSizes.xxlarge, marginBottom: spacing * 2 }]}>
+            My Videos
+          </Text>
           
           {isLoading ? (
-            <View style={styles.loadingContainer}>
+            <View style={[
+              styles.loadingContainer,
+              {
+                borderRadius: getBorderRadius('medium'),
+                padding: spacing * 4,
+                gap: spacing * 2,
+              }
+            ]}>
               <ActivityIndicator size="large" color={colors.accent} />
-              <Text style={styles.loadingText}>Loading your videos...</Text>
+              <Text style={[styles.loadingText, { fontSize: fontSizes.medium }]}>Loading your videos...</Text>
             </View>
           ) : userVideos.length > 0 ? (
             userVideos.map((video, index) => (
-              <View key={index} style={styles.videoCard}>
-                <View style={styles.videoThumbnail}>
-                  <Text style={styles.videoPlaceholder}>Video</Text>
+              <View 
+                key={index} 
+                style={[
+                  styles.videoCard,
+                  {
+                    borderRadius: getBorderRadius('medium'),
+                    padding: cardPadding,
+                    marginBottom: spacing * 2,
+                    gap: spacing,
+                  }
+                ]}
+              >
+                <View style={[
+                  styles.videoThumbnail,
+                  {
+                    borderRadius: getBorderRadius('medium'),
+                  }
+                ]}>
+                  <Text style={[styles.videoPlaceholder, { fontSize: fontSizes.body }]}>Video</Text>
                   <View style={styles.playIconOverlay}>
                     <IconSymbol 
                       android_material_icon_name="play-circle"
@@ -212,55 +273,88 @@ export default function LibraryScreen() {
                   </View>
                 </View>
                 <View style={styles.videoInfo}>
-                  <Text style={styles.videoTitle}>{video.title}</Text>
-                  <Text style={styles.videoTask}>{video.task}</Text>
-                  <View style={styles.videoStats}>
-                    <View style={styles.videoStatItem}>
+                  <Text style={[styles.videoTitle, { fontSize: fontSizes.medium, marginBottom: spacing * 0.5 }]}>
+                    {video.title}
+                  </Text>
+                  <Text style={[styles.videoTask, { fontSize: fontSizes.body, marginBottom: spacing }]}>
+                    {video.task}
+                  </Text>
+                  <View style={[styles.videoStats, { gap: spacing }]}>
+                    <View style={[styles.videoStatItem, { gap: spacing * 0.5 }]}>
                       <IconSymbol 
                         android_material_icon_name="visibility"
-                        size={14} 
+                        size={getIconSize('small')} 
                         color={colors.text}
                       />
-                      <Text style={styles.videoStatText}>{video.views}</Text>
+                      <Text style={[styles.videoStatText, { fontSize: fontSizes.small }]}>{video.views}</Text>
                     </View>
-                    <View style={styles.videoStatItem}>
+                    <View style={[styles.videoStatItem, { gap: spacing * 0.5 }]}>
                       <IconSymbol 
                         android_material_icon_name="favorite"
-                        size={14} 
+                        size={getIconSize('small')} 
                         color={colors.accent}
                       />
-                      <Text style={styles.videoStatText}>{video.likes}</Text>
+                      <Text style={[styles.videoStatText, { fontSize: fontSizes.small }]}>{video.likes}</Text>
                     </View>
-                    <Text style={styles.videoDate}>{formatDate(video.uploaded_at)}</Text>
+                    <Text style={[styles.videoDate, { fontSize: fontSizes.tiny }]}>
+                      {formatDate(video.uploaded_at)}
+                    </Text>
                   </View>
                 </View>
               </View>
             ))
           ) : (
-            <View style={styles.emptyState}>
+            <View style={[
+              styles.emptyState,
+              {
+                borderRadius: getBorderRadius('medium'),
+                padding: spacing * 4,
+                gap: spacing * 2,
+              }
+            ]}>
               <IconSymbol 
                 android_material_icon_name="videocam-off"
                 size={48} 
                 color={colors.text}
               />
-              <Text style={styles.emptyStateText}>
+              <Text style={[styles.emptyStateText, { fontSize: fontSizes.medium, lineHeight: fontSizes.medium * 1.5 }]}>
                 No videos yet. Start participating in challenges!
               </Text>
               <TouchableOpacity
-                style={styles.recordButton}
+                style={[
+                  styles.recordButton,
+                  {
+                    borderRadius: getBorderRadius('medium'),
+                    paddingVertical: spacing,
+                    paddingHorizontal: spacing * 2,
+                    marginTop: spacing,
+                  }
+                ]}
                 onPress={() => router.push('/(tabs)/(home)/record')}
               >
-                <Text style={styles.recordButtonText}>Record Your First Video</Text>
+                <Text style={[styles.recordButtonText, { fontSize: fontSizes.medium }]}>
+                  Record Your First Video
+                </Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
 
         <TouchableOpacity
-          style={styles.communityButton}
+          style={[
+            styles.communityButton,
+            {
+              borderRadius: getBorderRadius('medium'),
+              padding: cardPadding,
+              marginTop: spacing * 2,
+              marginBottom: spacing * 10,
+            }
+          ]}
           onPress={() => router.push('/(tabs)/community')}
         >
-          <Text style={styles.communityButtonText}>Back to Community Hub</Text>
+          <Text style={[styles.communityButtonText, { fontSize: fontSizes.medium }]}>
+            Back to Community Hub
+          </Text>
         </TouchableOpacity>
       </ScrollView>
     </View>
@@ -274,116 +368,84 @@ const styles = StyleSheet.create({
   },
   header: {
     backgroundColor: colors.primary,
-    paddingTop: Platform.OS === 'android' ? 48 : 60,
-    paddingHorizontal: 20,
-    paddingBottom: 20,
   },
   headerTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 12,
   },
   title: {
-    fontSize: 32,
     fontWeight: 'bold',
     color: colors.textHeader,
   },
   settingsButton: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
     backgroundColor: colors.secondary,
     alignItems: 'center',
     justifyContent: 'center',
   },
   profileInfo: {
-    gap: 6,
+    // Dynamic gap applied inline
   },
   welcomeText: {
-    fontSize: 16,
     fontWeight: '600',
     color: colors.text,
-    marginBottom: 4,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
   },
   infoText: {
-    fontSize: 14,
     color: colors.text,
   },
   content: {
     flex: 1,
-    padding: 20,
   },
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 24,
-    gap: 12,
   },
   statCard: {
     flex: 1,
     backgroundColor: colors.secondary,
-    borderRadius: 16,
-    padding: 20,
     alignItems: 'center',
-    gap: 8,
   },
   statValue: {
-    fontSize: 28,
     fontWeight: 'bold',
     color: colors.text,
   },
   statLabel: {
-    fontSize: 13,
     color: colors.textMuted,
     fontWeight: '600',
   },
   section: {
-    marginBottom: 24,
+    // No inline styles needed
   },
   sectionTitle: {
-    fontSize: 22,
     fontWeight: 'bold',
     color: colors.textHeader,
-    marginBottom: 16,
   },
   loadingContainer: {
     backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 48,
     alignItems: 'center',
-    gap: 16,
   },
   loadingText: {
-    fontSize: 15,
     color: colors.text,
     textAlign: 'center',
   },
   videoCard: {
     backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 12,
-    marginBottom: 16,
     flexDirection: 'row',
-    gap: 12,
   },
   videoThumbnail: {
     width: 120,
     height: 160,
     backgroundColor: colors.secondary,
-    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
   },
   videoPlaceholder: {
     color: colors.text,
-    fontSize: 14,
     fontWeight: '500',
   },
   playIconOverlay: {
@@ -396,75 +458,52 @@ const styles = StyleSheet.create({
   },
   videoTitle: {
     color: colors.text,
-    fontSize: 16,
     fontWeight: '700',
-    marginBottom: 4,
   },
   videoTask: {
     color: colors.text,
-    fontSize: 14,
     fontWeight: '500',
     opacity: 0.8,
-    marginBottom: 8,
   },
   videoStats: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
     flexWrap: 'wrap',
   },
   videoStatItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 4,
   },
   videoStatText: {
     color: colors.text,
-    fontSize: 13,
     fontWeight: '600',
   },
   videoDate: {
     color: colors.text,
-    fontSize: 12,
     fontWeight: '400',
     opacity: 0.7,
   },
   emptyState: {
     backgroundColor: colors.primary,
-    borderRadius: 16,
-    padding: 48,
     alignItems: 'center',
-    gap: 16,
   },
   emptyStateText: {
-    fontSize: 15,
     color: colors.text,
     textAlign: 'center',
-    lineHeight: 22,
   },
   recordButton: {
     backgroundColor: colors.accent,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    marginTop: 8,
   },
   recordButtonText: {
     color: colors.textOnPrimary,
-    fontSize: 15,
     fontWeight: '600',
   },
   communityButton: {
     backgroundColor: colors.accent,
-    borderRadius: 12,
-    padding: 16,
     alignItems: 'center',
-    marginTop: 16,
-    marginBottom: 100,
   },
   communityButtonText: {
     color: colors.textOnPrimary,
-    fontSize: 16,
     fontWeight: '600',
   },
 });

@@ -10,10 +10,20 @@ import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTask } from "@/contexts/TaskContext";
 import { useFonts, PlayfairDisplay_900Black } from '@expo-google-fonts/playfair-display';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { 
+  getBottomSafePadding, 
+  getHorizontalPadding,
+  getSpacing,
+  getBorderRadius,
+  getFontSizes,
+  getIconSize,
+} from '@/utils/responsive';
 
 export default function HomeScreen() {
   const { userProfile } = useAuth();
   const { todayTask } = useTask();
+  const insets = useSafeAreaInsets();
   
   // Load Playfair Display font
   const [fontsLoaded] = useFonts({
@@ -23,6 +33,13 @@ export default function HomeScreen() {
   // Sample data - in a real app, this would come from an API
   const streak = 15;
   const followers = 142;
+
+  // Get responsive values
+  const fontSizes = getFontSizes();
+  const bottomPadding = getBottomSafePadding();
+  const horizontalPadding = getHorizontalPadding();
+  const spacing = getSpacing();
+  const topPadding = insets.top + spacing * 2;
 
   // Get time-based greeting
   const getGreeting = () => {
@@ -62,47 +79,70 @@ export default function HomeScreen() {
         >
           <ScrollView 
             style={styles.scrollView}
-            contentContainerStyle={styles.scrollContent}
+            contentContainerStyle={[
+              styles.scrollContent,
+              { 
+                paddingTop: topPadding,
+                paddingHorizontal: horizontalPadding,
+                paddingBottom: bottomPadding,
+              }
+            ]}
             showsVerticalScrollIndicator={false}
           >
             {/* Logo */}
-            <View style={styles.logoContainer}>
-              <Text style={styles.logo}>BLOOP</Text>
+            <View style={[styles.logoContainer, { top: topPadding, left: horizontalPadding }]}>
+              <Text style={[styles.logo, { fontSize: fontSizes.hero }]}>BLOOP</Text>
             </View>
 
             {/* Header with greeting and stats */}
-            <View style={styles.header}>
+            <View style={[styles.header, { marginTop: spacing * 5, marginBottom: spacing * 3.5 }]}>
               {/* Personalized Greeting */}
-              <Text style={styles.greeting}>
+              <Text style={[styles.greeting, { fontSize: fontSizes.title, marginBottom: spacing * 2 }]}>
                 {getGreeting()}, {getFirstName()}
               </Text>
 
               {/* Stats Row */}
-              <View style={styles.statsRow}>
-                <View style={styles.statBadge}>
+              <View style={[styles.statsRow, { gap: spacing }]}>
+                <View style={[
+                  styles.statBadge, 
+                  { 
+                    paddingHorizontal: spacing * 2, 
+                    paddingVertical: spacing,
+                    borderRadius: getBorderRadius('large'),
+                    gap: spacing * 0.5,
+                  }
+                ]}>
                   <IconSymbol 
                     ios_icon_name="flame.fill"
                     android_material_icon_name="local-fire-department" 
-                    size={20} 
+                    size={getIconSize('medium')} 
                     color="#ffffff"
                   />
-                  <Text style={styles.statText}>{streak}</Text>
+                  <Text style={[styles.statText, { fontSize: fontSizes.medium }]}>{streak}</Text>
                 </View>
                 
-                <View style={styles.statBadge}>
+                <View style={[
+                  styles.statBadge, 
+                  { 
+                    paddingHorizontal: spacing * 2, 
+                    paddingVertical: spacing,
+                    borderRadius: getBorderRadius('large'),
+                    gap: spacing * 0.5,
+                  }
+                ]}>
                   <IconSymbol 
                     ios_icon_name="person.2.fill"
                     android_material_icon_name="people" 
-                    size={20} 
+                    size={getIconSize('medium')} 
                     color="#ffffff"
                   />
-                  <Text style={styles.statText}>{followers}</Text>
+                  <Text style={[styles.statText, { fontSize: fontSizes.medium }]}>{followers}</Text>
                 </View>
               </View>
             </View>
 
             {/* Task Card */}
-            <View style={styles.challengeCardContainer}>
+            <View style={[styles.challengeCardContainer, { marginBottom: spacing * 2 }]}>
               <TodaysChallengeCard
                 task={todayTask.task}
                 constraint={todayTask.constraint}
@@ -115,14 +155,28 @@ export default function HomeScreen() {
 
             {/* Start Task Button */}
             <TouchableOpacity 
-              style={styles.startButton}
+              style={[
+                styles.startButton,
+                {
+                  paddingVertical: spacing * 2,
+                  borderRadius: getBorderRadius('large'),
+                  marginBottom: spacing * 2,
+                }
+              ]}
               onPress={handleStartChallenge}
             >
-              <Text style={styles.startButtonText}>START TASK</Text>
+              <Text style={[styles.startButtonText, { fontSize: fontSizes.large }]}>START TASK</Text>
             </TouchableOpacity>
 
             {/* Bottom Message */}
-            <Text style={styles.bottomMessage}>
+            <Text style={[
+              styles.bottomMessage, 
+              { 
+                fontSize: fontSizes.medium,
+                lineHeight: fontSizes.medium * 1.5,
+                paddingHorizontal: spacing * 2,
+              }
+            ]}>
               Complete the task to unlock voting & scroll mode
             </Text>
           </ScrollView>
@@ -144,73 +198,52 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: 60,
-    paddingHorizontal: 24,
-    paddingBottom: 120,
+    // Dynamic padding applied inline
   },
   logoContainer: {
     position: 'absolute',
-    top: 60,
-    left: 24,
     zIndex: 10,
   },
   logo: {
-    fontSize: 36,
     fontFamily: 'PlayfairDisplay_900Black',
     color: '#003399',
     letterSpacing: 1,
   },
   header: {
-    marginTop: 60,
-    marginBottom: 40,
+    // Dynamic margins applied inline
   },
   greeting: {
     color: '#ffffff',
-    fontSize: 28,
     fontWeight: '700',
-    marginBottom: 16,
   },
   statsRow: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
-    gap: 12,
   },
   statBadge: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-    gap: 6,
   },
   statText: {
     color: '#ffffff',
-    fontSize: 16,
     fontWeight: '700',
   },
   challengeCardContainer: {
-    marginBottom: 24,
+    // Dynamic margin applied inline
   },
   startButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 18,
-    borderRadius: 30,
     alignItems: 'center',
-    marginBottom: 24,
   },
   startButtonText: {
     color: '#ffffff',
-    fontSize: 18,
     fontWeight: '700',
     letterSpacing: 1,
   },
   bottomMessage: {
     color: '#ffffff',
-    fontSize: 15,
     fontWeight: '500',
     textAlign: 'center',
-    lineHeight: 22,
-    paddingHorizontal: 16,
   },
 });

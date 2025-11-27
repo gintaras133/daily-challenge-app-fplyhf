@@ -4,6 +4,17 @@ import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Platform, Image }
 import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import VideoComparisonModal from '@/components/VideoComparisonModal';
+import { 
+  getTopSafePadding, 
+  getBottomSafePadding, 
+  getHorizontalPadding,
+  getSpacing,
+  getBorderRadius,
+  getFontSizes,
+  getIconSize,
+  getCardPadding,
+  getAvatarSize,
+} from '@/utils/responsive';
 
 interface FriendVideo {
   id: string;
@@ -18,6 +29,15 @@ export default function CommunityScreen() {
   const [clickedVideos, setClickedVideos] = useState<string[]>([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
   const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
+
+  // Get responsive values
+  const fontSizes = getFontSizes();
+  const topPadding = getTopSafePadding();
+  const bottomPadding = getBottomSafePadding();
+  const horizontalPadding = getHorizontalPadding();
+  const spacing = getSpacing();
+  const cardPadding = getCardPadding();
+  const avatarSize = getAvatarSize('small');
 
   const friendsVideos: FriendVideo[] = [
     {
@@ -130,67 +150,97 @@ export default function CommunityScreen() {
     <View style={styles.container}>
       <ScrollView
         style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            paddingTop: topPadding,
+            paddingHorizontal: horizontalPadding,
+            paddingBottom: bottomPadding,
+          }
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.headerIcon}>
-            <IconSymbol android_material_icon_name="people" size={28} color={colors.text} />
+        <View style={[styles.header, { marginBottom: spacing * 3 }]}>
+          <View style={[styles.headerIcon, { marginBottom: spacing * 0.5 }]}>
+            <IconSymbol android_material_icon_name="people" size={getIconSize('large')} color={colors.text} />
           </View>
-          <Text style={styles.headerTitle}>COMMUNITY HUB</Text>
-          <Text style={styles.headerSubtitle}>See what your friends created today!</Text>
+          <Text style={[styles.headerTitle, { fontSize: fontSizes.title, marginBottom: spacing * 2 }]}>
+            COMMUNITY HUB
+          </Text>
+          <Text style={[styles.headerSubtitle, { fontSize: fontSizes.medium }]}>
+            See what your friends created today!
+          </Text>
         </View>
 
         {/* Friends' Today Videos Section */}
-        <Text style={styles.sectionTitle}>Friends&apos; Today Videos</Text>
+        <Text style={[styles.sectionTitle, { fontSize: fontSizes.large, marginBottom: spacing * 2 }]}>
+          Friends&apos; Today Videos
+        </Text>
 
         {/* Video Cards */}
         {friendsVideos.map((video, index) => (
           <TouchableOpacity 
             key={index} 
-            style={styles.videoCard}
+            style={[
+              styles.videoCard,
+              {
+                borderRadius: getBorderRadius('large'),
+                padding: cardPadding,
+                marginBottom: spacing * 2,
+              }
+            ]}
             onPress={() => handleVideoClick(video.id)}
             activeOpacity={0.8}
           >
-            <View style={styles.videoThumbnail}>
-              <Text style={styles.videoPlaceholder}>Video</Text>
+            <View style={[
+              styles.videoThumbnail,
+              {
+                borderRadius: getBorderRadius('medium'),
+                marginBottom: spacing,
+              }
+            ]}>
+              <Text style={[styles.videoPlaceholder, { fontSize: fontSizes.medium }]}>Video</Text>
               {clickedVideos.includes(video.id) && (
                 <View style={styles.clickedBadge}>
                   <IconSymbol
                     android_material_icon_name="check-circle"
                     ios_icon_name="checkmark.circle.fill"
-                    size={24}
+                    size={getIconSize('medium')}
                     color={colors.accent}
                   />
                 </View>
               )}
             </View>
 
-            <View style={styles.videoInfo}>
-              <View style={styles.videoHeader}>
+            <View style={[styles.videoInfo, { gap: spacing }]}>
+              <View style={[styles.videoHeader, { gap: spacing }]}>
                 <Image 
                   source={{ uri: video.avatarUrl }} 
-                  style={styles.avatar}
+                  style={[styles.avatar, { width: avatarSize, height: avatarSize, borderRadius: avatarSize / 2 }]}
                 />
                 <View style={styles.userDetails}>
-                  <Text style={styles.username}>{video.username}</Text>
-                  <Text style={styles.timeAgo}>{video.timeAgo}</Text>
+                  <Text style={[styles.username, { fontSize: fontSizes.medium, marginBottom: 2 }]}>
+                    {video.username}
+                  </Text>
+                  <Text style={[styles.timeAgo, { fontSize: fontSizes.small }]}>
+                    {video.timeAgo}
+                  </Text>
                 </View>
               </View>
 
-              <Text style={styles.videoDescription}>
+              <Text style={[styles.videoDescription, { fontSize: fontSizes.body, lineHeight: fontSizes.body * 1.5 }]}>
                 Nailed the CapCut challenge! 🎯{'\n'}#BubblesBubbles
               </Text>
 
-              <View style={styles.videoStats}>
-                <View style={styles.statItem}>
-                  <IconSymbol android_material_icon_name="favorite" size={16} color={colors.accent} />
-                  <Text style={styles.statText}>{video.likes}</Text>
+              <View style={[styles.videoStats, { gap: spacing * 2 }]}>
+                <View style={[styles.statItem, { gap: spacing * 0.5 }]}>
+                  <IconSymbol android_material_icon_name="favorite" size={getIconSize('small')} color={colors.accent} />
+                  <Text style={[styles.statText, { fontSize: fontSizes.body }]}>{video.likes}</Text>
                 </View>
-                <View style={styles.statItem}>
-                  <IconSymbol android_material_icon_name="visibility" size={16} color={colors.text} />
-                  <Text style={styles.statText}>{video.views}</Text>
+                <View style={[styles.statItem, { gap: spacing * 0.5 }]}>
+                  <IconSymbol android_material_icon_name="visibility" size={getIconSize('small')} color={colors.text} />
+                  <Text style={[styles.statText, { fontSize: fontSizes.body }]}>{video.views}</Text>
                 </View>
               </View>
             </View>
@@ -198,23 +248,39 @@ export default function CommunityScreen() {
         ))}
 
         {/* Load More Button */}
-        <TouchableOpacity style={styles.loadMoreButton} onPress={handleLoadMore}>
-          <Text style={styles.loadMoreText}>Load More Friends</Text>
+        <TouchableOpacity 
+          style={[
+            styles.loadMoreButton,
+            {
+              paddingVertical: spacing * 2,
+              borderRadius: getBorderRadius('large'),
+              marginBottom: spacing * 2,
+            }
+          ]} 
+          onPress={handleLoadMore}
+        >
+          <Text style={[styles.loadMoreText, { fontSize: fontSizes.medium }]}>Load More Friends</Text>
         </TouchableOpacity>
 
         {/* Community Stats */}
-        <View style={styles.statsContainer}>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{communityStats.friendsActive}</Text>
-            <Text style={styles.statLabel}>Friends Active</Text>
+        <View style={[styles.statsContainer, { gap: spacing, marginBottom: spacing * 2 }]}>
+          <View style={[styles.statCard, { borderRadius: getBorderRadius('medium'), padding: cardPadding }]}>
+            <Text style={[styles.statNumber, { fontSize: fontSizes.title, marginBottom: spacing * 0.5 }]}>
+              {communityStats.friendsActive}
+            </Text>
+            <Text style={[styles.statLabel, { fontSize: fontSizes.small }]}>Friends Active</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{communityStats.totalVideos}</Text>
-            <Text style={styles.statLabel}>Total Videos</Text>
+          <View style={[styles.statCard, { borderRadius: getBorderRadius('medium'), padding: cardPadding }]}>
+            <Text style={[styles.statNumber, { fontSize: fontSizes.title, marginBottom: spacing * 0.5 }]}>
+              {communityStats.totalVideos}
+            </Text>
+            <Text style={[styles.statLabel, { fontSize: fontSizes.small }]}>Total Videos</Text>
           </View>
-          <View style={styles.statCard}>
-            <Text style={styles.statNumber}>{communityStats.timeLeft}</Text>
-            <Text style={styles.statLabel}>Left Today</Text>
+          <View style={[styles.statCard, { borderRadius: getBorderRadius('medium'), padding: cardPadding }]}>
+            <Text style={[styles.statNumber, { fontSize: fontSizes.title, marginBottom: spacing * 0.5 }]}>
+              {communityStats.timeLeft}
+            </Text>
+            <Text style={[styles.statLabel, { fontSize: fontSizes.small }]}>Left Today</Text>
           </View>
         </View>
       </ScrollView>
@@ -240,54 +306,40 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContent: {
-    paddingTop: Platform.OS === 'android' ? 48 : 60,
-    paddingHorizontal: 24,
-    paddingBottom: 120,
+    // Dynamic padding applied inline
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
   },
   headerIcon: {
-    marginBottom: 4,
+    // Dynamic margin applied inline
   },
   headerTitle: {
     color: colors.text,
-    fontSize: 24,
     fontWeight: '700',
     letterSpacing: 1,
-    marginBottom: 16,
   },
   headerSubtitle: {
     color: colors.text,
-    fontSize: 15,
     fontWeight: '500',
   },
   sectionTitle: {
     color: colors.text,
-    fontSize: 18,
     fontWeight: '700',
-    marginBottom: 16,
   },
   videoCard: {
     backgroundColor: colors.primary,
-    borderRadius: 20,
-    padding: 16,
-    marginBottom: 16,
   },
   videoThumbnail: {
     width: '100%',
     height: 120,
     backgroundColor: colors.secondary,
-    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
     position: 'relative',
   },
   videoPlaceholder: {
     color: colors.text,
-    fontSize: 16,
     fontWeight: '500',
   },
   clickedBadge: {
@@ -299,17 +351,13 @@ const styles = StyleSheet.create({
     padding: 4,
   },
   videoInfo: {
-    gap: 12,
+    // Dynamic gap applied inline
   },
   videoHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
   },
   avatar: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     backgroundColor: colors.secondary,
   },
   userDetails: {
@@ -317,68 +365,49 @@ const styles = StyleSheet.create({
   },
   username: {
     color: colors.text,
-    fontSize: 15,
     fontWeight: '600',
-    marginBottom: 2,
   },
   timeAgo: {
     color: colors.text,
-    fontSize: 13,
     fontWeight: '400',
   },
   videoDescription: {
     color: colors.text,
-    fontSize: 14,
     fontWeight: '500',
-    lineHeight: 20,
   },
   videoStats: {
     flexDirection: 'row',
-    gap: 16,
   },
   statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
   },
   statText: {
     color: colors.text,
-    fontSize: 14,
     fontWeight: '600',
   },
   loadMoreButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 16,
-    borderRadius: 20,
     alignItems: 'center',
-    marginBottom: 24,
   },
   loadMoreText: {
     color: colors.text,
-    fontSize: 16,
     fontWeight: '700',
   },
   statsContainer: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 24,
   },
   statCard: {
     flex: 1,
     backgroundColor: colors.secondary,
-    borderRadius: 16,
-    padding: 16,
     alignItems: 'center',
   },
   statNumber: {
     color: colors.text,
-    fontSize: 28,
     fontWeight: '800',
-    marginBottom: 4,
   },
   statLabel: {
     color: colors.text,
-    fontSize: 12,
     fontWeight: '600',
   },
 });

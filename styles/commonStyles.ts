@@ -1,5 +1,15 @@
 
 import { StyleSheet, ViewStyle, TextStyle } from 'react-native';
+import { 
+  getHorizontalPadding, 
+  getVerticalPadding, 
+  getBorderRadius, 
+  getCardPadding,
+  getFontSizes,
+  getButtonHeight,
+  getSpacing,
+  getMaxContentWidth,
+} from '@/utils/responsive';
 
 // 🎨 VIOLATING THE STRICT 4-COLOR DESIGN SYSTEM
 // ALL TEXT IS NOW BLACK
@@ -45,6 +55,9 @@ export const theme = {
   }
 };
 
+// Get responsive font sizes
+const fontSizes = getFontSizes();
+
 export const buttonStyles = StyleSheet.create({
   instructionsButton: {
     backgroundColor: colors.primary,
@@ -58,46 +71,49 @@ export const buttonStyles = StyleSheet.create({
   },
   primaryButton: {
     backgroundColor: colors.primary,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 30,
+    paddingVertical: getSpacing(2),
+    paddingHorizontal: getSpacing(4),
+    borderRadius: getBorderRadius('large'),
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    minHeight: getButtonHeight(),
   },
   primaryButtonText: {
     color: '#000000',
-    fontSize: 18,
+    fontSize: fontSizes.large,
     fontWeight: '700',
     textTransform: 'uppercase',
   },
   secondaryButton: {
     backgroundColor: colors.secondary,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 30,
+    paddingVertical: getSpacing(2),
+    paddingHorizontal: getSpacing(4),
+    borderRadius: getBorderRadius('large'),
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    minHeight: getButtonHeight(),
   },
   secondaryButtonText: {
     color: '#000000',
-    fontSize: 18,
+    fontSize: fontSizes.large,
     fontWeight: '700',
     textTransform: 'uppercase',
   },
   accentButton: {
     backgroundColor: colors.accent,
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    borderRadius: 30,
+    paddingVertical: getSpacing(2),
+    paddingHorizontal: getSpacing(4),
+    borderRadius: getBorderRadius('large'),
     alignItems: 'center',
     justifyContent: 'center',
     width: '100%',
+    minHeight: getButtonHeight(),
   },
   accentButtonText: {
     color: '#000000',
-    fontSize: 18,
+    fontSize: fontSizes.large,
     fontWeight: '700',
     textTransform: 'uppercase',
   },
@@ -121,41 +137,41 @@ export const commonStyles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    maxWidth: 800,
+    maxWidth: getMaxContentWidth(),
     width: '100%',
   },
   title: {
-    fontSize: 24,
+    fontSize: fontSizes.title,
     fontWeight: '800',
     textAlign: 'center',
     color: '#000000',
-    marginBottom: 10
+    marginBottom: getSpacing(1.5),
   },
   text: {
-    fontSize: 16,
+    fontSize: fontSizes.medium,
     fontWeight: '500',
     color: '#000000',
-    marginBottom: 8,
-    lineHeight: 24,
+    marginBottom: getSpacing(1),
+    lineHeight: fontSizes.medium * 1.5,
     textAlign: 'center',
   },
   section: {
     width: '100%',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: getHorizontalPadding(),
   },
   buttonContainer: {
     width: '100%',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: getHorizontalPadding(),
   },
   card: {
     backgroundColor: colors.primary,
     borderColor: colors.accent,
     borderWidth: 3,
-    borderRadius: 20,
-    padding: 24,
-    marginVertical: 8,
+    borderRadius: getBorderRadius('large'),
+    padding: getCardPadding(),
+    marginVertical: getSpacing(1),
     width: '100%',
   },
   icon: {
