@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
+import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert, Platform } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
@@ -9,6 +9,7 @@ import { useTask } from "@/contexts/TaskContext";
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '@/app/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import * as FileSystem from 'expo-file-system/legacy';
 
 export default function RecordScreen() {
   const { userProfile } = useAuth();
@@ -21,6 +22,7 @@ export default function RecordScreen() {
       console.log('=== Starting video upload ===');
       console.log('Video URI:', uri);
       console.log('File name:', fileName);
+      console.log('Platform:', Platform.OS);
 
       if (!userProfile?.id) {
         console.error('No user profile found');
@@ -29,34 +31,111 @@ export default function RecordScreen() {
 
       console.log('User ID:', userProfile.id);
 
-      // Fetch the video file
-      console.log('Fetching video file...');
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      console.log('Video blob size:', blob.size, 'bytes');
-      console.log('Video blob type:', blob.type);
-
       // Generate unique filename
       const timestamp = Date.now();
-      const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName}`;
+      const fileExtension = fileName.split('.').pop() || 'mp4';
+      const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
       console.log('Unique filename:', uniqueFileName);
 
-      // Upload to Supabase storage
-      console.log('Uploading to Supabase storage bucket: challengemedia');
-      const { data, error } = await supabase.storage
-        .from('challengemedia')
-        .upload(uniqueFileName, blob, {
-          contentType: 'video/mp4',
-          upsert: false
-        });
+      let uploadData;
+      let uploadError;
 
-      if (error) {
-        console.error('Storage upload error:', error);
-        console.error('Error details:', JSON.stringify(error, null, 2));
-        throw error;
+      // Different upload strategies for different platforms
+      if (Platform.OS === 'web') {
+        // Web: Use fetch and blob
+        console.log('Using web upload strategy (fetch + blob)');
+        const response = await fetch(uri);
+        const blob = await response.blob();
+        console.log('Video blob size:', blob.size, 'bytes');
+        console.log('Video blob type:', blob.type);
+
+        const result = await supabase.storage
+          .from('challengemedia')
+          .upload(uniqueFileName, blob, {
+            contentType: blob.type || 'video/mp4',
+            upsert: false
+          });
+        
+        uploadData = result.data;
+        uploadError = result.error;
+      } else {
+        // Native (iOS/Android): Use FileSystem to read as base64 or binary
+        console.log('Using native upload strategy (FileSystem)');
+        
+        try {
+          // Try to get file info first
+          const fileInfo = await FileSystem.getInfoAsync(uri);
+          console.log('File info:', fileInfo);
+
+          if (!fileInfo.exists) {
+            throw new Error('File does not exist at URI');
+          }
+
+          // Read file as base64
+          console.log('Reading file as base64...');
+          const base64 = await FileSystem.readAsStringAsync(uri, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          
+          console.log('Base64 length:', base64.length);
+
+          // Convert base64 to blob
+          const byteCharacters = atob(base64);
+          const byteNumbers = new Array(byteCharacters.length);
+          for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+          }
+          const byteArray = new Uint8Array(byteNumbers);
+          const blob = new Blob([byteArray], { type: 'video/mp4' });
+          
+          console.log('Converted to blob, size:', blob.size, 'bytes');
+
+          const result = await supabase.storage
+            .from('challengemedia')
+            .upload(uniqueFileName, blob, {
+              contentType: 'video/mp4',
+              upsert: false
+            });
+          
+          uploadData = result.data;
+          uploadError = result.error;
+        } catch (fsError) {
+          console.error('FileSystem error:', fsError);
+          // Fallback to fetch method
+          console.log('Falling back to fetch method...');
+          const response = await fetch(uri);
+          const blob = await response.blob();
+          console.log('Fallback blob size:', blob.size, 'bytes');
+
+          const result = await supabase.storage
+            .from('challengemedia')
+            .upload(uniqueFileName, blob, {
+              contentType: 'video/mp4',
+              upsert: false
+            });
+          
+          uploadData = result.data;
+          uploadError = result.error;
+        }
       }
 
-      console.log('Upload successful! Storage data:', data);
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        console.error('Error details:', JSON.stringify(uploadError, null, 2));
+        
+        // Provide more specific error messages
+        if (uploadError.message?.includes('row-level security')) {
+          throw new Error('Permission denied. Please contact support.');
+        } else if (uploadError.message?.includes('size')) {
+          throw new Error('Video file is too large. Maximum size is 100MB.');
+        } else if (uploadError.message?.includes('mime')) {
+          throw new Error('Invalid video format. Please use MP4, MOV, or AVI.');
+        }
+        
+        throw uploadError;
+      }
+
+      console.log('Upload successful! Storage data:', uploadData);
 
       // Get public URL
       const { data: urlData } = supabase.storage
@@ -113,9 +192,11 @@ export default function RecordScreen() {
         console.error('Error message:', error.message);
         console.error('Error stack:', error.stack);
       }
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       Alert.alert(
         'Upload Failed', 
-        `Failed to upload video: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`
+        `Failed to upload video: ${errorMessage}. Please try again.`
       );
       throw error;
     } finally {
@@ -149,8 +230,9 @@ export default function RecordScreen() {
 
       if (!result.canceled && result.assets[0]) {
         const videoUri = result.assets[0].uri;
-        const fileName = `recorded_${Date.now()}.mp4`;
+        const fileName = result.assets[0].fileName || `recorded_${Date.now()}.mp4`;
         console.log('Video recorded, URI:', videoUri);
+        console.log('File name:', fileName);
         
         // Automatically upload to Library
         await uploadVideoToSupabase(videoUri, fileName);
@@ -191,6 +273,7 @@ export default function RecordScreen() {
         const videoUri = result.assets[0].uri;
         const fileName = result.assets[0].fileName || `upload_${Date.now()}.mp4`;
         console.log('Video selected, URI:', videoUri);
+        console.log('File name:', fileName);
         
         // Automatically upload to Library
         await uploadVideoToSupabase(videoUri, fileName);

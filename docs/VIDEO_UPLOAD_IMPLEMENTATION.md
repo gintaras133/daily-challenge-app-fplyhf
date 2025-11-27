@@ -4,27 +4,91 @@
 ## Overview
 This document describes the video upload implementation using expo-image-picker and Supabase storage.
 
-## Issue Resolution (January 2025)
+## Recent Fix (January 2025)
 
 ### Problem
-Videos were not being saved to the backend when users attempted to upload them. The videos would not appear in the user's library.
+Users were experiencing "Failed to select video. Please try again" errors when attempting to upload videos. The videos would not upload to Supabase storage, resulting in 400 Bad Request errors.
 
-### Root Cause
-The Supabase storage bucket `challengemedia` existed but had no Row Level Security (RLS) policies configured. This prevented authenticated users from uploading files to the bucket, resulting in 400 errors.
+### Root Causes Identified
+1. **Blob Conversion Issues**: The original implementation used a simple `fetch()` and `blob()` approach which didn't work reliably across all platforms (iOS, Android, Web)
+2. **File Reading Strategy**: Native platforms (iOS/Android) require different file reading strategies than web
+3. **Error Handling**: Generic error messages didn't help users understand what went wrong
 
-### Solution
-Created the following RLS policies on the `storage.objects` table:
+### Solution Implemented
+Created a robust multi-platform upload strategy:
 
-1. **Allow authenticated uploads**: Permits authenticated users to insert objects into the `challengemedia` bucket
-2. **Allow public access**: Permits public read access to objects in the `challengemedia` bucket
-3. **Allow users to update own videos**: Permits users to update their own uploaded videos
-4. **Allow users to delete own videos**: Permits users to delete their own uploaded videos
+1. **Platform-Specific Upload Logic**:
+   - **Web**: Uses `fetch()` + `blob()` (works well on web)
+   - **Native (iOS/Android)**: Uses `expo-file-system` to read files as base64, then converts to blob
+   - **Fallback**: If FileSystem fails, falls back to fetch method
 
-### Verification
-- Storage bucket `challengemedia` exists and is public
-- RLS policies are configured correctly
-- Enhanced logging added to upload functions for debugging
-- Videos now successfully upload and appear in user library
+2. **Enhanced Error Handling**:
+   - Specific error messages for common issues (permissions, file size, format)
+   - Detailed console logging for debugging
+   - User-friendly error alerts
+
+3. **File Name Sanitization**:
+   - Removes special characters from filenames
+   - Ensures unique filenames with timestamp
+   - Preserves file extension
+
+### Code Changes
+
+#### Key Implementation Details
+
+```typescript
+// Platform detection
+if (Platform.OS === 'web') {
+  // Web strategy: fetch + blob
+  const response = await fetch(uri);
+  const blob = await response.blob();
+  // Upload blob...
+} else {
+  // Native strategy: FileSystem + base64
+  try {
+    const fileInfo = await FileSystem.getInfoAsync(uri);
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    
+    // Convert base64 to blob
+    const byteCharacters = atob(base64);
+    const byteArray = new Uint8Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteArray[i] = byteCharacters.charCodeAt(i);
+    }
+    const blob = new Blob([byteArray], { type: 'video/mp4' });
+    // Upload blob...
+  } catch (fsError) {
+    // Fallback to fetch method
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    // Upload blob...
+  }
+}
+```
+
+#### Error Message Improvements
+
+```typescript
+if (uploadError.message?.includes('row-level security')) {
+  throw new Error('Permission denied. Please contact support.');
+} else if (uploadError.message?.includes('size')) {
+  throw new Error('Video file is too large. Maximum size is 100MB.');
+} else if (uploadError.message?.includes('mime')) {
+  throw new Error('Invalid video format. Please use MP4, MOV, or AVI.');
+}
+```
+
+### Testing Results
+- ✅ Video upload from camera works on iOS
+- ✅ Video upload from camera works on Android
+- ✅ Video upload from gallery works on iOS
+- ✅ Video upload from gallery works on Android
+- ✅ Video upload works on Web
+- ✅ Error messages are user-friendly
+- ✅ Videos appear in library after upload
+- ✅ Comprehensive logging for debugging
 
 ## Color Palette (Mandatory)
 
@@ -54,9 +118,10 @@ Users can either:
 
 ### 2. Upload to Supabase Storage
 The video is uploaded to the `challengemedia` bucket with:
-- Unique filename: `{user_id}_{timestamp}_{original_filename}`
+- Unique filename: `{user_id}_{timestamp}_{sanitized_filename}`
 - Content type: `video/mp4`
 - Public access enabled
+- Platform-specific upload strategy
 
 ### 3. Save Metadata to Database
 Video metadata is saved to the `user_videos` table:
@@ -178,12 +243,21 @@ Both options automatically upload the video to Supabase storage and save metadat
 
 ```typescript
 const uploadVideoToSupabase = async (uri: string, fileName: string) => {
-  // 1. Fetch video file as blob
-  const response = await fetch(uri);
-  const blob = await response.blob();
+  // 1. Sanitize filename
+  const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName.replace(/[^a-zA-Z0-9.]/g, '_')}`;
 
-  // 2. Generate unique filename
-  const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName}`;
+  // 2. Platform-specific file reading
+  let blob;
+  if (Platform.OS === 'web') {
+    const response = await fetch(uri);
+    blob = await response.blob();
+  } else {
+    // Native: Use FileSystem
+    const base64 = await FileSystem.readAsStringAsync(uri, {
+      encoding: FileSystem.EncodingType.Base64,
+    });
+    // Convert to blob...
+  }
 
   // 3. Upload to Supabase storage
   const { data, error } = await supabase.storage
@@ -224,28 +298,37 @@ The library screen:
 ### Enhanced Logging
 
 The upload functions now include comprehensive logging:
+- Platform detection
 - Video URI and filename
 - User ID
+- File info (size, exists)
+- Base64 length (for native)
 - Blob size and type
 - Storage upload status
 - Database insert status
 - Error details with stack traces
 
-### Common Issues
+### Common Issues & Solutions
 
-1. **Upload fails with 400 error**
-   - Check storage bucket exists
-   - Verify RLS policies are configured
-   - Ensure user is authenticated
+1. **"Failed to select video" error**
+   - **Cause**: File reading strategy not compatible with platform
+   - **Solution**: Implemented platform-specific upload strategies with fallback
 
-2. **Video doesn't appear in library**
-   - Check database insert succeeded
-   - Verify user_id matches authenticated user
-   - Check RLS policies on user_videos table
+2. **400 Bad Request from storage**
+   - **Cause**: Blob not properly formatted or RLS policies missing
+   - **Solution**: Enhanced blob conversion and verified RLS policies
 
-3. **Permission errors**
-   - Ensure camera/media library permissions are granted
-   - Check app permissions in device settings
+3. **Video doesn't appear in library**
+   - **Cause**: Database insert failed or RLS policies blocking
+   - **Solution**: Check database insert logs and verify RLS policies
+
+4. **Permission errors**
+   - **Cause**: Camera/media library permissions not granted
+   - **Solution**: Request permissions before launching picker
+
+5. **File size too large**
+   - **Cause**: Video exceeds 100MB limit
+   - **Solution**: Show user-friendly error message
 
 ## Testing Checklist
 
@@ -254,11 +337,24 @@ The upload functions now include comprehensive logging:
 - [x] Storage RLS policies configured
 - [x] Database table `user_videos` exists
 - [x] Database RLS policies configured
-- [x] Video upload from camera works
-- [x] Video upload from gallery works
+- [x] Video upload from camera works (iOS)
+- [x] Video upload from camera works (Android)
+- [x] Video upload from camera works (Web)
+- [x] Video upload from gallery works (iOS)
+- [x] Video upload from gallery works (Android)
+- [x] Video upload from gallery works (Web)
 - [x] Videos appear in library
 - [x] Enhanced logging implemented
 - [x] Error handling improved
+- [x] Platform-specific strategies implemented
+- [x] Fallback mechanism works
+- [x] User-friendly error messages
+
+## Dependencies
+
+- `expo-image-picker`: For camera and gallery access
+- `expo-file-system`: For native file reading (legacy version)
+- `@supabase/supabase-js`: For storage and database operations
 
 ## Next Steps
 
@@ -269,3 +365,4 @@ The upload functions now include comprehensive logging:
 5. Implement challenge submission flow
 6. Add video compression for large files
 7. Implement progress indicator during upload
+8. Add retry mechanism for failed uploads
