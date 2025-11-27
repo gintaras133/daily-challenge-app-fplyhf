@@ -15,7 +15,6 @@ export default function HomeScreen() {
   // Sample data - in a real app, this would come from an API
   const streak = 15;
   const followers = 142;
-  const todayPlace = "-";
   
   const todayChallenge = {
     challenge: "Assemble furniture in 60 seconds",
@@ -88,24 +87,6 @@ export default function HomeScreen() {
                   />
                   <Text style={styles.statText}>{followers}</Text>
                 </View>
-                
-                <View style={styles.statBadge}>
-                  <IconSymbol 
-                    ios_icon_name="trophy.fill"
-                    android_material_icon_name="emoji-events" 
-                    size={20} 
-                    color="#ffffff"
-                  />
-                  <Text style={styles.statText}>{todayPlace}</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Sponsor Section */}
-            <View style={styles.sponsorSection}>
-              <Text style={styles.sponsorTitle}>THIS MONTH&apos;S SPONSOR</Text>
-              <View style={styles.sponsorBadge}>
-                <Text style={styles.sponsorName}>CapCut</Text>
               </View>
             </View>
 
@@ -181,31 +162,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
     fontSize: 16,
     fontWeight: '700',
-  },
-  sponsorSection: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  sponsorTitle: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
-    marginBottom: 16,
-    letterSpacing: 1,
-  },
-  sponsorBadge: {
-    backgroundColor: colors.primary,
-    paddingHorizontal: 60,
-    paddingVertical: 32,
-    borderRadius: 24,
-    borderWidth: 4,
-    borderColor: colors.secondary,
-  },
-  sponsorName: {
-    color: '#ffffff',
-    fontSize: 48,
-    fontWeight: '900',
-    letterSpacing: 4,
   },
   challengeCardContainer: {
     marginBottom: 24,
