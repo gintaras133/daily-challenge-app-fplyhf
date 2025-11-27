@@ -45,6 +45,19 @@ interface UserStats {
   bloopCoins: number;
 }
 
+// Predefined challenge names for the last 3 videos
+const CHALLENGE_NAMES = [
+  'Film something that represents your "inner child."',
+  'Show a hobby you never post about.',
+  'Film yourself saying one sentence you wish someone told you today.',
+];
+
+// Function to generate random views and likes
+const generateRandomStats = () => ({
+  views: Math.floor(Math.random() * 1000) + 100, // Random views between 100-1100
+  likes: Math.floor(Math.random() * 200) + 20,   // Random likes between 20-220
+});
+
 export default function LibraryScreen() {
   const { userProfile, user } = useAuth();
   const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
@@ -114,10 +127,49 @@ export default function LibraryScreen() {
 
       console.log('✅ Fetched', videosData?.length || 0, 'videos');
       
+      // Process videos: replace last 3 with new challenge names and add random stats
+      let processedVideos = videosData || [];
+      
+      if (processedVideos.length > 0) {
+        processedVideos = processedVideos.map((video, index) => {
+          // Add random views and likes to the first video (today's challenge)
+          if (index === 0) {
+            const randomStats = generateRandomStats();
+            return {
+              ...video,
+              views: randomStats.views,
+              likes: randomStats.likes,
+            };
+          }
+          
+          // Replace last 3 videos with new challenge names
+          const lastThreeIndex = processedVideos.length - 3;
+          if (index >= lastThreeIndex && index < processedVideos.length) {
+            const challengeIndex = index - lastThreeIndex;
+            const randomStats = generateRandomStats();
+            return {
+              ...video,
+              title: CHALLENGE_NAMES[challengeIndex],
+              task: CHALLENGE_NAMES[challengeIndex],
+              views: randomStats.views,
+              likes: randomStats.likes,
+            };
+          }
+          
+          // Add random stats to other videos
+          const randomStats = generateRandomStats();
+          return {
+            ...video,
+            views: randomStats.views,
+            likes: randomStats.likes,
+          };
+        });
+      }
+      
       // Log each video URL for debugging
-      if (videosData && videosData.length > 0) {
+      if (processedVideos && processedVideos.length > 0) {
         console.log('=== VIDEO DETAILS ===');
-        videosData.forEach((video, index) => {
+        processedVideos.forEach((video, index) => {
           console.log(`Video ${index + 1}:`);
           console.log('  - Title:', video.title);
           console.log('  - URL:', video.video_url);
@@ -128,11 +180,11 @@ export default function LibraryScreen() {
         console.log('ℹ️ No videos found for this user');
       }
       
-      setUserVideos(videosData || []);
+      setUserVideos(processedVideos);
 
       // Update stats
       setUserStats({
-        videoCount: videosData?.length || 0,
+        videoCount: processedVideos?.length || 0,
         winsCount: profileData?.wins || 0,
         streakNumber: profileData?.streak || 0,
         bloopCoins: profileData?.bloop_coins || 0,
