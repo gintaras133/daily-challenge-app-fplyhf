@@ -52,6 +52,39 @@ export default function LoginScreen() {
     }
   };
 
+  const getSignInErrorMessage = (error: any): string => {
+    console.log('Sign in error:', error);
+    
+    // Check for specific error messages from Supabase
+    const errorMessage = error.message?.toLowerCase() || '';
+    
+    // Invalid login credentials - could be wrong email or password
+    if (errorMessage.includes('invalid login credentials') || 
+        errorMessage.includes('invalid credentials')) {
+      return 'Invalid email or password. Please check your credentials and try again.\n\nIf you don\'t have an account, please sign up first.';
+    }
+    
+    // Email not confirmed
+    if (errorMessage.includes('email not confirmed')) {
+      return 'Please verify your email address before signing in. Check your inbox for the verification link.';
+    }
+    
+    // User not found (some Supabase versions)
+    if (errorMessage.includes('user not found') || 
+        errorMessage.includes('no user found')) {
+      return 'No account found with this email address. Please check your email or sign up for a new account.';
+    }
+    
+    // Too many requests
+    if (errorMessage.includes('too many requests') || 
+        errorMessage.includes('rate limit')) {
+      return 'Too many login attempts. Please wait a few minutes and try again.';
+    }
+    
+    // Default error message
+    return error.message || 'An error occurred during sign in. Please try again.';
+  };
+
   const handleEmailAuth = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
@@ -84,6 +117,7 @@ export default function LoginScreen() {
         });
 
         if (error) {
+          console.log('Sign up error:', error);
           Alert.alert('Sign Up Error', error.message);
         } else if (data.user && !data.session) {
           // Email confirmation required - redirect to verify email screen
@@ -98,21 +132,35 @@ export default function LoginScreen() {
           router.replace('/auth/onboarding');
         }
       } else {
+        // Sign In
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) {
-          // Display the error message from Supabase
-          Alert.alert('Sign In Error', error.message);
+          // Get user-friendly error message
+          const errorMessage = getSignInErrorMessage(error);
+          
+          // Display the error message with appropriate title
+          Alert.alert(
+            'Sign In Failed',
+            errorMessage,
+            [
+              {
+                text: 'OK',
+                style: 'default',
+              },
+            ]
+          );
         } else if (data.session) {
           console.log('Sign in successful');
           // Navigation will be handled by AuthContext
         }
       }
     } catch (error: any) {
-      Alert.alert('Error', error.message);
+      console.log('Unexpected error:', error);
+      Alert.alert('Error', error.message || 'An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
