@@ -20,10 +20,42 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [passwordError, setPasswordError] = useState('');
+
+  const validatePassword = (pass: string): boolean => {
+    if (pass.length < 7) {
+      setPasswordError('Password must be at least 7 characters long');
+      return false;
+    }
+    setPasswordError('');
+    return true;
+  };
+
+  const handlePasswordChange = (text: string) => {
+    setPassword(text);
+    if (isSignUp && text.length > 0) {
+      validatePassword(text);
+    } else {
+      setPasswordError('');
+    }
+  };
 
   const handleEmailAuth = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter both email and password');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      Alert.alert('Error', 'Please enter a valid email address');
+      return;
+    }
+
+    // Validate password length for sign up
+    if (isSignUp && !validatePassword(password)) {
+      Alert.alert('Error', 'Password must be at least 7 characters long');
       return;
     }
 
@@ -47,6 +79,11 @@ export default function LoginScreen() {
             'Please check your email inbox and click the confirmation link to verify your account before signing in.',
             [{ text: 'OK' }]
           );
+          // Clear the form after successful signup
+          setEmail('');
+          setPassword('');
+          setPasswordError('');
+          setIsSignUp(false);
         } else if (data.session) {
           console.log('Sign up successful with session');
           router.replace('/auth/onboarding');
@@ -58,54 +95,12 @@ export default function LoginScreen() {
         });
 
         if (error) {
+          // Display the error message from Supabase
           Alert.alert('Sign In Error', error.message);
         } else if (data.session) {
           console.log('Sign in successful');
+          // Navigation will be handled by AuthContext
         }
-      }
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleGoogleSignIn = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: Platform.OS === 'web' 
-            ? window.location.origin 
-            : 'bloop://auth/callback',
-        },
-      });
-
-      if (error) {
-        Alert.alert('Google Sign In Error', error.message);
-      }
-    } catch (error: any) {
-      Alert.alert('Error', error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleAppleSignIn = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'apple',
-        options: {
-          redirectTo: Platform.OS === 'web' 
-            ? window.location.origin 
-            : 'bloop://auth/callback',
-        },
-      });
-
-      if (error) {
-        Alert.alert('Apple Sign In Error', error.message);
       }
     } catch (error: any) {
       Alert.alert('Error', error.message);
@@ -144,24 +139,32 @@ export default function LoginScreen() {
         </View>
 
         <View style={styles.inputContainer}>
-          <Text style={styles.label}>Password</Text>
+          <Text style={styles.label}>
+            Password {isSignUp && '(minimum 7 characters)'}
+          </Text>
           <TextInput
-            style={styles.input}
+            style={[
+              styles.input,
+              passwordError ? styles.inputError : null
+            ]}
             placeholder="Enter your password"
             placeholderTextColor={colors.textMuted}
             value={password}
-            onChangeText={setPassword}
+            onChangeText={handlePasswordChange}
             secureTextEntry
             autoCapitalize="none"
             autoComplete="password"
             editable={!loading}
           />
+          {passwordError ? (
+            <Text style={styles.errorText}>{passwordError}</Text>
+          ) : null}
         </View>
 
         <TouchableOpacity
           style={[styles.button, styles.primaryButton, loading && styles.buttonDisabled]}
           onPress={handleEmailAuth}
-          disabled={loading}
+          disabled={loading || (isSignUp && !!passwordError)}
         >
           {loading ? (
             <ActivityIndicator color={colors.textOnPrimary} />
@@ -174,7 +177,10 @@ export default function LoginScreen() {
 
         <TouchableOpacity
           style={styles.switchButton}
-          onPress={() => setIsSignUp(!isSignUp)}
+          onPress={() => {
+            setIsSignUp(!isSignUp);
+            setPasswordError('');
+          }}
           disabled={loading}
         >
           <Text style={styles.switchButtonText}>
@@ -182,28 +188,6 @@ export default function LoginScreen() {
               ? 'Already have an account? Sign In'
               : "Don't have an account? Sign Up"}
           </Text>
-        </TouchableOpacity>
-
-        <View style={styles.divider}>
-          <View style={styles.dividerLine} />
-          <Text style={styles.dividerText}>OR</Text>
-          <View style={styles.dividerLine} />
-        </View>
-
-        <TouchableOpacity
-          style={[styles.button, styles.socialButton]}
-          onPress={handleGoogleSignIn}
-          disabled={loading}
-        >
-          <Text style={styles.socialButtonText}>Continue with Google</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.button, styles.socialButton]}
-          onPress={handleAppleSignIn}
-          disabled={loading}
-        >
-          <Text style={styles.socialButtonText}>Continue with Apple</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -252,6 +236,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.text,
   },
+  inputError: {
+    borderColor: '#FF3B30',
+  },
+  errorText: {
+    fontSize: 12,
+    color: '#FF3B30',
+    marginTop: 4,
+  },
   button: {
     borderRadius: 12,
     padding: 16,
@@ -271,16 +263,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
   },
-  socialButton: {
-    backgroundColor: colors.secondary,
-    borderWidth: 2,
-    borderColor: colors.accent,
-  },
-  socialButtonText: {
-    color: colors.textOnSecondary,
-    fontSize: 16,
-    fontWeight: '600',
-  },
   switchButton: {
     padding: 8,
     alignItems: 'center',
@@ -290,21 +272,5 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textDecorationLine: 'underline',
-  },
-  divider: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 8,
-  },
-  dividerLine: {
-    flex: 1,
-    height: 2,
-    backgroundColor: colors.accent,
-  },
-  dividerText: {
-    marginHorizontal: 16,
-    color: colors.text,
-    fontSize: 14,
-    fontWeight: '600',
   },
 });
