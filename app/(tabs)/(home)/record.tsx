@@ -18,20 +18,31 @@ export default function RecordScreen() {
   const uploadVideoToSupabase = async (uri: string, fileName: string) => {
     try {
       setIsUploading(true);
+      console.log('=== Starting video upload ===');
+      console.log('Video URI:', uri);
+      console.log('File name:', fileName);
 
       if (!userProfile?.id) {
+        console.error('No user profile found');
         throw new Error('User not authenticated');
       }
 
+      console.log('User ID:', userProfile.id);
+
       // Fetch the video file
+      console.log('Fetching video file...');
       const response = await fetch(uri);
       const blob = await response.blob();
+      console.log('Video blob size:', blob.size, 'bytes');
+      console.log('Video blob type:', blob.type);
 
       // Generate unique filename
       const timestamp = Date.now();
       const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName}`;
+      console.log('Unique filename:', uniqueFileName);
 
       // Upload to Supabase storage
+      console.log('Uploading to Supabase storage bucket: challengemedia');
       const { data, error } = await supabase.storage
         .from('challengemedia')
         .upload(uniqueFileName, blob, {
@@ -40,33 +51,44 @@ export default function RecordScreen() {
         });
 
       if (error) {
+        console.error('Storage upload error:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
         throw error;
       }
+
+      console.log('Upload successful! Storage data:', data);
 
       // Get public URL
       const { data: urlData } = supabase.storage
         .from('challengemedia')
         .getPublicUrl(uniqueFileName);
 
-      console.log('Video uploaded successfully:', urlData.publicUrl);
+      console.log('Public URL generated:', urlData.publicUrl);
 
       // Save video metadata to database
-      const { error: dbError } = await supabase
+      console.log('Saving video metadata to user_videos table...');
+      const videoData = {
+        user_id: userProfile.id,
+        video_url: urlData.publicUrl,
+        file_name: uniqueFileName,
+        title: `${todayTask.task} Challenge`,
+        task: todayTask.task,
+      };
+      console.log('Video data to insert:', videoData);
+
+      const { data: insertedData, error: dbError } = await supabase
         .from('user_videos')
-        .insert({
-          user_id: userProfile.id,
-          video_url: urlData.publicUrl,
-          file_name: uniqueFileName,
-          title: `${todayTask.task} Challenge`,
-          task: todayTask.task,
-        });
+        .insert(videoData)
+        .select();
 
       if (dbError) {
-        console.error('Error saving video to database:', dbError);
+        console.error('Database insert error:', dbError);
+        console.error('Error details:', JSON.stringify(dbError, null, 2));
         throw dbError;
       }
 
-      console.log('Video metadata saved to database');
+      console.log('Video metadata saved successfully:', insertedData);
+      console.log('=== Video upload complete ===');
       
       Alert.alert(
         'Success!',
@@ -85,8 +107,16 @@ export default function RecordScreen() {
 
       return urlData.publicUrl;
     } catch (error) {
-      console.error('Error uploading video:', error);
-      Alert.alert('Upload Failed', 'Failed to upload video. Please try again.');
+      console.error('=== Video upload failed ===');
+      console.error('Error:', error);
+      if (error instanceof Error) {
+        console.error('Error message:', error.message);
+        console.error('Error stack:', error.stack);
+      }
+      Alert.alert(
+        'Upload Failed', 
+        `Failed to upload video: ${error instanceof Error ? error.message : 'Unknown error'}. Please try again.`
+      );
       throw error;
     } finally {
       setIsUploading(false);
@@ -95,8 +125,11 @@ export default function RecordScreen() {
 
   const handleRecordVideo = async () => {
     try {
+      console.log('=== Starting video recording ===');
+      
       // Request camera permissions
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      console.log('Camera permission status:', status);
       
       if (status !== 'granted') {
         Alert.alert('Permission Required', 'Camera permission is needed to record videos.');
@@ -104,6 +137,7 @@ export default function RecordScreen() {
       }
 
       // Launch camera for video recording
+      console.log('Launching camera...');
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ['videos'],
         allowsEditing: true,
@@ -111,12 +145,17 @@ export default function RecordScreen() {
         videoMaxDuration: 60, // 60 seconds max
       });
 
+      console.log('Camera result:', result);
+
       if (!result.canceled && result.assets[0]) {
         const videoUri = result.assets[0].uri;
         const fileName = `recorded_${Date.now()}.mp4`;
+        console.log('Video recorded, URI:', videoUri);
         
         // Automatically upload to Library
         await uploadVideoToSupabase(videoUri, fileName);
+      } else {
+        console.log('Video recording cancelled');
       }
     } catch (error) {
       console.error('Error recording video:', error);
@@ -126,8 +165,11 @@ export default function RecordScreen() {
 
   const handleUploadFromGallery = async () => {
     try {
+      console.log('=== Starting gallery upload ===');
+      
       // Request media library permissions
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      console.log('Media library permission status:', status);
       
       if (status !== 'granted') {
         Alert.alert('Permission Required', 'Media library permission is needed to select videos.');
@@ -135,6 +177,7 @@ export default function RecordScreen() {
       }
 
       // Launch image picker for video selection
+      console.log('Launching image picker...');
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['videos'],
         allowsEditing: true,
@@ -142,12 +185,17 @@ export default function RecordScreen() {
         videoMaxDuration: 60, // 60 seconds max
       });
 
+      console.log('Image picker result:', result);
+
       if (!result.canceled && result.assets[0]) {
         const videoUri = result.assets[0].uri;
         const fileName = result.assets[0].fileName || `upload_${Date.now()}.mp4`;
+        console.log('Video selected, URI:', videoUri);
         
         // Automatically upload to Library
         await uploadVideoToSupabase(videoUri, fileName);
+      } else {
+        console.log('Video selection cancelled');
       }
     } catch (error) {
       console.error('Error selecting video:', error);

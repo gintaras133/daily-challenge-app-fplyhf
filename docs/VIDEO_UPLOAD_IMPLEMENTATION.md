@@ -2,7 +2,29 @@
 # Video Upload Implementation Guide
 
 ## Overview
-This document describes how to implement video uploads using the Natively Upload component and Supabase storage.
+This document describes the video upload implementation using expo-image-picker and Supabase storage.
+
+## Issue Resolution (January 2025)
+
+### Problem
+Videos were not being saved to the backend when users attempted to upload them. The videos would not appear in the user's library.
+
+### Root Cause
+The Supabase storage bucket `challengemedia` existed but had no Row Level Security (RLS) policies configured. This prevented authenticated users from uploading files to the bucket, resulting in 400 errors.
+
+### Solution
+Created the following RLS policies on the `storage.objects` table:
+
+1. **Allow authenticated uploads**: Permits authenticated users to insert objects into the `challengemedia` bucket
+2. **Allow public access**: Permits public read access to objects in the `challengemedia` bucket
+3. **Allow users to update own videos**: Permits users to update their own uploaded videos
+4. **Allow users to delete own videos**: Permits users to delete their own uploaded videos
+
+### Verification
+- Storage bucket `challengemedia` exists and is public
+- RLS policies are configured correctly
+- Enhanced logging added to upload functions for debugging
+- Videos now successfully upload and appear in user library
 
 ## Color Palette (Mandatory)
 
@@ -23,229 +45,220 @@ The app uses a strict 4-color design system:
 | Primary button text | `#FF8F8F` (Background) | "Join", "Upload" |
 | Secondary button text | `#FF8F8F` (Background) | "Logout", "Cancel" |
 
-## Natively Upload Component
+## Video Upload Flow
 
-### Basic Usage
+### 1. Record or Select Video
+Users can either:
+- Record a new video using the device camera
+- Select an existing video from their gallery
 
-```tsx
-import { Upload } from 'natively'; // Import from Natively package
+### 2. Upload to Supabase Storage
+The video is uploaded to the `challengemedia` bucket with:
+- Unique filename: `{user_id}_{timestamp}_{original_filename}`
+- Content type: `video/mp4`
+- Public access enabled
 
-<Upload
-  storage="challengemedia"
-  accept="video/*"
-  style={{
-    backgroundColor: '#FFF1CB',
-    padding: 16,
-    borderRadius: 12
-  }}
-/>
-```
+### 3. Save Metadata to Database
+Video metadata is saved to the `user_videos` table:
+- `user_id`: Reference to the authenticated user
+- `video_url`: Public URL of the uploaded video
+- `file_name`: Unique filename in storage
+- `title`: Generated title (e.g., "Assemble furniture Challenge")
+- `task`: The challenge task name
+- `uploaded_at`: Timestamp of upload
+- `views`: View count (default: 0)
+- `likes`: Like count (default: 0)
 
-### Theme Configuration
-
-Add this to your `styles/commonStyles.ts`:
-
-```typescript
-export const theme = {
-  colors: {
-    background: '#FF8F8F',
-    primary: '#FFF1CB',
-    secondary: '#C2E2FA',
-    accent: '#B7A3E3',
-    text: '#B7A3E3',
-    border: '#B7A3E3'
-  }
-}
-```
+### 4. Display in Library
+Videos are fetched from the `user_videos` table and displayed in the user's library screen.
 
 ## Supabase Storage Setup
 
-### 1. Create Storage Bucket
+### Storage Bucket Configuration
 
-The storage bucket must be named: **`challengemedia`**
+**Bucket Name**: `challengemedia`
 
-### 2. Bucket Configuration
-
-- **Public Access**: ON
-- **Uploads Allowed**: YES
-- **File Size Limit**: 100MB (recommended)
-- **Allowed MIME Types**: 
+**Settings**:
+- Public Access: ✅ ON
+- Uploads Allowed: ✅ YES
+- File Size Limit: 100MB (104857600 bytes)
+- Allowed MIME Types:
   - `video/mp4`
   - `video/quicktime`
   - `video/x-msvideo`
   - `video/webm`
+  - `video/mpeg`
 
-### 3. Storage Policies (RLS)
+### Storage Policies (RLS)
 
 ```sql
+-- Enable RLS on storage.objects
+ALTER TABLE storage.objects ENABLE ROW LEVEL SECURITY;
+
 -- Allow authenticated users to upload videos
-CREATE POLICY "Users can upload videos"
+CREATE POLICY "Allow authenticated uploads to challengemedia"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (bucket_id = 'challengemedia');
 
 -- Allow public read access to videos
-CREATE POLICY "Public can view videos"
+CREATE POLICY "Allow public access to challengemedia"
 ON storage.objects FOR SELECT
 TO public
 USING (bucket_id = 'challengemedia');
 
+-- Allow users to update their own videos
+CREATE POLICY "Allow users to update own videos"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'challengemedia' AND auth.uid()::text = owner::text);
+
 -- Allow users to delete their own videos
-CREATE POLICY "Users can delete own videos"
+CREATE POLICY "Allow users to delete own videos"
 ON storage.objects FOR DELETE
 TO authenticated
-USING (bucket_id = 'challengemedia' AND auth.uid()::text = (storage.foldername(name))[1]);
+USING (bucket_id = 'challengemedia' AND auth.uid()::text = owner::text);
 ```
 
-## Implementation Steps
+## Database Schema
 
-### Step 1: Install Natively Package (if not already installed)
-
-The Natively Upload component should be available in your Natively environment.
-
-### Step 2: Update Record Screen
-
-Replace the placeholder in `app/(tabs)/(home)/record.tsx`:
-
-```tsx
-import { Upload } from 'natively';
-
-// Inside your component:
-<Upload
-  storage="challengemedia"
-  accept="video/*"
-  onUploadComplete={(url) => {
-    console.log('Video uploaded:', url);
-    // Handle successful upload
-  }}
-  onUploadError={(error) => {
-    console.error('Upload error:', error);
-    Alert.alert('Upload Failed', error.message);
-  }}
-  style={{
-    backgroundColor: colors.primary,
-    padding: 16,
-    borderRadius: 12
-  }}
-/>
-```
-
-### Step 3: Create Video Submissions Table
+### user_videos Table
 
 ```sql
-CREATE TABLE video_submissions (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+CREATE TABLE user_videos (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
-  challenge_id UUID, -- Reference to challenges table
   video_url TEXT NOT NULL,
-  thumbnail_url TEXT,
-  duration INTEGER, -- Duration in seconds
+  file_name TEXT NOT NULL,
+  title TEXT,
+  task TEXT,
+  uploaded_at TIMESTAMPTZ DEFAULT NOW(),
+  views INTEGER DEFAULT 0,
+  likes INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW(),
-  likes_count INTEGER DEFAULT 0,
-  views_count INTEGER DEFAULT 0
+  updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Enable RLS
-ALTER TABLE video_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_videos ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
-CREATE POLICY "Users can view all submissions"
-ON video_submissions FOR SELECT
-TO authenticated
-USING (true);
+CREATE POLICY "Users can view their own videos"
+ON user_videos FOR SELECT
+TO public
+USING (user_id = auth.uid());
 
-CREATE POLICY "Users can create their own submissions"
-ON video_submissions FOR INSERT
-TO authenticated
-WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "Users can insert their own videos"
+ON user_videos FOR INSERT
+TO public
+WITH CHECK (user_id = auth.uid());
 
-CREATE POLICY "Users can update their own submissions"
-ON video_submissions FOR UPDATE
-TO authenticated
-USING (auth.uid() = user_id);
+CREATE POLICY "Users can update their own videos"
+ON user_videos FOR UPDATE
+TO public
+USING (user_id = auth.uid());
 
-CREATE POLICY "Users can delete their own submissions"
-ON video_submissions FOR DELETE
-TO authenticated
-USING (auth.uid() = user_id);
+CREATE POLICY "Users can delete their own videos"
+ON user_videos FOR DELETE
+TO public
+USING (user_id = auth.uid());
 ```
 
-## User Account
+## Implementation Details
 
-### Demo User Credentials
+### Record Screen (`app/(tabs)/(home)/record.tsx`)
 
-- **Email**: `user@bloop.app`
-- **Password**: `user1234`
-- **Role**: Normal user
-- **Permissions**:
-  - ✅ Join challenges
-  - ✅ Upload video
-  - ✅ View library
-  - ✅ Like / vote
-  - ❌ No admin tools
-  - ❌ No backend access
+The record screen provides two options:
+1. **Record Video**: Opens the camera to record a new video
+2. **Upload from Gallery**: Opens the gallery to select an existing video
 
-## Logout Button
+Both options automatically upload the video to Supabase storage and save metadata to the database.
 
-The logout button has been added to the Library screen:
+### Upload Function
 
-```tsx
-<TouchableOpacity
-  onPress={() => supabase.auth.signOut()}
-  style={{
-    backgroundColor: '#C2E2FA',
-    padding: 14,
-    borderRadius: 12,
-    alignSelf: 'flex-end',
-    marginBottom: 12
-  }}
->
-  <Text style={{ color: '#FF8F8F', fontWeight: 'bold' }}>Logout</Text>
-</TouchableOpacity>
+```typescript
+const uploadVideoToSupabase = async (uri: string, fileName: string) => {
+  // 1. Fetch video file as blob
+  const response = await fetch(uri);
+  const blob = await response.blob();
+
+  // 2. Generate unique filename
+  const uniqueFileName = `${userProfile.id}_${timestamp}_${fileName}`;
+
+  // 3. Upload to Supabase storage
+  const { data, error } = await supabase.storage
+    .from('challengemedia')
+    .upload(uniqueFileName, blob, {
+      contentType: 'video/mp4',
+      upsert: false
+    });
+
+  // 4. Get public URL
+  const { data: urlData } = supabase.storage
+    .from('challengemedia')
+    .getPublicUrl(uniqueFileName);
+
+  // 5. Save metadata to database
+  await supabase
+    .from('user_videos')
+    .insert({
+      user_id: userProfile.id,
+      video_url: urlData.publicUrl,
+      file_name: uniqueFileName,
+      title: `${todayTask.task} Challenge`,
+      task: todayTask.task,
+    });
+};
 ```
 
-**Behavior**:
-- Signs out the user
-- Redirects to login screen
-- Uses only the approved color palette
+### Library Screen (`app/(tabs)/library/index.tsx`)
+
+The library screen:
+- Fetches videos from the `user_videos` table filtered by user ID
+- Displays video cards with metadata (title, task, views, likes, date)
+- Refreshes when the screen comes into focus
+- Supports pull-to-refresh
+
+## Debugging
+
+### Enhanced Logging
+
+The upload functions now include comprehensive logging:
+- Video URI and filename
+- User ID
+- Blob size and type
+- Storage upload status
+- Database insert status
+- Error details with stack traces
+
+### Common Issues
+
+1. **Upload fails with 400 error**
+   - Check storage bucket exists
+   - Verify RLS policies are configured
+   - Ensure user is authenticated
+
+2. **Video doesn't appear in library**
+   - Check database insert succeeded
+   - Verify user_id matches authenticated user
+   - Check RLS policies on user_videos table
+
+3. **Permission errors**
+   - Ensure camera/media library permissions are granted
+   - Check app permissions in device settings
 
 ## Testing Checklist
 
-- [ ] Storage bucket `challengemedia` exists
-- [ ] Bucket is public
-- [ ] Video uploads are allowed
-- [ ] RLS policies are configured
-- [ ] Upload component uses correct colors
-- [ ] Logout button works correctly
-- [ ] Demo user can log in
-- [ ] Demo user can upload videos
-- [ ] Videos appear in library
-- [ ] Color palette is enforced everywhere
-
-## Troubleshooting
-
-### Upload Fails
-
-1. Check if bucket exists: `challengemedia`
-2. Verify bucket is public
-3. Check RLS policies
-4. Verify user is authenticated
-5. Check file size limits
-
-### Colors Not Matching
-
-1. Verify `styles/commonStyles.ts` has correct colors
-2. Check all components use `colors` from commonStyles
-3. Ensure no hardcoded colors exist
-4. Use the typography system for all text
-
-### Logout Not Working
-
-1. Check Supabase client is imported
-2. Verify `supabase.auth.signOut()` is called
-3. Check navigation redirects to `/auth/login`
-4. Verify AuthContext updates correctly
+- [x] Storage bucket `challengemedia` exists
+- [x] Bucket is public
+- [x] Storage RLS policies configured
+- [x] Database table `user_videos` exists
+- [x] Database RLS policies configured
+- [x] Video upload from camera works
+- [x] Video upload from gallery works
+- [x] Videos appear in library
+- [x] Enhanced logging implemented
+- [x] Error handling improved
 
 ## Next Steps
 
@@ -254,3 +267,5 @@ The logout button has been added to the Library screen:
 3. Implement voting/likes system
 4. Add video moderation
 5. Implement challenge submission flow
+6. Add video compression for large files
+7. Implement progress indicator during upload
