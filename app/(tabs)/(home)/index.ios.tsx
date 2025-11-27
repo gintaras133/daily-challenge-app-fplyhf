@@ -61,6 +61,11 @@ export default function HomeScreen() {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
+            {/* Logo */}
+            <View style={styles.logoContainer}>
+              <Text style={styles.logo}>BLOOP</Text>
+            </View>
+
             {/* Header with greeting and stats */}
             <View style={styles.header}>
               {/* Personalized Greeting */}
@@ -138,6 +143,16 @@ const styles = StyleSheet.create({
     paddingTop: 60,
     paddingHorizontal: 24,
     paddingBottom: 120,
+  },
+  logoContainer: {
+    alignSelf: 'flex-start',
+    marginBottom: 24,
+  },
+  logo: {
+    fontSize: 32,
+    fontWeight: '900',
+    color: '#003399',
+    letterSpacing: 2,
   },
   header: {
     marginBottom: 40,
