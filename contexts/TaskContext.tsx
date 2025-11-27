@@ -8,7 +8,6 @@ export interface TodayTask {
   duration: string;
   reward: string;
   partner?: string;
-  sampleVideoUrl?: string;
 }
 
 export interface YesterdayTask extends TodayTask {
@@ -39,8 +38,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     guidelines: "Speak directly to the camera",
     conqueredFear: "Fear of sounding \"cringe\" or not deep enough.",
     duration: "15–20 sec.",
-    reward: "1 Bloop token",
-    sampleVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+    reward: "1 Bloop token"
   });
 
   // Yesterday's task data
@@ -50,8 +48,7 @@ export const TaskProvider: React.FC<{ children: React.ReactNode }> = ({ children
     conqueredFear: "Fear of being judged for imperfection.",
     duration: "10–15 sec.",
     reward: "1 Bloop token",
-    prize: "100 Bloop tokens",
-    sampleVideoUrl: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4"
+    prize: "100 Bloop tokens"
   });
 
   const updateTodayTask = (task: TodayTask) => {
