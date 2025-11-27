@@ -5,8 +5,11 @@ import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
+import { useTask } from "@/contexts/TaskContext";
 
 export default function WinnerScreen() {
+  const { todayTask } = useTask();
+
   // Sample data - in a real app, this would come from an API
   const winner = {
     username: "@winner_user",
@@ -14,11 +17,7 @@ export default function WinnerScreen() {
     avatarColor: colors.primary,
   };
 
-  const yesterdayChallenge = {
-    challenge: "Assemble furniture in 60 seconds",
-    environment: "Your living room or any indoor space",
-    phrase: "Where's the instructions manual?!",
-    partner: "CapCut",
+  const yesterdayStats = {
     likes: 45200,
     views: 98500,
     engagement: 94,
@@ -111,12 +110,14 @@ export default function WinnerScreen() {
 
         {/* Yesterday's Challenge Card */}
         <View style={styles.challengeCardContainer}>
-          <Text style={styles.yesterdayTitle}>Yesterday&apos;s Challenge</Text>
+          <Text style={styles.yesterdayTitle}>Yesterday&apos;s Task</Text>
           <TodaysChallengeCard
-            challenge={yesterdayChallenge.challenge}
-            environment={yesterdayChallenge.environment}
-            phrase={yesterdayChallenge.phrase}
-            partner={yesterdayChallenge.partner}
+            task={todayTask.task}
+            constraint={todayTask.constraint}
+            skillMastery={todayTask.skillMastery}
+            duration={todayTask.duration}
+            suggestion={todayTask.suggestion}
+            partner={todayTask.partner}
           />
         </View>
 
@@ -130,7 +131,7 @@ export default function WinnerScreen() {
                 color={colors.accent}
               />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statNumber}>{(yesterdayChallenge.likes / 1000).toFixed(1)}k</Text>
+                <Text style={styles.statNumber}>{(yesterdayStats.likes / 1000).toFixed(1)}k</Text>
                 <Text style={styles.statLabel}>Likes</Text>
               </View>
             </View>
@@ -142,7 +143,7 @@ export default function WinnerScreen() {
                 color={colors.secondary}
               />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statNumber}>{(yesterdayChallenge.views / 1000).toFixed(1)}k</Text>
+                <Text style={styles.statNumber}>{(yesterdayStats.views / 1000).toFixed(1)}k</Text>
                 <Text style={styles.statLabel}>Views</Text>
               </View>
             </View>
@@ -154,7 +155,7 @@ export default function WinnerScreen() {
                 color={colors.primary}
               />
               <View style={styles.statTextContainer}>
-                <Text style={styles.statNumber}>{yesterdayChallenge.engagement}%</Text>
+                <Text style={styles.statNumber}>{yesterdayStats.engagement}%</Text>
                 <Text style={styles.statLabel}>Engagement</Text>
               </View>
             </View>
@@ -179,7 +180,7 @@ export default function WinnerScreen() {
 
         {/* Social Share Message */}
         <Text style={styles.shareMessage}>
-          <Text style={styles.shareMessageBold}>This video was shared {yesterdayChallenge.shareCount.toLocaleString()} times on social media!</Text> 🚀
+          <Text style={styles.shareMessageBold}>This video was shared {yesterdayStats.shareCount.toLocaleString()} times on social media!</Text> 🚀
         </Text>
 
         {/* Winners Lounge Button */}

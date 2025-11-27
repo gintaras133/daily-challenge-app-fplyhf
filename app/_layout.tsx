@@ -1,161 +1,24 @@
 
-import "react-native-reanimated";
-import React, { useEffect } from "react";
-import { useFonts } from "expo-font";
-import { Stack, router, useSegments } from "expo-router";
-import * as SplashScreen from "expo-splash-screen";
-import { SystemBars } from "react-native-edge-to-edge";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useColorScheme, Alert } from "react-native";
-import { useNetworkState } from "expo-network";
-import {
-  DarkTheme,
-  DefaultTheme,
-  Theme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { StatusBar } from "expo-status-bar";
-import { WidgetProvider } from "@/contexts/WidgetContext";
-import { AuthProvider, useAuth } from "@/contexts/AuthContext";
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useFonts } from 'expo-font';
+import { Stack, router } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import 'react-native-reanimated';
+import { useColorScheme } from 'react-native';
+import { AuthProvider, useAuth } from '@/contexts/AuthContext';
+import { TaskProvider } from '@/contexts/TaskContext';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
-export const unstable_settings = {
-  initialRouteName: "(tabs)",
-};
-
 function RootLayoutNav() {
-  const { session, user, userProfile, loading, profileChecked } = useAuth();
-  const segments = useSegments();
   const colorScheme = useColorScheme();
-  const networkState = useNetworkState();
+  const { session, userProfile, loading, profileChecked } = useAuth();
 
-  useEffect(() => {
-    // Wait until both auth loading is complete AND profile has been checked
-    if (loading || !profileChecked) {
-      console.log('Still loading or profile not checked yet');
-      return;
-    }
-
-    const inAuthGroup = segments[0] === 'auth';
-    const inTabsGroup = segments[0] === '(tabs)';
-
-    console.log('Navigation check:', {
-      session: !!session,
-      user: !!user,
-      userProfile: !!userProfile,
-      onboardingCompleted: userProfile?.onboarding_completed,
-      profileChecked,
-      inAuthGroup,
-      inTabsGroup,
-      segments,
-    });
-
-    if (!session) {
-      // User is not signed in, redirect to login
-      if (!inAuthGroup) {
-        router.replace('/auth/login');
-      }
-    } else if (session && user) {
-      // User is signed in and profile has been checked
-      if (!userProfile || !userProfile.onboarding_completed) {
-        // User hasn't completed onboarding or has no profile
-        if (segments[1] !== 'onboarding') {
-          console.log('Redirecting to onboarding');
-          router.replace('/auth/onboarding');
-        }
-      } else {
-        // User has completed onboarding, allow access to app
-        if (inAuthGroup) {
-          console.log('Redirecting to home');
-          router.replace('/(tabs)/(home)/');
-        }
-      }
-    }
-  }, [session, user, userProfile, loading, profileChecked, segments]);
-
-  React.useEffect(() => {
-    if (
-      !networkState.isConnected &&
-      networkState.isInternetReachable === false
-    ) {
-      Alert.alert(
-        "🔌 You are offline",
-        "You can keep using the app! Your changes will be saved locally and synced when you are back online."
-      );
-    }
-  }, [networkState.isConnected, networkState.isInternetReachable]);
-
-  const CustomDefaultTheme: Theme = {
-    ...DefaultTheme,
-    dark: false,
-    colors: {
-      primary: "rgb(0, 122, 255)",
-      background: "rgb(242, 242, 247)",
-      card: "rgb(255, 255, 255)",
-      text: "rgb(0, 0, 0)",
-      border: "rgb(216, 216, 220)",
-      notification: "rgb(255, 59, 48)",
-    },
-  };
-
-  const CustomDarkTheme: Theme = {
-    ...DarkTheme,
-    colors: {
-      primary: "rgb(10, 132, 255)",
-      background: "rgb(1, 1, 1)",
-      card: "rgb(28, 28, 30)",
-      text: "rgb(255, 255, 255)",
-      border: "rgb(44, 44, 46)",
-      notification: "rgb(255, 69, 58)",
-    },
-  };
-
-  return (
-    <ThemeProvider
-      value={colorScheme === "dark" ? CustomDarkTheme : CustomDefaultTheme}
-    >
-      <Stack
-        screenOptions={{
-          headerShown: false,
-        }}
-      >
-        <Stack.Screen name="auth" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen
-          name="modal"
-          options={{
-            presentation: "modal",
-            title: "Standard Modal",
-          }}
-        />
-        <Stack.Screen
-          name="formsheet"
-          options={{
-            presentation: "formSheet",
-            title: "Form Sheet Modal",
-            sheetGrabberVisible: true,
-            sheetAllowedDetents: [0.5, 0.8, 1.0],
-            sheetCornerRadius: 20,
-          }}
-        />
-        <Stack.Screen
-          name="transparent-modal"
-          options={{
-            presentation: "transparentModal",
-            headerShown: false,
-          }}
-        />
-      </Stack>
-      <SystemBars style={"auto"} />
-    </ThemeProvider>
-  );
-}
-
-export default function RootLayout() {
   const [loaded] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
   useEffect(() => {
@@ -164,20 +27,70 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded) {
+  useEffect(() => {
+    if (!loading && profileChecked) {
+      console.log('Session:', session);
+      console.log('User Profile:', userProfile);
+      
+      if (!session) {
+        // No session, redirect to login
+        router.replace('/auth/login');
+      } else if (!userProfile || !userProfile.onboarding_completed) {
+        // Session exists but onboarding not completed
+        router.replace('/auth/onboarding');
+      } else {
+        // Session exists and onboarding completed
+        router.replace('/(tabs)/(home)');
+      }
+    }
+  }, [session, userProfile, loading, profileChecked]);
+
+  if (!loaded || loading || !profileChecked) {
     return null;
   }
 
   return (
-    <>
-      <StatusBar style="auto" animated />
-      <GestureHandlerRootView style={{ flex: 1 }}>
-        <WidgetProvider>
-          <AuthProvider>
-            <RootLayoutNav />
-          </AuthProvider>
-        </WidgetProvider>
-      </GestureHandlerRootView>
-    </>
+    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name="auth" options={{ headerShown: false }} />
+        <Stack.Screen name="+not-found" />
+        <Stack.Screen 
+          name="modal" 
+          options={{ 
+            presentation: 'modal',
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="formsheet" 
+          options={{ 
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.5, 0.8],
+            sheetGrabberVisible: true,
+            headerShown: false 
+          }} 
+        />
+        <Stack.Screen 
+          name="transparent-modal" 
+          options={{ 
+            presentation: 'transparentModal',
+            animation: 'fade',
+            headerShown: false 
+          }} 
+        />
+      </Stack>
+      <StatusBar style="auto" />
+    </ThemeProvider>
+  );
+}
+
+export default function RootLayout() {
+  return (
+    <AuthProvider>
+      <TaskProvider>
+        <RootLayoutNav />
+      </TaskProvider>
+    </AuthProvider>
   );
 }

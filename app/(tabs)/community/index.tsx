@@ -5,6 +5,7 @@ import { colors } from '@/styles/commonStyles';
 import { IconSymbol } from '@/components/IconSymbol';
 import { router } from 'expo-router';
 import TodaysChallengeCard from '@/components/TodaysChallengeCard';
+import { useTask } from '@/contexts/TaskContext';
 
 interface FriendVideo {
   id: string;
@@ -16,13 +17,7 @@ interface FriendVideo {
 }
 
 export default function CommunityScreen() {
-  // Sample data - in a real app, this would come from an API
-  const todayChallenge = {
-    challenge: "Assemble furniture in 60 seconds",
-    environment: "Your living room or any indoor space",
-    phrase: "Where's the instructions manual?!",
-    partner: "CapCut"
-  };
+  const { todayTask } = useTask();
 
   const friendsVideos: FriendVideo[] = [
     {
@@ -109,10 +104,12 @@ export default function CommunityScreen() {
         {/* Today's Challenge Card */}
         <View style={styles.challengeCardContainer}>
           <TodaysChallengeCard
-            challenge={todayChallenge.challenge}
-            environment={todayChallenge.environment}
-            phrase={todayChallenge.phrase}
-            partner={todayChallenge.partner}
+            task={todayTask.task}
+            constraint={todayTask.constraint}
+            skillMastery={todayTask.skillMastery}
+            duration={todayTask.duration}
+            suggestion={todayTask.suggestion}
+            partner={todayTask.partner}
           />
         </View>
 
@@ -136,7 +133,7 @@ export default function CommunityScreen() {
               </View>
 
               <Text style={styles.videoDescription}>
-                Nailed the CapCut challenge! 🎯{'\n'}#BubblesBubbles
+                Nailed the {todayTask.partner} challenge! 🎯{'\n'}#BubblesBubbles
               </Text>
 
               <View style={styles.videoStats}>

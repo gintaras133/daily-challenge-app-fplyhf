@@ -8,10 +8,12 @@ import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 import { useAuth } from "@/contexts/AuthContext";
+import { useTask } from "@/contexts/TaskContext";
 import { useFonts, PlayfairDisplay_900Black } from '@expo-google-fonts/playfair-display';
 
 export default function HomeScreen() {
   const { userProfile } = useAuth();
+  const { todayTask } = useTask();
   
   // Load Playfair Display font
   const [fontsLoaded] = useFonts({
@@ -21,15 +23,6 @@ export default function HomeScreen() {
   // Sample data - in a real app, this would come from an API
   const streak = 15;
   const followers = 142;
-  
-  const todayTask = {
-    task: "Story in 3 Clips",
-    constraint: "Tell a mini story in three separate shots or angles.",
-    skillMastery: "Narrative pacing, basic sequencing, and transitions.",
-    duration: "20–40 sec final video\n60 min for shooting + editing.",
-    suggestion: "Use CapCut transition effects between clips",
-    partner: "CapCut"
-  };
 
   // Get time-based greeting
   const getGreeting = () => {

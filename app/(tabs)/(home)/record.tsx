@@ -5,21 +5,15 @@ import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
+import { useTask } from "@/contexts/TaskContext";
 import * as ImagePicker from 'expo-image-picker';
 import { supabase } from '@/app/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function RecordScreen() {
   const { userProfile } = useAuth();
+  const { todayTask } = useTask();
   const [isUploading, setIsUploading] = useState(false);
-
-  // Sample challenge data - in a real app, this would come from navigation params or context
-  const todayChallenge = {
-    challenge: "Assemble furniture in 60 seconds",
-    environment: "Your living room or any indoor space",
-    phrase: "Where's the instructions manual?!",
-    partner: "CapCut"
-  };
 
   const uploadVideoToSupabase = async (uri: string, fileName: string) => {
     try {
@@ -166,10 +160,12 @@ export default function RecordScreen() {
         {/* Today's Challenge Card */}
         <View style={styles.challengeCardContainer}>
           <TodaysChallengeCard
-            challenge={todayChallenge.challenge}
-            environment={todayChallenge.environment}
-            phrase={todayChallenge.phrase}
-            partner={todayChallenge.partner}
+            task={todayTask.task}
+            constraint={todayTask.constraint}
+            skillMastery={todayTask.skillMastery}
+            duration={todayTask.duration}
+            suggestion={todayTask.suggestion}
+            partner={todayTask.partner}
           />
         </View>
 
