@@ -76,32 +76,16 @@ export default function ProfileScreen() {
     router.push('/auth/login');
   };
 
-  const handleSignOut = () => {
-    Alert.alert(
-      'Sign Out',
-      'Are you sure you want to sign out?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Sign Out',
-          style: 'destructive',
-          onPress: async () => {
-            console.log('User confirmed sign out');
-            await signOut();
-            router.replace('/auth/login');
-          },
-        },
-      ]
-    );
+  const handleSignOut = async () => {
+    console.log('User clicked sign out - signing out immediately');
+    await signOut();
+    router.replace('/auth/login');
   };
 
   const handleDeleteAccount = () => {
     Alert.alert(
       'Delete Account',
-      'Are you sure you want to delete your account? This action cannot be undone and all your data will be permanently deleted.',
+      'Are you sure you want to permanently delete your account? This cannot be undone.',
       [
         {
           text: 'Cancel',
@@ -157,7 +141,7 @@ export default function ProfileScreen() {
         [
           {
             text: 'OK',
-            onPress: () => router.replace('/auth/login'),
+            onPress: () => router.replace('/auth/onboarding'),
           },
         ]
       );
