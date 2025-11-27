@@ -150,8 +150,8 @@ export default function RecordScreen() {
         user_id: userProfile.id,
         video_url: urlData.publicUrl,
         file_name: uniqueFileName,
-        title: `${todayTask.task} Challenge`,
-        task: todayTask.task,
+        title: `${todayTask.challenge} Challenge`,
+        task: todayTask.challenge,
       };
       console.log('Video data to insert:', videoData);
 
@@ -313,11 +313,11 @@ export default function RecordScreen() {
         {/* Today's Challenge Card */}
         <View style={styles.challengeCardContainer}>
           <TodaysChallengeCard
-            task={todayTask.task}
-            constraint={todayTask.constraint}
-            skillMastery={todayTask.skillMastery}
+            challenge={todayTask.challenge}
+            guidelines={todayTask.guidelines}
+            conqueredFear={todayTask.conqueredFear}
             duration={todayTask.duration}
-            suggestion={todayTask.suggestion}
+            reward={todayTask.reward}
             partner={todayTask.partner}
           />
         </View>
