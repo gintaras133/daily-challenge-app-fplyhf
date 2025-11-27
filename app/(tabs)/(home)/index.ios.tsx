@@ -151,6 +151,7 @@ export default function HomeScreen() {
                 reward={todayTask.reward}
                 partner={todayTask.partner}
                 sampleVideoUrl={todayTask.sampleVideoUrl}
+                showTitle={true}
               />
             </View>
 
