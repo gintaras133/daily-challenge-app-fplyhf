@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
@@ -7,6 +7,8 @@ import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 
 export default function WinnerScreen() {
+  const [timeRemaining, setTimeRemaining] = useState({ hours: 0, minutes: 0, seconds: 0 });
+
   // Sample data - in a real app, this would come from an API
   const winner = {
     username: "@winner_user",
@@ -25,10 +27,28 @@ export default function WinnerScreen() {
     shareCount: 2341,
   };
 
-  const timeUntilNext = {
-    hours: 2,
-    minutes: 10,
-  };
+  // Calculate time until next winner announcement (next day at midnight)
+  useEffect(() => {
+    const calculateTimeRemaining = () => {
+      const now = new Date();
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(0, 0, 0, 0);
+      
+      const diff = tomorrow.getTime() - now.getTime();
+      
+      const hours = Math.floor(diff / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      
+      setTimeRemaining({ hours, minutes, seconds });
+    };
+
+    calculateTimeRemaining();
+    const intervalId = setInterval(calculateTimeRemaining, 1000);
+
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleWinnersLounge = () => {
     console.log('Navigate to Winners Lounge');
@@ -54,6 +74,19 @@ export default function WinnerScreen() {
       >
         {/* Winner Announcement Section */}
         <View style={styles.winnerSection}>
+          {/* Countdown Timer at the top */}
+          <View style={styles.timerContainer}>
+            <IconSymbol 
+              ios_icon_name="clock.fill" 
+              size={20} 
+              color="#ffffff"
+            />
+            <Text style={styles.timerText}>
+              New one announced in {timeRemaining.hours}h {timeRemaining.minutes}m {timeRemaining.seconds}s
+            </Text>
+          </View>
+
+          {/* Last Winner Title */}
           <View style={styles.trophyRow}>
             <IconSymbol 
               ios_icon_name="trophy.fill" 
@@ -68,17 +101,7 @@ export default function WinnerScreen() {
             />
           </View>
 
-          <View style={styles.timerContainer}>
-            <IconSymbol 
-              ios_icon_name="clock.fill" 
-              size={20} 
-              color="#ffffff"
-            />
-            <Text style={styles.timerText}>
-              New one announced in {timeUntilNext.hours} hours {timeUntilNext.minutes} min
-            </Text>
-          </View>
-
+          {/* Congratulations Text */}
           <Text style={styles.congratsText}>Congratulations to our champion! 🎉</Text>
         </View>
 
@@ -227,6 +250,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 24,
   },
+  timerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+    backgroundColor: colors.primary,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 20,
+  },
+  timerText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
   trophyRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -238,17 +276,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: '700',
     letterSpacing: 2,
-  },
-  timerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 12,
-  },
-  timerText: {
-    color: '#ffffff',
-    fontSize: 16,
-    fontWeight: '600',
   },
   congratsText: {
     color: '#ffffff',
