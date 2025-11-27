@@ -26,30 +26,43 @@ interface UserVideo {
 }
 
 export default function LibraryScreen() {
-  const { userProfile } = useAuth();
+  const { userProfile, user } = useAuth();
   const [userVideos, setUserVideos] = useState<UserVideo[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const fetchUserVideos = async () => {
     try {
-      if (!userProfile?.id) {
-        console.log('No user profile found');
+      console.log('=== Fetching user videos ===');
+      console.log('User profile ID:', userProfile?.id);
+      console.log('Auth user ID:', user?.id);
+      
+      // Use auth user ID as primary, fallback to profile ID
+      const userId = user?.id || userProfile?.id;
+      
+      if (!userId) {
+        console.log('No user ID found - user not authenticated');
+        setIsLoading(false);
+        setIsRefreshing(false);
         return;
       }
+
+      console.log('Querying videos for user ID:', userId);
 
       const { data, error } = await supabase
         .from('user_videos')
         .select('*')
-        .eq('user_id', userProfile.id)
+        .eq('user_id', userId)
         .order('uploaded_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching user videos:', error);
+        console.error('Error details:', JSON.stringify(error, null, 2));
         throw error;
       }
 
-      console.log('Fetched user videos:', data);
+      console.log('Fetched user videos count:', data?.length || 0);
+      console.log('Video data:', JSON.stringify(data, null, 2));
       setUserVideos(data || []);
     } catch (error) {
       console.error('Error loading videos:', error);
@@ -60,17 +73,26 @@ export default function LibraryScreen() {
   };
 
   useEffect(() => {
-    fetchUserVideos();
-  }, [userProfile?.id]);
+    console.log('Library screen mounted, user profile:', userProfile?.id, 'auth user:', user?.id);
+    if (user?.id || userProfile?.id) {
+      fetchUserVideos();
+    } else {
+      setIsLoading(false);
+    }
+  }, [userProfile?.id, user?.id]);
 
   // Refresh videos when screen comes into focus
   useFocusEffect(
     React.useCallback(() => {
-      fetchUserVideos();
-    }, [userProfile?.id])
+      console.log('Library screen focused, refreshing videos');
+      if (user?.id || userProfile?.id) {
+        fetchUserVideos();
+      }
+    }, [userProfile?.id, user?.id])
   );
 
   const handleRefresh = () => {
+    console.log('Manual refresh triggered');
     setIsRefreshing(true);
     fetchUserVideos();
   };
