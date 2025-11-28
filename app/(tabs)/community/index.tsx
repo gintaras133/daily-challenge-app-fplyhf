@@ -231,7 +231,7 @@ export default function CommunityScreen() {
               </View>
 
               <Text style={[styles.videoDescription, { fontSize: fontSizes.body, lineHeight: fontSizes.body * 1.5 }]}>
-                Nailed the CapCut challenge! 🎯{'\n'}#BubblesBubbles
+                Overcame the fear of sounding &quot;cringe&quot;
               </Text>
 
               <View style={[styles.videoStats, { gap: spacing * 2 }]}>

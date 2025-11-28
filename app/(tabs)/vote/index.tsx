@@ -1,9 +1,11 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text, TouchableOpacity, ScrollView, Image } from "react-native";
 import { colors } from "@/styles/commonStyles";
 import { IconSymbol } from "@/components/IconSymbol";
 import VideoComparisonModal from "@/components/VideoComparisonModal";
+import VideoPlayerModal from "@/components/VideoPlayerModal";
+import { supabase } from "@/app/integrations/supabase/client";
 
 interface VideoData {
   id: string;
@@ -12,6 +14,8 @@ interface VideoData {
   views: number;
   avatarUrl: string;
   videoUrl?: string;
+  title?: string;
+  task?: string;
 }
 
 export default function VoteScreen() {
@@ -19,23 +23,13 @@ export default function VoteScreen() {
   const [clickedVideos, setClickedVideos] = useState<string[]>([]);
   const [showComparisonModal, setShowComparisonModal] = useState(false);
   const [currentComparisonPair, setCurrentComparisonPair] = useState<number>(0);
-
-  // Sample data - in a real app, this would come from an API
-  const video1: VideoData = {
-    id: '1',
-    username: "@sarah_creates",
-    timeAgo: "2 hours ago",
-    views: 124,
-    avatarUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop",
-  };
-
-  const video2: VideoData = {
-    id: '2',
-    username: "@mike_vision",
-    timeAgo: "1 hour ago",
-    views: 98,
-    avatarUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
-  };
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>('');
+  const [selectedVideoTitle, setSelectedVideoTitle] = useState<string>('');
+  const [selectedVideoTask, setSelectedVideoTask] = useState<string>('');
+  const [video1, setVideo1] = useState<VideoData | null>(null);
+  const [video2, setVideo2] = useState<VideoData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Additional video pairs for the comparison modal
   const comparisonPairs = [
@@ -65,6 +59,82 @@ export default function VoteScreen() {
     },
   ];
 
+  useEffect(() => {
+    fetchRandomVideos();
+  }, []);
+
+  const fetchRandomVideos = async () => {
+    try {
+      console.log('Fetching random videos for vote screen...');
+      setLoading(true);
+
+      // Fetch all videos from the database
+      const { data: videos, error } = await supabase
+        .from('user_videos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching videos:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (!videos || videos.length < 2) {
+        console.log('Not enough videos in database');
+        setLoading(false);
+        return;
+      }
+
+      // Randomly select 2 different videos
+      const shuffled = [...videos].sort(() => 0.5 - Math.random());
+      const selectedVideos = shuffled.slice(0, 2);
+
+      // Generate random views for each video
+      const randomViews1 = Math.floor(Math.random() * 500) + 50;
+      const randomViews2 = Math.floor(Math.random() * 500) + 50;
+
+      // Avatar URLs for variety
+      const avatarUrls = [
+        'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop',
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&h=200&fit=crop',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop',
+      ];
+
+      const video1Data: VideoData = {
+        id: selectedVideos[0].id,
+        username: `@user_${selectedVideos[0].id.substring(0, 6)}`,
+        timeAgo: `${Math.floor(Math.random() * 5) + 1}h ago`,
+        views: randomViews1,
+        avatarUrl: avatarUrls[Math.floor(Math.random() * avatarUrls.length)],
+        videoUrl: selectedVideos[0].video_url,
+        title: selectedVideos[0].title || 'Challenge Video',
+        task: selectedVideos[0].task || 'Challenge',
+      };
+
+      const video2Data: VideoData = {
+        id: selectedVideos[1].id,
+        username: `@user_${selectedVideos[1].id.substring(0, 6)}`,
+        timeAgo: `${Math.floor(Math.random() * 5) + 1}h ago`,
+        views: randomViews2,
+        avatarUrl: avatarUrls[Math.floor(Math.random() * avatarUrls.length)],
+        videoUrl: selectedVideos[1].video_url,
+        title: selectedVideos[1].title || 'Challenge Video',
+        task: selectedVideos[1].task || 'Challenge',
+      };
+
+      setVideo1(video1Data);
+      setVideo2(video2Data);
+      setLoading(false);
+
+      console.log('Videos loaded successfully');
+    } catch (error) {
+      console.error('Error in fetchRandomVideos:', error);
+      setLoading(false);
+    }
+  };
+
   const handleVideoClick = (videoId: string) => {
     console.log('Video clicked:', videoId);
     
@@ -78,6 +148,14 @@ export default function VoteScreen() {
         setShowComparisonModal(true);
       }
     }
+  };
+
+  const handlePlayVideo = (videoUrl: string, title: string, task: string) => {
+    console.log('Playing video:', videoUrl);
+    setSelectedVideoUrl(videoUrl);
+    setSelectedVideoTitle(title);
+    setSelectedVideoTask(task);
+    setShowVideoPlayer(true);
   };
 
   const handleVote = (vote: 'video1' | 'video2' | 'neither') => {
@@ -103,7 +181,24 @@ export default function VoteScreen() {
     setShowComparisonModal(false);
   };
 
+  const handleCloseVideoPlayer = () => {
+    setShowVideoPlayer(false);
+    setSelectedVideoUrl('');
+    setSelectedVideoTitle('');
+    setSelectedVideoTask('');
+  };
+
   const currentPair = comparisonPairs[currentComparisonPair];
+
+  if (loading || !video1 || !video2) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Loading videos...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -128,6 +223,25 @@ export default function VoteScreen() {
         >
           <View style={styles.videoPreview}>
             <Text style={styles.videoPlaceholder}>Video Preview 1</Text>
+            {video1.videoUrl && (
+              <TouchableOpacity
+                style={styles.playButton}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handlePlayVideo(video1.videoUrl!, video1.title || 'Video 1', video1.task || 'Challenge');
+                }}
+                activeOpacity={0.8}
+              >
+                <View style={styles.playButtonBackground}>
+                  <IconSymbol
+                    ios_icon_name="play.circle.fill"
+                    android_material_icon_name="play-circle-filled"
+                    size={64}
+                    color="rgba(255, 255, 255, 0.95)"
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
             {clickedVideos.includes(video1.id) && (
               <View style={styles.clickedBadge}>
                 <IconSymbol
@@ -173,6 +287,25 @@ export default function VoteScreen() {
         >
           <View style={styles.videoPreview}>
             <Text style={styles.videoPlaceholder}>Video Preview 2</Text>
+            {video2.videoUrl && (
+              <TouchableOpacity
+                style={styles.playButton}
+                onPress={(e) => {
+                  e.stopPropagation();
+                  handlePlayVideo(video2.videoUrl!, video2.title || 'Video 2', video2.task || 'Challenge');
+                }}
+                activeOpacity={0.8}
+              >
+                <View style={styles.playButtonBackground}>
+                  <IconSymbol
+                    ios_icon_name="play.circle.fill"
+                    android_material_icon_name="play-circle-filled"
+                    size={64}
+                    color="rgba(255, 255, 255, 0.95)"
+                  />
+                </View>
+              </TouchableOpacity>
+            )}
             {clickedVideos.includes(video2.id) && (
               <View style={styles.clickedBadge}>
                 <IconSymbol
@@ -260,6 +393,15 @@ export default function VoteScreen() {
         video1={currentPair.video1}
         video2={currentPair.video2}
       />
+
+      {/* Video Player Modal */}
+      <VideoPlayerModal
+        visible={showVideoPlayer}
+        videoUrl={selectedVideoUrl}
+        videoTitle={selectedVideoTitle}
+        videoTask={selectedVideoTask}
+        onClose={handleCloseVideoPlayer}
+      />
     </View>
   );
 }
@@ -276,6 +418,16 @@ const styles = StyleSheet.create({
     paddingTop: 48,
     paddingHorizontal: 24,
     paddingBottom: 120,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    color: colors.text,
+    fontSize: 18,
+    fontWeight: '600',
   },
   header: {
     marginBottom: 32,
@@ -317,6 +469,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '500',
   },
+  playButton: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 5,
+  },
+  playButtonBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 50,
+    padding: 4,
+  },
   clickedBadge: {
     position: 'absolute',
     top: 12,
@@ -324,6 +487,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
     borderRadius: 20,
     padding: 4,
+    zIndex: 10,
   },
   videoInfo: {
     flexDirection: 'row',

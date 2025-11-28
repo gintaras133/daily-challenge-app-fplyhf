@@ -6,9 +6,21 @@ import { IconSymbol } from "@/components/IconSymbol";
 import { router } from "expo-router";
 import TodaysChallengeCard from "@/components/TodaysChallengeCard";
 import { useTask } from "@/contexts/TaskContext";
+import VideoPlayerModal from "@/components/VideoPlayerModal";
+import { supabase } from "@/app/integrations/supabase/client";
+
+interface WinnerVideoData {
+  id: string;
+  videoUrl: string;
+  title: string;
+  task: string;
+}
 
 export default function WinnerScreen() {
   const { yesterdayTask } = useTask();
+  const [showVideoPlayer, setShowVideoPlayer] = useState(false);
+  const [winnerVideo, setWinnerVideo] = useState<WinnerVideoData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   // Sample data - in a real app, this would come from an API
   const winner = {
@@ -22,6 +34,52 @@ export default function WinnerScreen() {
     views: 98500,
     engagement: 94,
     shareCount: 2341,
+  };
+
+  useEffect(() => {
+    fetchWinnerVideo();
+  }, []);
+
+  const fetchWinnerVideo = async () => {
+    try {
+      console.log('Fetching winner video...');
+      setLoading(true);
+
+      // Fetch a random video from the database to use as the winner
+      const { data: videos, error } = await supabase
+        .from('user_videos')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(5);
+
+      if (error) {
+        console.error('Error fetching winner video:', error);
+        setLoading(false);
+        return;
+      }
+
+      if (!videos || videos.length === 0) {
+        console.log('No videos in database');
+        setLoading(false);
+        return;
+      }
+
+      // Pick a random video from the results
+      const randomVideo = videos[Math.floor(Math.random() * videos.length)];
+
+      setWinnerVideo({
+        id: randomVideo.id,
+        videoUrl: randomVideo.video_url,
+        title: randomVideo.title || 'Winning Video',
+        task: randomVideo.task || 'Challenge',
+      });
+
+      setLoading(false);
+      console.log('Winner video loaded successfully');
+    } catch (error) {
+      console.error('Error in fetchWinnerVideo:', error);
+      setLoading(false);
+    }
   };
 
   const handleWinnersLounge = () => {
@@ -52,13 +110,26 @@ export default function WinnerScreen() {
 
   const handleWatchAgain = () => {
     console.log('Watch video again');
-    Alert.alert(
-      'Watch Again',
-      'Video replay functionality is ready! In production, this would replay the winning video.',
-      [{ text: 'OK' }]
-    );
-    // In a real app, this would replay the winning video
-    // You could navigate to a video player screen or open a modal
+    if (winnerVideo && winnerVideo.videoUrl) {
+      setShowVideoPlayer(true);
+    } else {
+      Alert.alert(
+        'Watch Again',
+        'Video replay functionality is ready! In production, this would replay the winning video.',
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const handlePlayVideo = () => {
+    console.log('Playing winner video');
+    if (winnerVideo && winnerVideo.videoUrl) {
+      setShowVideoPlayer(true);
+    }
+  };
+
+  const handleCloseVideoPlayer = () => {
+    setShowVideoPlayer(false);
   };
 
   return (
@@ -100,9 +171,28 @@ export default function WinnerScreen() {
             <Text style={styles.placeBadgeText}>1st Place</Text>
           </View>
 
-          <View style={styles.videoPreview}>
-            <Text style={styles.videoPlaceholder}>Winning Video</Text>
-          </View>
+          <TouchableOpacity 
+            style={styles.videoPreview}
+            onPress={handlePlayVideo}
+            activeOpacity={0.8}
+            disabled={loading || !winnerVideo}
+          >
+            <Text style={styles.videoPlaceholder}>
+              {loading ? 'Loading...' : 'Winning Video'}
+            </Text>
+            {!loading && winnerVideo && winnerVideo.videoUrl && (
+              <View style={styles.playButton}>
+                <View style={styles.playButtonBackground}>
+                  <IconSymbol
+                    ios_icon_name="play.circle.fill"
+                    android_material_icon_name="play-circle-filled"
+                    size={64}
+                    color="rgba(255, 255, 255, 0.95)"
+                  />
+                </View>
+              </View>
+            )}
+          </TouchableOpacity>
 
           <View style={styles.winnerInfo}>
             <Image 
@@ -236,6 +326,17 @@ export default function WinnerScreen() {
           </View>
         </TouchableOpacity>
       </ScrollView>
+
+      {/* Video Player Modal */}
+      {winnerVideo && (
+        <VideoPlayerModal
+          visible={showVideoPlayer}
+          videoUrl={winnerVideo.videoUrl}
+          videoTitle={winnerVideo.title}
+          videoTask={winnerVideo.task}
+          onClose={handleCloseVideoPlayer}
+        />
+      )}
     </View>
   );
 }
@@ -307,11 +408,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 16,
+    position: 'relative',
   },
   videoPlaceholder: {
     color: colors.text,
     fontSize: 18,
     fontWeight: '500',
+  },
+  playButton: {
+    position: 'absolute',
+    alignItems: 'center',
+    justifyContent: 'center',
+    zIndex: 5,
+  },
+  playButtonBackground: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 50,
+    padding: 4,
   },
   winnerInfo: {
     flexDirection: 'row',
